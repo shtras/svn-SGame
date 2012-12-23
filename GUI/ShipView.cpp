@@ -33,6 +33,20 @@ void ShipView::render()
   tileWidth_ = size_.width * zoom_ * 0.05f;
   tileHeight_ = tileWidth_ * aspect;
   GLuint tilesTex = renderer.getTilesTex();
+  int drawStartX = drawingStartX_;
+  int drawStartY = drawingStartY_;
+  int drawEndX = hoveredLeft_;
+  int drawEndY = hoveredTop_;
+  if (drawStartX > drawEndX) {
+    int tmp = drawEndX;
+    drawEndX = drawStartX;
+    drawStartX = tmp;
+  }
+  if (drawStartY > drawEndY) {
+    int tmp = drawEndY;
+    drawEndY = drawStartY;
+    drawStartY = tmp;
+  }
   for (int i=0; i<layoutWidth_; ++i) {
     float tileX = i*tileWidth_ + offsetX_*zoom_ + size_.left;
     if (tileX < size_.left || tileX+tileWidth_ > size_.left + size_.width) {
@@ -67,6 +81,9 @@ void ShipView::render()
       }
       if (wallValue == -1) {
         renderer.setColor(Vector4(255,255,255,50));
+      }
+      if (drawing_ && i >= drawStartX && i <= drawEndX && j >= drawStartY && j <= drawEndY) {
+        renderer.setColor(Vector4(255,155,55,200));
       }
       texPos.top = wallCode / 4 * 0.25f;
       texPos.left = wallCode % 4 * 0.125f;
@@ -193,6 +210,9 @@ void ShipView::plantWalls()
   if (hoveredLeft_ >= layoutWidth_ || hoveredTop_ >= layoutHeight_ || drawingStartX_ >= layoutWidth_ || drawingStartY_ >= layoutHeight_) {
     return;
   }
+  action_ = BuildFloor;
+  eraseArea();
+  action_ = BuildWalls;
   int stepHor = drawingStartX_ > hoveredLeft_?-1:1;
   int stepVer = drawingStartY_ > hoveredTop_?-1:1;
   for (int i=drawingStartX_; i!= hoveredLeft_ + stepHor; i += stepHor) {
@@ -221,6 +241,9 @@ void ShipView::eraseArea()
   }
   for (int i=drawingStartX_; i!= hoveredLeft_ + stepHor; i += stepHor) {
     for (int j=drawingStartY_; j != hoveredTop_ + stepVer; j += stepVer) {
+      if (value == 0 && getWall(i, j) != -1) {
+        continue;
+      }
       setWall(i, j, value);
     }
   }
