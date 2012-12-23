@@ -1,0 +1,37 @@
+Item [name]
+Texfile [file]
+Rotatable [bool]
+Coord [x, y, w, h]
+//if !Rotatable
+	CoordL [x, y, w, h]
+	CoordU [x, y, w, h]
+	CoordR [x, y, w, h]
+	CoordD [x, y, w, h]
+//else
+Coord [x, y, w, h]
+
+AllowedIn [Room, Room, ...] || [any]
+Job [Sleep, Eat, Rest, Heal, Suit, Work, ...]
+Public [bool] //specific person allowed or not
+Requires [Item, Item, ...] //requires adjustant item (facing this item)
+Efficiency [1..100]
+------
+{
+Item [Console]
+Texfile [tiles.png]
+Rotatable [true]
+Coord [0, 0, 128, 64]
+AllowedIn [EngineControl, Bridge]
+Job [Work]
+Public [false]
+Requires [Chair]
+Efficiency [50]
+}
+
+{
+Item [Chair]
+Texfile [tiles.png]
+Rotatable [true]
+Coord [129, 0, 64, 64]
+Public [true]
+}

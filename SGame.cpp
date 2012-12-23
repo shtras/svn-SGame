@@ -1,0 +1,231 @@
+#include "StdAfx.h"
+#include "SGame.h"
+#include "Renderer.h"
+#include "Button.h"
+#include "ShipView.h"
+#include "BuildTools.h"
+
+const char* Version = "0.0.2.";
+//Shifted to 0.0.2 at build #349
+//Implemented GUI, basic editor
+//Floor, walls building, erase
+
+SGame::SGame():state_(Menu),stateRunnig_(false)
+{
+
+}
+
+SGame::~SGame()
+{
+
+}
+
+SGame& SGame::getInstance()
+{
+  static SGame instance;
+  return instance;
+}
+
+bool SGame::init()
+{
+  bool res = Renderer::getInstance().init();
+  return res;
+}
+
+bool SGame::run()
+{
+  while (state_ != Quit) {
+    switch (state_)
+    {
+    case Menu:
+      initMenu();
+      mainLoop();
+      finishMenu();
+      break;
+    case Editor:
+      initEditor();
+      mainLoop();
+      finishMenu();
+      break;
+    default:
+      break;
+    }
+  }
+  close();
+  return true;
+}
+
+bool SGame::mainLoop()
+{
+//   typedef BOOL (APIENTRY *PFNWGLSWAPINTERVALFARPROC)( int );
+//   PFNWGLSWAPINTERVALFARPROC wglSwapIntervalEXT = 0;
+//   wglSwapIntervalEXT = (PFNWGLSWAPINTERVALFARPROC)wglGetProcAddress( "wglSwapIntervalEXT" );
+// 
+//   if( wglSwapIntervalEXT ) {
+//     wglSwapIntervalEXT(0);
+//   } 
+  int fpsTimeBase = SDL_GetTicks();
+  int currTime = fpsTimeBase;
+  int lastTime = currTime;
+  int accumulator = 0;
+  int frames = 0;
+  float fps = 0;
+  CString version = Version + CString(BUILD_NUM) + " " + CString(BUILD_STR);
+  while(stateRunnig_) {
+    SDL_Event event;
+    while (SDL_PollEvent(&event)) {
+      handleEvent(event);
+    }
+    currTime = SDL_GetTicks();
+    int delta = currTime - lastTime;
+    accumulator += delta;
+    lastTime = currTime;
+    ++frames;
+    if (currTime - fpsTimeBase > 100) {
+      fps = frames / (float)(currTime - fpsTimeBase) * 1000.0f;
+      fpsTimeBase = currTime;
+      frames = 0;
+    }
+    Renderer::getInstance().clear();
+    Renderer::getInstance().render();
+    Renderer::getInstance().setTextSize(1);
+    //Renderer::getInstance().renderText(0.1f, 0.5f, "A quick brown fox JUMPS over a lAzY DoG");
+    //Renderer::getInstance().renderText(0.15f, 0.55f, "abcdefghijklmnopqrstuvwxyz");
+    //Renderer::getInstance().setColor(Vector4(255,70, 0, 255));
+    //Renderer::getInstance().renderText(0.2f, 0.6f, "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+    //Renderer::getInstance().renderText(0.25f, 0.65f, "0123456789");
+    //Renderer::getInstance().renderText(0.3f, 0.7f, "!@#$%^&*()-+=:\"'");
+    Renderer::getInstance().setColor(Vector4(255, 255, 255, 255));
+    CString fpsString = "FPS: " + CString(fps, 2);
+    Renderer::getInstance().renderText(1.0f - fpsString.getSize()*Renderer::getInstance().getCharWidth(), 0.0f, fpsString);
+    Renderer::getInstance().renderText(1.0f - version.getSize()*Renderer::getInstance().getCharWidth(), 1.0f - Renderer::getInstance().getCharHeight(), version);
+
+    Renderer::getInstance().renderEnd();
+    checkReleaseError("OpenGL error during main loop. Something bad happened :(");
+  }
+  return true;
+}
+
+bool SGame::initMenu()
+{
+  Renderer& renderer = Renderer::getInstance();
+  stateRunnig_ = true;
+  Window* menuWindow = new Window(Rect(0.1, 0.1, 0.4, 0.8));
+  renderer.addWidget(menuWindow);
+
+  Button* editorButton = new Button(Rect(0.1, 0.1, 0.8, 0.1));
+  editorButton->setCaption("Ship editor");
+  editorButton->setColor(Vector4(0, 0, 255, 255));
+  editorButton->setTextSize(3);
+  menuWindow->addWidget(editorButton);
+  editorButton->sigClick.connect(this, &SGame::toggleEditor);
+
+  Button* newGameButton = new Button(Rect(0.1, 0.25, 0.8, 0.1));
+  newGameButton->setCaption("New game");
+  newGameButton->setColor(Vector4(0, 0, 255, 255));
+  newGameButton->setTextSize(3);
+  menuWindow->addWidget(newGameButton);
+
+  Button* quitButton = new Button(Rect(0.1, 0.4, 0.8, 0.1));
+  quitButton->setCaption("Quit");
+  quitButton->setColor(Vector4(0, 0, 255, 255));
+  quitButton->setTextSize(3);
+  menuWindow->addWidget(quitButton);
+  quitButton->sigClick.connect(this, &SGame::quit);
+  return true;
+}
+
+bool SGame::initEditor()
+{
+  Window* topPanel = new Window(Rect(0.0, 0.0, 1.0, 0.05));
+  Renderer::getInstance().addWidget(topPanel);
+
+  Button* menuButton = new Button(Rect(0.9, 0.1, 0.1, 0.8));
+  menuButton->setCaption("Quit");
+  menuButton->setColor(Vector4(0, 0, 255, 255));
+  menuButton->setTextSize(3);
+  topPanel->addWidget(menuButton);
+  menuButton->sigClick.connect(this, &SGame::toggleMenu);
+  stateRunnig_ = true;
+
+  ShipView* view = new ShipView(Rect(0.2, 0.05, 0.8, 0.95));
+  Renderer::getInstance().addWidget(view);
+
+  BuildTools* tools = new BuildTools(Rect(0.0, 0.05, 0.2, 0.95));
+  tools->init(view);
+  Renderer::getInstance().addWidget(tools);
+  return true;
+}
+
+bool SGame::finishMenu()
+{
+  Renderer::getInstance().clearWindows();
+  return true;
+}
+
+void SGame::handleEvent( SDL_Event& event )
+{
+  switch (event.type)
+  {
+  case SDL_QUIT:
+    quit();
+    break;
+  case SDL_MOUSEBUTTONDOWN:
+  case SDL_MOUSEBUTTONUP:
+  case SDL_MOUSEMOTION:
+    Renderer::getInstance().handleGUIEvent(event);
+    break;
+  default:
+    break;
+  }
+}
+
+void SGame::close()
+{
+  SDL_Quit();
+}
+
+void SGame::quit()
+{
+  state_ = Quit;
+  stateRunnig_ = false;
+}
+
+void SGame::toggleEditor()
+{
+  state_ = Editor;
+  stateRunnig_ = false;
+}
+
+void SGame::toggleMenu()
+{
+  state_ = Menu;
+  stateRunnig_ = false;
+}
+
+bool SGame::finishEditor()
+{
+  Renderer::getInstance().clearWindows();
+  return true;
+}
+
+#ifdef WIN32
+int __stdcall WinMain( __in HINSTANCE hInstance, __in_opt HINSTANCE hPrevInstance, __in LPSTR lpCmdLine, __in int nShowCmd )
+#else
+int main(int argc, char** argv)
+#endif
+{
+#if defined(WIN32) && defined(DEBUG)
+  AllocConsole();
+  FILE* stream = NULL;
+  errno_t err = freopen_s(&stream, "CON", "w", stdout);
+#endif
+
+  SGame& game = SGame::getInstance();
+  game.init();
+  game.run();
+
+#if defined(WIN32) && defined(DEBUG)
+  FreeConsole();
+#endif
+}
