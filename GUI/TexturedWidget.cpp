@@ -4,7 +4,7 @@
 
 Widget::Widget(Rect size):
   size_(size), regularTexture_(NULL), hoveredTexture_(NULL), pressedTexture_(NULL), activeTexture_(NULL), hovered_(false), pressed_(false), clickable_(false),
-  draggable_(false), dragged_(false)
+  draggable_(false), dragged_(false),highlighted_(false)
 {
 
 }
@@ -259,6 +259,7 @@ void Widget::setHighlighted( bool value )
   if (!value) {
     activeTexture_ = regularTexture_;
   }
+  highlighted_ = value;
 }
 
 TexturedWidget::TexturedWidget(Rect size):dimensionsInitialized_(false), size_(size)
