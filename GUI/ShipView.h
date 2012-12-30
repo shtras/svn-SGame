@@ -17,14 +17,20 @@ public:
   void onLMUp();
   void buildWalls();
   void buildFloor();
+  void buildDoor();
   void erase();
 private:
-  enum Action {BuildWalls, BuildFloor, Erase};
-  int getWall(int x, int y);
+  enum Action {BuildWalls, BuildFloor, BuildDoor, Erase};
+  enum TileType {Empty = -1, Floor = 0, Wall = 1, Door = 2};
+  ShipView::TileType getWall(int x, int y);
   int hasWall(int x, int y);
-  void setWall(int x, int y, int value);
+  void setWall(int x, int y, TileType value);
   void plantWalls();
   void eraseArea();
+  int getWallCode(int i, int j);
+  void setDoor(int x, int y);
+  bool hasDoorsAround(int x, int y);
+  void eraseDoorsAround(int x, int y);
   Ship* ship_;
   int layoutWidth_;
   int layoutHeight_;
@@ -46,6 +52,8 @@ private:
   bool drawing_;
   int drawingStartX_;
   int drawingStartY_;
-  int* wallLayout_;
+  TileType* wallLayout_;
   Action action_;
+  int tilesTexWidth_;
+  int tilesTexHeight_;
 };

@@ -6,7 +6,6 @@
 #include <map>
 #include <algorithm>
 #include <assert.h>
-#include "VersionInfo.h"
 using namespace std;
 
 #ifdef DEBUG

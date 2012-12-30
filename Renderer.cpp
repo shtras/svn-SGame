@@ -8,7 +8,7 @@
 
 Renderer::Renderer():font_(0),currVertIdx_(0),color_(Vector4(255,255,255,255)),activeTex_(-1),width_(1600), height_(900), textSize_(1.0f), guiTexHeight_(-1), guiTexWidth_(-1),
   globalGUIWindow_(NULL), draggedWidget_(NULL), offsetX_(0), offsetY_(0), xAtStartDrag_(0), yAtStartDrag_(0), startMouseX_(0), startMouseY_(0),
-  renderingDragged_(false),lastColor_(Vector4(255,255,255,255)),flushes_(0),vertices_(0)
+  renderingDragged_(false),lastColor_(Vector4(255,255,255,255)),flushes_(0),vertices_(0),tilesTexWidth_(0),tilesTexHeight_(0)
 {
   fontMap_['!'] = 0;
   fontMap_['@'] = 1;
@@ -27,20 +27,6 @@ Renderer::Renderer():font_(0),currVertIdx_(0),color_(Vector4(255,255,255,255)),a
   fontMap_['"'] = 14;
   fontMap_['\''] = 15;
   globalGUIWindow_ = new GlobalWindow(Rect(0,0,1,1));
-  //Window* wnd = new Window(Rect(0.2f, 0.2f, 0.6f, 0.6f));
-  //Window* wnd1 = new Window(Rect(0.5f, 0.5f, 0.4f, 0.4f));
-  //wnd->addWidget(wnd1);
-  //Window* wnd2 = new Window(Rect(0.1f, 0.1f, 0.8f, 0.8f));
-  //wnd1->addWidget(wnd2);
-  //globalGUIWindow_->addWidget(wnd);
-  //Button* b1 = new Button(Rect(0.1f, 0.1f, 0.3f, 0.15f));
-  //b1->setCaption("Button!");
-  //wnd->addWidget(b1);
-  //b1->setTextSize(3.0f);
-  //Text* t1 = new Text(Rect(0.1f, 0.5f, 0.2f, 0.3f));
-  //t1->setCaption("Hello!");
-  //t1->setColor(Vector4(255,0,0,255));
-  //wnd->addWidget(t1);
 }
 
 Renderer::~Renderer()
@@ -59,6 +45,8 @@ bool Renderer::init()
   if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
     return false;
   }
+
+  SDL_WM_SetCaption("SGame", NULL);
 
   SDL_Surface* surf = SDL_SetVideoMode(width_, height_, 32, SDL_HWSURFACE | SDL_GL_DOUBLEBUFFER | SDL_OPENGL);
   if (!surf) {
@@ -92,7 +80,7 @@ bool Renderer::init()
   IMG_Init(IMG_INIT_PNG);
   loadFonts();
   loadTexture("res/gui.png", gui_, guiTexWidth_, guiTexHeight_);
-  loadTexture("res/walls.png", tiles_);
+  loadTexture("res/walls.png", tiles_, tilesTexWidth_, tilesTexHeight_);
   loadTexture("res/bg.png", bgTex_);
 
   return true;
@@ -226,7 +214,7 @@ void Renderer::renderTextLine(TextToRender& ttr)
       ty = 0;
       tw = 0;
     }
-    //char: 9x12
+    //char: 9x15
     Rect pos;
     pos.left = x;
     pos.width = width;
@@ -238,13 +226,6 @@ void Renderer::renderTextLine(TextToRender& ttr)
     texPos.top = ty;
     texPos.height = 0.25f;
     drawTexRect(pos, font_, texPos);
-//     addVertex(x, y, tx0, ty);
-//     addVertex(x+width, y, tx1, ty);
-//     addVertex(x+width, y+height, tx1, ty - 0.5);
-// 
-//     addVertex(x, y, tx0, ty);
-//     addVertex(x, y+height, tx0, ty - 0.5);
-//     addVertex(x+width, y+height, tx1, ty - 0.5);
   }
 }
 

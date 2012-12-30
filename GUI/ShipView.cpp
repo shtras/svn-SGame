@@ -4,12 +4,15 @@
 
 ShipView::ShipView(Rect size):Widget(size),layoutWidth_(50), layoutHeight_(50), zoom_(1.0f), offsetX_(0.0f), offsetY_(0.0f),
   scrolling_(false), lastMouseX_(0), lastMouseY_(0),hoveredLeft_(-1), hoveredTop_(-1), hoverWidth_(1), hoverHeight_(1),tileWidth_(0),
-  tileHeight_(0),drawing_(false),drawingStartX_(-1), drawingStartY_(-1),desiredZoom_(1.0f),zoomStep_(0),action_(BuildWalls)
+  tileHeight_(0),drawing_(false),drawingStartX_(-1), drawingStartY_(-1),desiredZoom_(1.0f),zoomStep_(0),action_(BuildWalls),
+  tilesTexWidth_(0), tilesTexHeight_(0)
 {
-  wallLayout_ = new int[layoutHeight_ * layoutWidth_];
+  wallLayout_ = new TileType[layoutHeight_ * layoutWidth_];
   for (int i=0; i<layoutHeight_ * layoutWidth_; ++i) {
-    wallLayout_[i] = -1;
+    wallLayout_[i] = Empty;
   }
+  tilesTexWidth_ = Renderer::getInstance().getTilesTexWidth();
+  tilesTexHeight_ = Renderer::getInstance().getTilesTexHeight();
 }
 
 ShipView::~ShipView()
@@ -47,6 +50,8 @@ void ShipView::render()
     drawEndY = drawStartY;
     drawStartY = tmp;
   }
+  float tileTexWidth = 62 / (float)tilesTexWidth_;
+  float tileTexHeight = 62 / (float)tilesTexHeight_;
   for (int i=0; i<layoutWidth_; ++i) {
     float tileX = i*tileWidth_ + offsetX_*zoom_ + size_.left;
     if (tileX < size_.left || tileX+tileWidth_ > size_.left + size_.width) {
@@ -63,38 +68,46 @@ void ShipView::render()
       if (i >= hoveredLeft_ && j >= hoveredTop_ && i < hoveredLeft_ + hoverHeight_ && j < hoveredTop_ + hoverHeight_) {
         renderer.setColor(Vector4(100,255,50,200));
         CString coord = CString(i) + "," + CString(j);
+        if (drawing_) {
+          coord += " " + CString(drawEndX - drawStartX) + "," + CString(drawEndY - drawStartY);
+        }
         renderer.renderText(tileX + tileWidth_*0.5f - renderer.getCharWidth()*coord.getSize()*0.5f, tileY + tileHeight_*0.5f - renderer.getCharHeight()*0.5f, coord);
       }
       Rect tilePos(tileX, tileY, tileWidth_, tileHeight_);
-      Rect texPos(0.0f, 0.0f, 0.125f, 0.25f);
+      Rect texPos(0.0f, 0.0f, tileTexWidth, tileTexHeight);
       int wallValue = getWall(i, j);
       int wallCode = 0;
-      if (wallValue == 1) {
-        wallCode |= hasWall(i, j+1);
-        wallCode |= (hasWall(i+1, j) << 1);
-        wallCode |= (hasWall(i, j-1) << 2);
-        wallCode |= (hasWall(i-1, j) << 3);
-        assert (wallValue >= 0 && wallValue < 16);
+      if (wallValue == Wall|| wallValue == Door) {
+        wallCode = getWallCode(i, j);
       }
-      if (wallValue == 1 && wallCode == 0) {
+      if (wallValue == Wall && wallCode == 0) {
         wallCode = 10; //horizontal wall;
       }
-      if (wallValue == -1) {
+      if (wallValue == Empty) {
         renderer.setColor(Vector4(255,255,255,50));
       }
       if (drawing_ && i >= drawStartX && i <= drawEndX && j >= drawStartY && j <= drawEndY) {
         renderer.setColor(Vector4(255,155,55,200));
       }
-      texPos.top = wallCode / 4 * 0.25f;
-      texPos.left = wallCode % 4 * 0.125f;
-      if (wallValue == 0) {
-        texPos.left = 0.5f;
-        texPos.top = 0;
+      texPos.top = wallCode / 4 * 64.0f / (float)tilesTexHeight_ + 1/(float)tilesTexHeight_;
+      texPos.left = wallCode % 4 * 64.0f / (float)tilesTexWidth_ + 1/(float)tilesTexWidth_;
+      if (wallValue == Floor) {
+        texPos.left = 257.0f / (float)tilesTexWidth_;
+        texPos.top = 1.0f / (float)tilesTexHeight_;
       }
-      texPos.left += 0.002f;
-      texPos.top += 0.004f;
-      texPos.width -= 0.004f;
-      texPos.height -= 0.008f;
+      if (wallValue == Door) {
+        assert (wallCode == 10 || wallCode == 5);
+        texPos.left = 257.0f / tilesTexWidth_;
+        if (wallCode == 10) {
+          texPos.top = 65.0f / tilesTexHeight_;
+        } else if (wallCode == 5) {
+          texPos.top = 129.0f / tilesTexHeight_;
+        }
+      }
+      //texPos.left += 0.002f;
+      //texPos.top += 0.004f;
+      //texPos.width -= 0.004f;
+      //texPos.height -= 0.008f;
       renderer.drawTexRect(tilePos, tilesTex, texPos);
       renderer.setColor(Vector4(255,255,255,255));
     }
@@ -174,14 +187,16 @@ void ShipView::onLMUp()
     plantWalls();
   } else if (action_ == Erase || action_ == BuildFloor) {
     eraseArea();
+  } else if (action_ == BuildDoor) {
+    setDoor(hoveredLeft_, hoveredTop_);
   }
   drawing_ = false;
 }
 
-int ShipView::getWall( int x, int y )
+ShipView::TileType ShipView::getWall( int x, int y )
 {
   if (x < 0 || x >= layoutWidth_ || y < 0 || y >= layoutHeight_) {
-    return 0;
+    return Empty;
   }
   return wallLayout_[y*layoutWidth_ + x];
 }
@@ -191,13 +206,23 @@ int ShipView::hasWall( int x, int y )
   if (x < 0 || x >= layoutWidth_ || y < 0 || y >= layoutHeight_) {
     return 0;
   }
-  return wallLayout_[y*layoutWidth_ + x]==1?1:0;
+  return (wallLayout_[y*layoutWidth_ + x]==Wall || wallLayout_[y*layoutWidth_ + x]==Door)?1:0;
 }
 
-void ShipView::setWall( int x, int y, int value )
+void ShipView::setWall( int x, int y, TileType value )
 {
   if (x < 0 || x >= layoutWidth_ || y < 0 || y >= layoutHeight_) {
     assert(0);
+  }
+  if (value == Wall || value == Floor || value == Door) {
+    if (hasDoorsAround(x, y) && value != Floor) {
+      //Can't create doors or walls around a door
+      return;
+    }
+    if (getWall(x, y) == Door) {
+      //Can only erase door, not replace
+      return;
+    }
   }
   wallLayout_[y*layoutWidth_ + x] = value;
 }
@@ -216,12 +241,12 @@ void ShipView::plantWalls()
   int stepHor = drawingStartX_ > hoveredLeft_?-1:1;
   int stepVer = drawingStartY_ > hoveredTop_?-1:1;
   for (int i=drawingStartX_; i!= hoveredLeft_ + stepHor; i += stepHor) {
-    setWall(i, drawingStartY_, 1);
-    setWall(i, hoveredTop_, 1);
+    setWall(i, drawingStartY_, Wall);
+    setWall(i, hoveredTop_, Wall);
   }
   for (int i=drawingStartY_; i != hoveredTop_ + stepVer; i += stepVer) {
-    setWall(drawingStartX_, i, 1);
-    setWall(hoveredLeft_, i, 1);
+    setWall(drawingStartX_, i, Wall);
+    setWall(hoveredLeft_, i, Wall);
   }
 }
 
@@ -235,14 +260,17 @@ void ShipView::eraseArea()
   }
   int stepHor = drawingStartX_ > hoveredLeft_?-1:1;
   int stepVer = drawingStartY_ > hoveredTop_?-1:1;
-  int value = -1;
+  TileType value = Empty;
   if (action_ == BuildFloor) {
-    value = 0;
+    value = Floor;
   }
   for (int i=drawingStartX_; i!= hoveredLeft_ + stepHor; i += stepHor) {
     for (int j=drawingStartY_; j != hoveredTop_ + stepVer; j += stepVer) {
-      if (value == 0 && getWall(i, j) != -1) {
+      if (value == Floor && getWall(i, j) != Empty) {
         continue;
+      }
+      if (value == Empty && getWall(i, j) == Wall) {
+        eraseDoorsAround(i, j);
       }
       setWall(i, j, value);
     }
@@ -262,4 +290,55 @@ void ShipView::erase()
 void ShipView::buildFloor()
 {
   action_ = BuildFloor;
+}
+
+void ShipView::buildDoor()
+{
+  action_ = BuildDoor;
+}
+
+int ShipView::getWallCode( int i, int j )
+{
+  int wallCode = 0;
+  wallCode |= hasWall(i, j+1);
+  wallCode |= (hasWall(i+1, j) << 1);
+  wallCode |= (hasWall(i, j-1) << 2);
+  wallCode |= (hasWall(i-1, j) << 3);
+  assert (wallCode >= 0 && wallCode < 16);
+  return wallCode;
+}
+
+void ShipView::setDoor( int x, int y )
+{
+  TileType type = getWall(x, y);
+  if (type != Wall) {
+    return;
+  }
+  int wallCode = getWallCode(x, y);
+  if (wallCode != 10 && wallCode != 5) {
+    //Not a horizontal or vertical straight wall
+    return;
+  }
+  setWall(x, y, Door);
+}
+
+bool ShipView::hasDoorsAround( int x, int y )
+{
+  return getWall(x-1,y) == Door || getWall(x+1, y) == Door || getWall(x, y-1) == Door || getWall(x, y+1) == Door;
+}
+
+void ShipView::eraseDoorsAround( int x, int y )
+{
+  if (getWall(x-1,y) == Door) {
+    setWall(x-1, y, Empty);
+  }
+  if (getWall(x+1,y) == Door) {
+    setWall(x+1, y, Empty);
+  }
+  if (getWall(x,y-1) == Door) {
+    setWall(x, y-1, Empty);
+  }
+  if (getWall(x,y+1) == Door) {
+    setWall(x, y+1, Empty);
+  }
 }

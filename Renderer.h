@@ -59,6 +59,8 @@ public:
   float getCharHeight();
   void addWidget(Widget* window);
   void clearWindows();
+  int getTilesTexWidth() {return tilesTexWidth_;}
+  int getTilesTexHeight() {return tilesTexHeight_;}
 private:
   Renderer();
   ~Renderer();
@@ -85,7 +87,8 @@ public:
   float textSize_;
   int guiTexWidth_;
   int guiTexHeight_;
-
+  int tilesTexHeight_;
+  int tilesTexWidth_;
   map<char, int> fontMap_;
 
   list<TextToRender> linesToRender_;

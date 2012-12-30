@@ -13,8 +13,10 @@ private:
   void buildClick();
   void eraseClick();
   void floorClick();
+  void doorClick();
   ShipView* shipView_;
   Button* buildButton_;
   Button* floorButton_;
+  Button* doorButton_;
   Button* eraseButton_;
 };

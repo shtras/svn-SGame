@@ -4,6 +4,7 @@
 #include "Button.h"
 #include "ShipView.h"
 #include "BuildTools.h"
+#include "VersionInfo.h"
 
 const char* Version = "0.0.2.";
 //Shifted to 0.0.2 at build #349
@@ -89,12 +90,6 @@ bool SGame::mainLoop()
     Renderer::getInstance().clear();
     Renderer::getInstance().render();
     Renderer::getInstance().setTextSize(1);
-    //Renderer::getInstance().renderText(0.1f, 0.5f, "A quick brown fox JUMPS over a lAzY DoG");
-    //Renderer::getInstance().renderText(0.15f, 0.55f, "abcdefghijklmnopqrstuvwxyz");
-    //Renderer::getInstance().setColor(Vector4(255,70, 0, 255));
-    //Renderer::getInstance().renderText(0.2f, 0.6f, "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
-    //Renderer::getInstance().renderText(0.25f, 0.65f, "0123456789");
-    //Renderer::getInstance().renderText(0.3f, 0.7f, "!@#$%^&*()-+=:\"'");
     Renderer::getInstance().setColor(Vector4(255, 255, 255, 255));
     CString fpsString = "FPS: " + CString(fps, 2);
     Renderer::getInstance().renderText(1.0f - fpsString.getSize()*Renderer::getInstance().getCharWidth(), 0.0f, fpsString);
@@ -143,7 +138,7 @@ bool SGame::initEditor()
   Button* menuButton = new Button(Rect(0.9, 0.1, 0.1, 0.8));
   menuButton->setCaption("Quit");
   menuButton->setColor(Vector4(0, 0, 255, 255));
-  menuButton->setTextSize(3);
+  menuButton->setTextSize(2);
   topPanel->addWidget(menuButton);
   menuButton->sigClick.connect(this, &SGame::toggleMenu);
   stateRunnig_ = true;
