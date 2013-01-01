@@ -32,6 +32,7 @@ public:
   bool operator== (const CString& other) const;
   bool operator== (const char* other) const;
   bool operator!= (const CString& other) const;
+  bool operator!= (const char* other) const;
   bool operator< (const CString& other) const;
   CString& operator+= (const CString& other);
   bool isEmpty();

@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "Ship.h"
+#include "Renderer.h"
 
 Ship::Ship()
 {
@@ -76,7 +77,8 @@ Compartment::Compartment()
 {
 }
 
-Compartment::Compartment(const Compartment& other):left_(other.left_), top_(other.top_), width_(other.width_), height_(other.height_)
+Compartment::Compartment(const Compartment& other):left_(other.left_), top_(other.top_), width_(other.width_), height_(other.height_), name_(other.name_),
+  category_(other.category_)
 {
   for (auto itr = other.items_.begin(); itr != other.items_.end(); ++itr) {
     items_.push_back(new Item(**itr));
@@ -94,12 +96,33 @@ Item::Item()
 {
 }
 
-Item::Item(const Item& other):x_(other.x_), y_(other.y_),name_(other.name_),texX_(other.texX_),texY_(other.texY_), texWidth_(other.texWidth_),texHeight_(other.texHeight_)
+Item::Item(const Item& other):x_(other.x_), y_(other.y_),name_(other.name_),texX_(other.texX_),texY_(other.texY_), texWidth_(other.texWidth_),texHeight_(other.texHeight_),
+  rotation_(other.rotation_),id_(other.id_)
 {
 }
 
 Item::~Item()
 {
+}
+
+void Item::setTexX(int x)
+{
+  texX_ = x / (float)Renderer::getInstance().getTilesTexWidth();
+}
+
+void Item::setTexY(int y)
+{
+  texY_ = y / (float)Renderer::getInstance().getTilesTexHeight();
+}
+
+void Item::setTexWidth(int width)
+{
+  texWidth_ = width / (float)Renderer::getInstance().getTilesTexWidth();
+}
+
+void Item::setTexHeight(int height)
+{
+  texHeight_ = height / (float)Renderer::getInstance().getTilesTexHeight();
 }
 
 Tile::Tile():type_(Empty)

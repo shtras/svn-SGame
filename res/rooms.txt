@@ -1,56 +1,58 @@
-Item {
-	ID=1
-	Name=Table
-	X=0
-	Y=256
-}
-
-Item {
-	ID=2
-	Name=Chair
-	X=0
-	Y=320
-}
-
-Compartment {
-	Category=1 ; Navigation
-	Name=Bridge
-	Width=5
-	Height=3
+CompartmentInfo {
 	Item {
-		ID=1 ; Table
+		ID=1
+		Name=Table
 		X=0
-		Y=0
-		Rotation=3 ; 270 degrees
+		Y=256
 	}
+	
 	Item {
-		ID=2 ; Chair
-		X=1
-		Y=0
-		Rotation=3
-	}
-	Item {
-		ID=1 ; Table
+		ID=2
+		Name=Chair
 		X=0
-		Y=1
-		Rotation=3 ; 270 degrees
+		Y=320
 	}
-	Item {
-		ID=2 ; Chair
-		X=1
-		Y=1
-		Rotation=3
-	}
-	Item {
-		ID=1 ; Table
-		X=0
-		Y=2
-		Rotation=3 ; 270 degrees
-	}
-	Item {
-		ID=2 ; Chair
-		X=1
-		Y=2
-		Rotation=3
+	
+	Compartment {
+		Category=1 ; Navigation
+		Name=Bridge
+		Width=5
+		Height=3
+		Item {
+			ID=1 ; Table
+			X=0
+			Y=0
+			Rotation=3 ; 270 degrees
+		}
+		Item {
+			ID=2 ; Chair
+			X=1
+			Y=0
+			Rotation=3
+		}
+		Item {
+			ID=1 ; Table
+			X=0
+			Y=1
+			Rotation=3 ; 270 degrees
+		}
+		Item {
+			ID=2 ; Chair
+			X=1
+			Y=1
+			Rotation=3
+		}
+		Item {
+			ID=1 ; Table
+			X=0
+			Y=2
+			Rotation=3 ; 270 degrees
+		}
+		Item {
+			ID=2 ; Chair
+			X=1
+			Y=2
+			Rotation=3
+		}
 	}
 }

@@ -248,6 +248,11 @@ bool CString::operator!= (const CString& other) const
   return !(*this == other);
 }
 
+bool CString::operator!= (const char* other) const
+{
+  return !(*this == other);
+}
+
 CString& CString::operator+= (const CString& other)
 {
   *this = append(other);

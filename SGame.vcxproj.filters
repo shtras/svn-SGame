@@ -43,6 +43,12 @@
     <Filter Include="Source Files\Ship">
       <UniqueIdentifier>{fb6be539-efff-4aa4-9436-75db1f06973a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\FileTools">
+      <UniqueIdentifier>{d470ac4a-1b47-472d-a402-87d164b1f5ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\FileTools">
+      <UniqueIdentifier>{c5926306-ea2e-44d1-b850-c237e52495fc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SGame.cpp">
@@ -95,6 +101,12 @@
     </ClCompile>
     <ClCompile Include="GUI\Forms\BuildTools.cpp">
       <Filter>Source Files\GUI\Forms</Filter>
+    </ClCompile>
+    <ClCompile Include="FileTools\RoomParser.cpp">
+      <Filter>Source Files\FileTools</Filter>
+    </ClCompile>
+    <ClCompile Include="Ship\ItemsDB.cpp">
+      <Filter>Source Files\Ship</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -154,6 +166,12 @@
     </ClInclude>
     <ClInclude Include="GUI\Forms\BuildTools.h">
       <Filter>Header Files\GUI\Forms</Filter>
+    </ClInclude>
+    <ClInclude Include="FileTools\RoomParser.h">
+      <Filter>Header Files\FileTools</Filter>
+    </ClInclude>
+    <ClInclude Include="Ship\ItemsDB.h">
+      <Filter>Header Files\Ship</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

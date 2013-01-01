@@ -51,7 +51,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;DEBUG;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;Ship;Generic;SDL;Math;GUI;GUI/Forms;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;Ship;FileTools;Generic;SDL;Math;GUI;GUI/Forms;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>false</MultiProcessorCompilation>
       <SDLCheck>false</SDLCheck>
       <MinimalRebuild>true</MinimalRebuild>
@@ -76,10 +76,11 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;RELEASE;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;Ship;Generic;SDL;Math;GUI;GUI/Forms;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;Ship;FileTools;Generic;SDL;Math;GUI;GUI/Forms;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <MultiProcessorCompilation>false</MultiProcessorCompilation>
+      <MinimalRebuild>true</MinimalRebuild>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -95,6 +96,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="auxFuncs.cpp" />
+    <ClCompile Include="FileTools\RoomParser.cpp" />
     <ClCompile Include="Generic\CString.cpp" />
     <ClCompile Include="GUI\Button.cpp" />
     <ClCompile Include="GUI\Forms\BuildTools.cpp" />
@@ -109,6 +111,7 @@
     <ClCompile Include="Math\Vector.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="SGame.cpp" />
+    <ClCompile Include="Ship\ItemsDB.cpp" />
     <ClCompile Include="Ship\Ship.cpp" />
     <ClCompile Include="StdAfx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -117,6 +120,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="auxFuncs.h" />
+    <ClInclude Include="FileTools\RoomParser.h" />
     <ClInclude Include="Generic\CString.h" />
     <ClInclude Include="GUI\Button.h" />
     <ClInclude Include="GUI\Forms\BuildTools.h" />
@@ -131,6 +135,7 @@
     <ClInclude Include="Math\Vector.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="SGame.h" />
+    <ClInclude Include="Ship\ItemsDB.h" />
     <ClInclude Include="Ship\Ship.h" />
     <ClInclude Include="sigslot.h" />
     <ClInclude Include="StdAfx.h" />

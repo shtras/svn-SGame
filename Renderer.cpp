@@ -42,15 +42,25 @@ Renderer& Renderer::getInstance()
 
 bool Renderer::init()
 {
+  Logger::getInstance().log(INFO_LOG_NAME, "Starting renderer initialization");
   if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
     return false;
   }
+  Logger::getInstance().log(INFO_LOG_NAME, "SDL successfully initialized");
 
   SDL_WM_SetCaption("SGame", NULL);
 
   SDL_Surface* surf = SDL_SetVideoMode(width_, height_, 32, SDL_HWSURFACE | SDL_GL_DOUBLEBUFFER | SDL_OPENGL);
   if (!surf) {
     return false;
+  }
+  Logger::getInstance().log(INFO_LOG_NAME, "Video mode set");
+
+  const char* verstr = (const char*)glGetString( GL_VERSION );
+  if (verstr) {
+    Logger::getInstance().log(INFO_LOG_NAME, CString("OpenGL version: ") + CString(verstr));
+  } else {
+    Logger::getInstance().log(INFO_LOG_NAME, CString("Couldn't determine OpenGL version"));
   }
 
   SDL_GL_SetAttribute(SDL_GL_RED_SIZE,        8);
@@ -78,10 +88,12 @@ bool Renderer::init()
 
   glEnable(GL_TEXTURE_2D);
   IMG_Init(IMG_INIT_PNG);
+  Logger::getInstance().log(INFO_LOG_NAME, "Loading textures...");
   loadFonts();
   loadTexture("res/gui.png", gui_, guiTexWidth_, guiTexHeight_);
   loadTexture("res/walls.png", tiles_, tilesTexWidth_, tilesTexHeight_);
   loadTexture("res/bg.png", bgTex_);
+  Logger::getInstance().log(INFO_LOG_NAME, "Finished loading textures.");
 
   return true;
 }
@@ -164,6 +176,7 @@ void Renderer::loadTexture(CString fileName, GLuint& tex, int& width, int& heigh
   glTexImage2D(GL_TEXTURE_2D, 0, mode, fontSurf->w, fontSurf->h, 0, mode, GL_UNSIGNED_BYTE, fontSurf->pixels);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  Logger::getInstance().log(INFO_LOG_NAME, "Successfully loaded " + fileName);
 }
 
 void Renderer::loadTexture( CString fileName, GLuint& tex )

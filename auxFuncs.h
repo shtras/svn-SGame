@@ -13,3 +13,5 @@ void checkErrorDebug(CString errorMsg = "");
 void checkReleaseError(CString errorMsg);
 
 vector<CString> getFileNames(CString dir);
+
+int parseInt(CString str);

@@ -5,6 +5,8 @@
 #include "ShipView.h"
 #include "BuildTools.h"
 #include "VersionInfo.h"
+#include "RoomParser.h"
+#include "Ship\ItemsDB.h"
 
 const char* Version = "0.0.2.";
 //Shifted to 0.0.2 at build #349
@@ -30,7 +32,16 @@ SGame& SGame::getInstance()
 bool SGame::init()
 {
   bool res = Renderer::getInstance().init();
-  return res;
+  if (!res) {
+    Logger::getInstance().log(ERROR_LOG_NAME, "Failed to initialize renderer");
+    return false;
+  }
+  res = ItemsDB::getInstance().init();
+  if (!res) {
+    Logger::getInstance().log(ERROR_LOG_NAME, "Failed to initialize items DB");
+    return false;
+  }
+  return true;
 }
 
 bool SGame::run()
@@ -39,16 +50,20 @@ bool SGame::run()
     switch (state_)
     {
     case Menu:
+      Logger::getInstance().log(INFO_LOG_NAME, "Switching to menu");
       initMenu();
       mainLoop();
       finishMenu();
       break;
     case Editor:
+      Logger::getInstance().log(INFO_LOG_NAME, "Switching to editor");
       initEditor();
       mainLoop();
       finishMenu();
       break;
     default:
+      Logger::getInstance().log(ERROR_LOG_NAME, "Encountered unknown state. Terminating.");
+      state_ = Quit;
       break;
     }
   }
@@ -210,17 +225,24 @@ int __stdcall WinMain( __in HINSTANCE hInstance, __in_opt HINSTANCE hPrevInstanc
 int main(int argc, char** argv)
 #endif
 {
+  Logger::getInstance().log(INFO_LOG_NAME, "Application started. Hello, World!");
+  Logger::getInstance().log(INFO_LOG_NAME, CString("Application version: ") + Version + CString(BUILD_NUM) + " " + CString(BUILD_STR));
 #if defined(WIN32) && defined(DEBUG)
   AllocConsole();
   FILE* stream = NULL;
   errno_t err = freopen_s(&stream, "CON", "w", stdout);
 #endif
-
   SGame& game = SGame::getInstance();
-  game.init();
-  game.run();
+  bool res = game.init();
+  if (res) {
+    Logger::getInstance().log(INFO_LOG_NAME, "Initialization successfully completed");
+    game.run();
+  } else {
+    Logger::getInstance().log(ERROR_LOG_NAME, "Something went horribly wrong. Look above for details.");
+  }
 
 #if defined(WIN32) && defined(DEBUG)
   FreeConsole();
 #endif
+  Logger::getInstance().log(INFO_LOG_NAME, "Application ended. Bye!");
 }

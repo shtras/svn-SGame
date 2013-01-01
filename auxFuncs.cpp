@@ -43,3 +43,32 @@ void checkReleaseError(CString errorMsg)
 {
   checkErrorDebug(errorMsg);
 }
+
+int parseInt(CString str)
+{
+  if (str.getSize() == 0) {
+    return 0;
+  }
+  int res = 0;
+  bool neg = false;
+  int start = 0;
+  if (str[0] == '-') {
+    neg = true;
+    ++start;
+  }
+  for (int i=start; i<str.getSize(); ++i) {
+    char c = str[i];
+    if (c < '0' || c > '9') {
+      Logger::getInstance().log(ERROR_LOG_NAME, "Error parsing integer: " + str);
+      return 0;
+    }
+    int digit = c - '0';
+    res += digit;
+    res *= 10;
+  }
+  res /= 10;
+  if (neg) {
+    res = -res;
+  }
+  return res;
+}
