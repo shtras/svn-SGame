@@ -1,9 +1,13 @@
 #include "StdAfx.h"
 #include "BuildTools.h"
+#include "Renderer.h"
+#include "ItemsDB.h"
+#include "CompartmentButton.h"
 
 BuildTools::BuildTools( Rect size ):Window(size)
 {
-
+  draggable_ = false;
+  clickable_ = true;
 }
 
 BuildTools::~BuildTools()
@@ -46,6 +50,18 @@ void BuildTools::init(ShipView* shipView)
   eraseButton_->init(regular1, hovered1, pressed1);
   eraseButton_->sigClick.connect(this, &BuildTools::eraseClick);
   addWidget(eraseButton_);
+
+  list<Compartment*> comps = ItemsDB::getInstance().getCompartmentsByCategory(Compartment::Navigation);
+  float lastTop = 0.3f;
+  float aspect = size_.width / size_.height * Renderer::getInstance().getWidth() / (float)Renderer::getInstance().getHeight();
+  for (auto itr = comps.begin(); itr != comps.end(); ++itr) {
+    Compartment* comp = *itr;
+    float width = 0.8f;
+    float height = width * aspect * comp->getHeight() / (float)comp->getWidth();
+    CompartmentButton* button = new CompartmentButton(Rect(0.1f, lastTop, width, height), comp, shipView_);
+    addWidget(button);
+    lastTop += height + 0.02f;
+  }
 }
 
 void BuildTools::buildClick()
@@ -82,4 +98,33 @@ void BuildTools::doorClick()
   floorButton_->setHighlighted(false);
   doorButton_->setHighlighted(true);
   eraseButton_->setHighlighted(false);
+}
+
+void BuildTools::onClick()
+{
+  cout << "aaa" << endl;
+}
+
+void BuildTools::render()
+{
+  //Renderer& renderer = Renderer::getInstance();
+  //GLuint texID = renderer.getTilesTex();
+  //float lastTop = 0.3f;
+  //float aspect = renderer.getWidth() / (float)renderer.getHeight();
+  //list<Compartment*> compartments = ItemsDB::getInstance().getCompartmentsByCategory(Compartment::Navigation);
+  //for (auto itr = compartments.begin(); itr != compartments.end(); ++itr) {
+  //  Compartment* comp = *itr;
+
+  //  float tileWidth = size_.width / (float)comp->getWidth() * 0.8f;
+  //  float tileHeight = tileWidth * aspect;
+
+  //  const list<Item*>& items = comp->getItems();
+  //  for (auto itemItr = items.begin(); itemItr != items.end(); ++itemItr) {
+  //    Item* item = *itemItr;
+  //    Rect pos(item->getX() * tileWidth, lastTop + item->getY()*tileHeight, tileWidth, tileHeight);
+  //    Rect texPos(item->getTexX() + item->getRotation()*item->getTexWidth(), item->getTexY(), item->getTexWidth(), item->getTexHeight());
+  //    renderer.drawTexRect(pos, texID, texPos);
+  //  }
+  //  lastTop += tileHeight * comp->getHeight() * 1.2f;
+  //}
 }

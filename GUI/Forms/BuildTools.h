@@ -9,6 +9,8 @@ public:
   BuildTools(Rect size);
   ~BuildTools();
   void init(ShipView* shipView);
+  void onClick();
+  void render();
 private:
   void buildClick();
   void eraseClick();

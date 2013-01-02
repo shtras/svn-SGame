@@ -258,15 +258,15 @@ bool RoomParser::processCompartment( Section* sec )
     newItem->y_ = itemY;
     newItem->rotation_ = itemRot;
     comp->addItem(newItem);
-    if (roomsMap_.count(category) == 0) {
-      list<Compartment*> newList;
-      newList.push_back(comp);
-      roomsMap_[category] = newList;
-    } else {
-      roomsMap_[category].push_back(comp);
-    }
-    ItemsDB::getInstance().addCompartment(comp);
   }
+  if (roomsMap_.count(category) == 0) {
+    list<Compartment*> newList;
+    newList.push_back(comp);
+    roomsMap_[category] = newList;
+  } else {
+    roomsMap_[category].push_back(comp);
+  }
+  ItemsDB::getInstance().addCompartment(comp);
   return true;
 }
 

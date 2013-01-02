@@ -6,12 +6,21 @@
 #include "BuildTools.h"
 #include "VersionInfo.h"
 #include "RoomParser.h"
-#include "Ship\ItemsDB.h"
+#include "ItemsDB.h"
 
-const char* Version = "0.0.2.";
-//Shifted to 0.0.2 at build #349
+const char* Version = "0.0.3.";
+//TODO for next major version:
+//1. Complete editor
+//***Shifted to 0.0.2 at build #349
 //Implemented GUI, basic editor
 //Floor, walls building, erase
+//***Shifted to 0.0.3 at build #432
+//Doors building
+//Items database
+//Parsing of rooms.txt - compartments and items description file
+//TODO for next minor version:
+//1. Compartments by category display at tools panel
+//2. Compartments and items building / display at ShipView
 
 SGame::SGame():state_(Menu),stateRunnig_(false)
 {

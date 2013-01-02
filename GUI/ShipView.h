@@ -15,13 +15,17 @@ public:
   void onMouseWheelScroll(int direction);
   void onLMDown();
   void onLMUp();
+  void onDrop(Widget* w);
   void buildWalls();
   void buildFloor();
   void buildDoor();
   void erase();
+  void setHoveredDimensions(int width, int height);
 private:
   enum Action {BuildWalls, BuildFloor, BuildDoor, Erase};
   enum TileType {Empty = -1, Floor = 0, Wall = 1, Door = 2};
+  void drawCompartments();
+  Compartment* getCompartment(int x, int y);
   ShipView::TileType getWall(int x, int y);
   int hasWall(int x, int y);
   void setWall(int x, int y, TileType value);
@@ -56,4 +60,5 @@ private:
   Action action_;
   int tilesTexWidth_;
   int tilesTexHeight_;
+  list<Compartment*> compartments_;
 };

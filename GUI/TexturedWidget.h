@@ -68,6 +68,7 @@ public:
   void hoverEnter();
   void hoverExit();
   void drag();
+  void stopDrag();
   void drop(Widget* w);
   void mouseMove();
   void mouseWheelScroll(int direction);
@@ -80,6 +81,7 @@ public:
   virtual void onHoverEnter() {}
   virtual void onHoverExit() {}
   virtual void onDrag() {}
+  virtual void onStopDrag() {}
   virtual void onDrop(Widget* w) {}
   virtual void onMouseMove() {}
   virtual void onMouseWheelScroll(int direction) {}

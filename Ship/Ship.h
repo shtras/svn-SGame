@@ -55,6 +55,13 @@ public:
   ~Compartment();
   void addItem(Item* item) {items_.push_back(item);}
   Category getCategory() {return category_;}
+  const list<Item*>& getItems() {return items_;}
+  int getX() {return left_;}
+  int getY() {return top_;}
+  void setX(int x) {left_ = x;}
+  void setY(int y) {top_ = y;}
+  int getWidth() {return width_;}
+  int getHeight() {return height_;}
 private:
   Category category_;
   int left_;
@@ -77,6 +84,13 @@ public:
   void setTexWidth(int width);
   void setTexHeight(int height);
   int getID() {return id_;}
+  int getX() {return x_;}
+  int getY() {return y_;}
+  int getRotation() {return rotation_;}
+  float getTexX() {return texX_;}
+  float getTexY() {return texY_;}
+  float getTexWidth() {return texWidth_;}
+  float getTexHeight() {return texHeight_;}
 private:
   int id_;
   int x_;

@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "ShipView.h"
 #include "Renderer.h"
+#include "CompartmentButton.h"
 
 ShipView::ShipView(Rect size):Widget(size),layoutWidth_(50), layoutHeight_(50), zoom_(1.0f), offsetX_(0.0f), offsetY_(0.0f),
   scrolling_(false), lastMouseX_(0), lastMouseY_(0),hoveredLeft_(-1), hoveredTop_(-1), hoverWidth_(1), hoverHeight_(1),tileWidth_(0),
@@ -18,6 +19,9 @@ ShipView::ShipView(Rect size):Widget(size),layoutWidth_(50), layoutHeight_(50), 
 ShipView::~ShipView()
 {
   delete[] wallLayout_;
+  for (auto itr = compartments_.begin(); itr != compartments_.end(); ++itr) {
+    delete *itr;
+  }
 }
 
 void ShipView::render()
@@ -65,25 +69,24 @@ void ShipView::render()
       //if (lastMouseX_ >= tileX && lastMouseX_ <= tileX + tileWidth_*hoverWidth_ && lastMouseY_ >= tileY && lastMouseY_ <= tileY + tileHeight_*hoverHeight_) {
       //  renderer.setColor(Vector4(100,255,50,200));
       //}
-      if (i >= hoveredLeft_ && j >= hoveredTop_ && i < hoveredLeft_ + hoverHeight_ && j < hoveredTop_ + hoverHeight_) {
-        renderer.setColor(Vector4(100,255,50,200));
-        CString coord = CString(i) + "," + CString(j);
-        if (drawing_) {
-          coord += " " + CString(drawEndX - drawStartX) + "," + CString(drawEndY - drawStartY);
-        }
-        renderer.renderText(tileX + tileWidth_*0.5f - renderer.getCharWidth()*coord.getSize()*0.5f, tileY + tileHeight_*0.5f - renderer.getCharHeight()*0.5f, coord);
-      }
       Rect tilePos(tileX, tileY, tileWidth_, tileHeight_);
       Rect texPos(0.0f, 0.0f, tileTexWidth, tileTexHeight);
       int wallValue = getWall(i, j);
       int wallCode = 0;
-      if (wallValue == Wall|| wallValue == Door) {
+      if (wallValue == Wall || wallValue == Door) {
         wallCode = getWallCode(i, j);
       }
       if (wallValue == Wall && wallCode == 0) {
         wallCode = 10; //horizontal wall;
       }
-      if (wallValue == Empty) {
+      if (i >= hoveredLeft_ && j >= hoveredTop_ && i < hoveredLeft_ + hoverWidth_ && j < hoveredTop_ + hoverHeight_) {
+        renderer.setColor(Vector4(155,255,55,200));
+        CString coord = CString(i) + "," + CString(j);
+        if (drawing_) {
+          coord += " " + CString(drawEndX - drawStartX) + "," + CString(drawEndY - drawStartY);
+        }
+        renderer.renderText(tileX + tileWidth_*0.5f - renderer.getCharWidth()*coord.getSize()*0.5f, tileY + tileHeight_*0.5f - renderer.getCharHeight()*0.5f, coord);
+      } else if (wallValue == Empty) {
         renderer.setColor(Vector4(255,255,255,50));
       }
       if (drawing_ && i >= drawStartX && i <= drawEndX && j >= drawStartY && j <= drawEndY) {
@@ -114,7 +117,33 @@ void ShipView::render()
   }
   renderer.setTextSize(1);
   renderer.renderText(0, 0, CString(zoom_, 5) + " " + CString(desiredZoom_, 5) + " " + CString(zoomStep_, 5));
+  drawCompartments();
   //glScissor(0, 0, 1600, 900);
+}
+
+void ShipView::drawCompartments()
+{
+  Renderer& renderer = Renderer::getInstance();
+  GLuint tilesTex = renderer.getTilesTex();
+  for (auto itr = compartments_.begin(); itr != compartments_.end(); ++itr) {
+    Compartment* comp = *itr;
+    for (auto itemItr = comp->getItems().begin(); itemItr != comp->getItems().end(); ++itemItr) {
+      Item* item = *itemItr;
+      int x = item->getX() + comp->getX();
+      int y = item->getY() + comp->getY();
+      float tileX = x*tileWidth_ + offsetX_*zoom_ + size_.left;
+      float tileY = y*tileHeight_ + offsetY_*zoom_ + size_.top;
+      if (tileX < size_.left || tileX+tileWidth_ > size_.left + size_.width) {
+        continue;
+      }
+      if (tileY < size_.top || tileY+tileHeight_ > size_.top + size_.height) {
+        continue;
+      }
+      Rect pos(tileX, tileY, tileWidth_, tileHeight_);
+      Rect texPos(item->getTexX() + item->getRotation() * item->getTexWidth(), item->getTexY(), item->getTexWidth(), item->getTexHeight());
+      renderer.drawTexRect(pos, tilesTex, texPos);
+    }
+  }
 }
 
 void ShipView::onRMDown()
@@ -193,6 +222,43 @@ void ShipView::onLMUp()
   drawing_ = false;
 }
 
+void ShipView::onDrop(Widget* w)
+{
+  CompartmentButton* cb = dynamic_cast<CompartmentButton*>(w);
+  if (!cb) {
+    return;
+  }
+  Compartment* comp = cb->getCompartment();
+  //Check overlapping
+  int x = hoveredLeft_;
+  int y = hoveredTop_;
+  int width = comp->getWidth();
+  int height = comp->getHeight();
+  for (auto itr = compartments_.begin(); itr != compartments_.end(); ++itr) {
+    Compartment* otherComp = *itr;
+    int otherX = otherComp->getX();
+    int otherY = otherComp->getY();
+    int otherWidth = otherComp->getWidth();
+    int otherHeight = otherComp->getHeight();
+    if (otherX + otherWidth >= x && otherX < x + width && otherY + otherHeight >= y && otherY < y + height) {
+      //Overlap
+      return;
+    }
+  }
+  for (int i=x; i<x+width; ++i) {
+    for (int j=y; j<y+height; ++j) {
+      if (getWall(i,j) != Floor && getWall(i,j) != Empty) {
+        //Wall or door
+        return;
+      }
+    }
+  }
+  Compartment* newComp = new Compartment(*comp);
+  newComp->setX(hoveredLeft_);
+  newComp->setY(hoveredTop_);
+  compartments_.push_back(newComp);
+}
+
 ShipView::TileType ShipView::getWall( int x, int y )
 {
   if (x < 0 || x >= layoutWidth_ || y < 0 || y >= layoutHeight_) {
@@ -223,6 +289,10 @@ void ShipView::setWall( int x, int y, TileType value )
       //Can only erase door, not replace
       return;
     }
+  }
+  if ((value == Wall || value == Door) && getCompartment(x,y)) {
+    //Can't build over compartment
+    return;
   }
   wallLayout_[y*layoutWidth_ + x] = value;
 }
@@ -272,6 +342,13 @@ void ShipView::eraseArea()
       if (value == Empty && getWall(i, j) == Wall) {
         eraseDoorsAround(i, j);
       }
+      if (value == Empty) {
+        Compartment* comp = getCompartment(i,j);
+        if (comp) {
+          compartments_.remove(comp);
+          assert (!getCompartment(i,j));
+        }
+      }
       setWall(i, j, value);
     }
   }
@@ -295,6 +372,17 @@ void ShipView::buildFloor()
 void ShipView::buildDoor()
 {
   action_ = BuildDoor;
+}
+
+Compartment* ShipView::getCompartment(int x, int y)
+{
+  for (auto itr = compartments_.begin(); itr != compartments_.end(); ++itr) {
+    Compartment* comp = *itr;
+    if (x >= comp->getX() && x < comp->getX() + comp->getWidth() && y >= comp->getY() && y < comp->getY() + comp->getHeight()) {
+      return comp;
+    }
+  }
+  return NULL;
 }
 
 int ShipView::getWallCode( int i, int j )
@@ -341,4 +429,10 @@ void ShipView::eraseDoorsAround( int x, int y )
   if (getWall(x,y+1) == Door) {
     setWall(x, y+1, Empty);
   }
+}
+
+void ShipView::setHoveredDimensions(int width, int height)
+{
+  hoverWidth_ = width;
+  hoverHeight_ = height;
 }

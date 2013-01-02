@@ -76,6 +76,7 @@ void Widget::lmDown()
   }
   pressed_ = true;
   if (draggable_) {
+    drag();
     Renderer::getInstance().setDraggedWidget(this);
   }
   onLMDown();
@@ -97,6 +98,7 @@ void Widget::lmUp()
     drop(draggedWidget);
   }
   if (draggedWidget) {
+    draggedWidget->stopDrag();
     Renderer::getInstance().setDraggedWidget(NULL);
   }
   pressed_ = false;
@@ -138,6 +140,11 @@ void Widget::hoverExit()
 void Widget::drag()
 {
   onDrag();
+}
+
+void Widget::stopDrag()
+{
+  onStopDrag();
 }
 
 void Widget::drop( Widget* w )

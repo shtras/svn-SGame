@@ -54,5 +54,71 @@ CompartmentInfo {
 			Y=2
 			Rotation=3
 		}
+		Item {
+			ID=1 ; Table
+			X=4
+			Y=0
+			Rotation=1 ; 270 degrees
+		}
+		Item {
+			ID=2 ; Chair
+			X=3
+			Y=0
+			Rotation=1
+		}
+		Item {
+			ID=1 ; Table
+			X=4
+			Y=1
+			Rotation=1 ; 270 degrees
+		}
+		Item {
+			ID=2 ; Chair
+			X=3
+			Y=1
+			Rotation=1
+		}
+		Item {
+			ID=1 ; Table
+			X=4
+			Y=2
+			Rotation=1 ; 270 degrees
+		}
+		Item {
+			ID=2 ; Chair
+			X=3
+			Y=2
+			Rotation=1
+		}		
+	}
+	Compartment {
+		Category=1
+		Name=SmallBridge
+		Width=2
+		Height=2
+		Item {
+			ID=1
+			X=0
+			Y=0
+			Rotation=0
+		}
+		Item {
+			ID=1
+			X=1
+			Y=0
+			Rotation=0
+		}
+		Item {
+			ID=2
+			X=0
+			Y=1
+			Rotation=0
+		}
+		Item {
+			ID=2
+			X=1
+			Y=1
+			Rotation=0
+		}
 	}
 }
