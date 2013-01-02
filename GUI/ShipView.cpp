@@ -6,7 +6,7 @@
 ShipView::ShipView(Rect size):Widget(size),layoutWidth_(50), layoutHeight_(50), zoom_(1.0f), offsetX_(0.0f), offsetY_(0.0f),
   scrolling_(false), lastMouseX_(0), lastMouseY_(0),hoveredLeft_(-1), hoveredTop_(-1), hoverWidth_(1), hoverHeight_(1),tileWidth_(0),
   tileHeight_(0),drawing_(false),drawingStartX_(-1), drawingStartY_(-1),desiredZoom_(1.0f),zoomStep_(0),action_(BuildWalls),
-  tilesTexWidth_(0), tilesTexHeight_(0)
+  tilesTexWidth_(0), tilesTexHeight_(0), hoveredComp_(NULL)
 {
   wallLayout_ = new TileType[layoutHeight_ * layoutWidth_];
   for (int i=0; i<layoutHeight_ * layoutWidth_; ++i) {
@@ -127,6 +127,11 @@ void ShipView::drawCompartments()
   GLuint tilesTex = renderer.getTilesTex();
   for (auto itr = compartments_.begin(); itr != compartments_.end(); ++itr) {
     Compartment* comp = *itr;
+    if (hoveredComp_ == comp) {
+      renderer.setColor(Vector4(125, 200, 210, 255));
+    } else {
+      renderer.setColor(Vector4(255,255,255,255));
+    }
     for (auto itemItr = comp->getItems().begin(); itemItr != comp->getItems().end(); ++itemItr) {
       Item* item = *itemItr;
       int x = item->getX() + comp->getX();
@@ -140,9 +145,10 @@ void ShipView::drawCompartments()
         continue;
       }
       Rect pos(tileX, tileY, tileWidth_, tileHeight_);
-      Rect texPos(item->getTexX() + item->getRotation() * item->getTexWidth(), item->getTexY(), item->getTexWidth(), item->getTexHeight());
+      Rect texPos(item->getTexX() + item->getRotation() * item->getTexWidth() + item->getTexWidth()*0.01f, item->getTexY() + item->getTexHeight()*0.01f, item->getTexWidth()*0.98f, item->getTexHeight()*0.98f);
       renderer.drawTexRect(pos, tilesTex, texPos);
     }
+    renderer.resetColor();
   }
 }
 
@@ -185,6 +191,7 @@ void ShipView::onMouseMove()
 
   hoveredLeft_ = (int)(((lastMouseX_-size_.left) - offsetX_*zoom_)/tileWidth_);
   hoveredTop_ = (int)(((lastMouseY_ - size_.top) - offsetY_*zoom_)/tileHeight_);
+  hoveredComp_ = getCompartment(hoveredLeft_, hoveredTop_);
 }
 
 void ShipView::onMouseWheelScroll(int direction)
@@ -240,8 +247,11 @@ void ShipView::onDrop(Widget* w)
     int otherY = otherComp->getY();
     int otherWidth = otherComp->getWidth();
     int otherHeight = otherComp->getHeight();
-    if (otherX + otherWidth >= x && otherX < x + width && otherY + otherHeight >= y && otherY < y + height) {
+    if (otherX + otherWidth > x && otherX < x + width && otherY + otherHeight > y && otherY < y + height) {
       //Overlap
+      return;
+    }
+    if (x < 0 || y < 0 || x + width >= layoutWidth_ || y + height >= layoutHeight_) {
       return;
     }
   }

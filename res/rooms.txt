@@ -5,12 +5,35 @@ CompartmentInfo {
 		X=0
 		Y=256
 	}
-	
 	Item {
 		ID=2
 		Name=Chair
 		X=0
 		Y=320
+	}
+	Item {
+		ID=3
+		Name=ReactorTL
+		X=256
+		Y=256
+	}
+	Item {
+		ID=4
+		Name=ReactorTR
+		X=256
+		Y=320
+	}
+	Item {
+		ID=5
+		Name=ReactorBR
+		X=256
+		Y=384
+	}
+	Item {
+		ID=6
+		Name=ReactorBL
+		X=256
+		Y=448
 	}
 	
 	Compartment {
@@ -117,6 +140,36 @@ CompartmentInfo {
 		Item {
 			ID=2
 			X=1
+			Y=1
+			Rotation=0
+		}
+	}
+	Compartment {
+		Category=1
+		Name=Reactor
+		Width=2
+		Height=2
+		Item {
+			ID=3
+			X=0
+			Y=0
+			Rotation=0
+		}
+		Item {
+			ID=4
+			X=1
+			Y=0
+			Rotation=0
+		}
+		Item {
+			ID=5
+			X=1
+			Y=1
+			Rotation=0
+		}
+		Item {
+			ID=6
+			X=0
 			Y=1
 			Rotation=0
 		}

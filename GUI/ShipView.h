@@ -61,4 +61,5 @@ private:
   int tilesTexWidth_;
   int tilesTexHeight_;
   list<Compartment*> compartments_;
+  Compartment* hoveredComp_;
 };

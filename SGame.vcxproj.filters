@@ -108,6 +108,9 @@
     <ClCompile Include="Ship\ItemsDB.cpp">
       <Filter>Source Files\Ship</Filter>
     </ClCompile>
+    <ClCompile Include="GUI\CompartmentButton.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SGame.h">
@@ -172,6 +175,9 @@
     </ClInclude>
     <ClInclude Include="Ship\ItemsDB.h">
       <Filter>Header Files\Ship</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI\CompartmentButton.h">
+      <Filter>Header Files\GUI</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

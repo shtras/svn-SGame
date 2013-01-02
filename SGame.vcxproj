@@ -99,6 +99,7 @@
     <ClCompile Include="FileTools\RoomParser.cpp" />
     <ClCompile Include="Generic\CString.cpp" />
     <ClCompile Include="GUI\Button.cpp" />
+    <ClCompile Include="GUI\CompartmentButton.cpp" />
     <ClCompile Include="GUI\Forms\BuildTools.cpp" />
     <ClCompile Include="GUI\GlobalWindow.cpp" />
     <ClCompile Include="GUI\GUIManager.cpp" />
@@ -123,6 +124,7 @@
     <ClInclude Include="FileTools\RoomParser.h" />
     <ClInclude Include="Generic\CString.h" />
     <ClInclude Include="GUI\Button.h" />
+    <ClInclude Include="GUI\CompartmentButton.h" />
     <ClInclude Include="GUI\Forms\BuildTools.h" />
     <ClInclude Include="GUI\GlobalWindow.h" />
     <ClInclude Include="GUI\GUIManager.h" />
