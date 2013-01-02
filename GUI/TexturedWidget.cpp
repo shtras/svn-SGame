@@ -4,7 +4,7 @@
 
 Widget::Widget(Rect size):
   size_(size), regularTexture_(NULL), hoveredTexture_(NULL), pressedTexture_(NULL), activeTexture_(NULL), hovered_(false), pressed_(false), clickable_(false),
-  draggable_(false), dragged_(false),highlighted_(false)
+  draggable_(false), dragged_(false),highlighted_(false),scrollTransparrent_(false),visible_(true)
 {
 
 }
@@ -22,6 +22,9 @@ Widget::~Widget()
 
 void Widget::renderFrameRec()
 {
+  if (!visible_) {
+    return;
+  }
   if (!Renderer::getInstance().renderingDragged() && Renderer::getInstance().getDraggedWidget() == this) {
     return;
   }
@@ -38,6 +41,9 @@ void Widget::renderFrameRec()
 
 void Widget::renderContRec()
 {
+  if (!visible_) {
+    return;
+  }
   if (!Renderer::getInstance().renderingDragged() && Renderer::getInstance().getDraggedWidget() == this) {
     return;
   }
@@ -233,16 +239,25 @@ bool Widget::handleEvent( SDL_Event& event, float fx, float fy )
     childHandeled |= child->handleEvent(event, fx, fy);
   }
 
-  if (!childHandeled) { //Button events not handeled by any child
+  bool handled = true;
+  if (!childHandeled) { //Button events not handled by any child
     if (event.type == SDL_MOUSEBUTTONDOWN) {
       if (event.button.button == SDL_BUTTON_LEFT) {
         lmDown();
       } else if (event.button.button == SDL_BUTTON_RIGHT) {
         rmDown();
       } else if (event.button.button == SDL_BUTTON_WHEELUP) {
-        mouseWheelScroll(1);
+        if (scrollTransparrent_) {
+          handled = false;
+        } else {
+          mouseWheelScroll(1);
+        }
       } else if (event.button.button == SDL_BUTTON_WHEELDOWN) {
-        mouseWheelScroll(-1);
+        if (scrollTransparrent_) {
+          handled = false;
+        } else {
+          mouseWheelScroll(-1);
+        }
       }
     } else if (event.type == SDL_MOUSEBUTTONUP) {
       if (event.button.button == SDL_BUTTON_LEFT) {
@@ -255,7 +270,7 @@ bool Widget::handleEvent( SDL_Event& event, float fx, float fy )
     }
   }
 
-  return true;
+  return handled;
 }
 
 void Widget::setHighlighted( bool value )

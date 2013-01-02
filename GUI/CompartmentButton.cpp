@@ -10,6 +10,7 @@ CompartmentButton::CompartmentButton(Rect size, Compartment* comp, ShipView* shi
   initHovered(params2);
   initPressed(params2);
   draggable_ = true;
+  scrollTransparrent_ = true;
 }
 
 CompartmentButton::~CompartmentButton()

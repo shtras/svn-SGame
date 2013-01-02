@@ -2,6 +2,7 @@
 #include "Window.h"
 #include "ShipView.h"
 #include "Button.h"
+#include "CompartmentButton.h"
 
 class BuildTools: public Window
 {
@@ -11,6 +12,7 @@ public:
   void init(ShipView* shipView);
   void onClick();
   void render();
+  void onMouseWheelScroll(int direction);
 private:
   void buildClick();
   void eraseClick();
@@ -21,4 +23,7 @@ private:
   Button* floorButton_;
   Button* doorButton_;
   Button* eraseButton_;
+  vector<CompartmentButton*> compButtons_;
+  int firstButton_;
+  int lastButton_;
 };

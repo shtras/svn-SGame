@@ -94,10 +94,13 @@ public:
   Rect getSize() {return size_;}
   void setHighlighted(bool value);
   bool isHighlighted() {return highlighted_;}
+  bool isVisible() {return visible_;}
+  void setVisible(bool value) {visible_ = value;}
 protected:
   Rect size_;
   bool clickable_;
   bool draggable_;
+  bool scrollTransparrent_; //Widget does not handle scroll events
   list<Widget*> children_;
   TexturedWidget* regularTexture_;
   TexturedWidget* hoveredTexture_;
@@ -109,4 +112,5 @@ private:
   bool pressed_;
   bool dragged_;
   bool highlighted_;
+  bool visible_;
 };

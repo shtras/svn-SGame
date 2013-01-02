@@ -4,7 +4,7 @@
 #include "ItemsDB.h"
 #include "CompartmentButton.h"
 
-BuildTools::BuildTools( Rect size ):Window(size)
+BuildTools::BuildTools( Rect size ):Window(size),firstButton_(-1), lastButton_(-1)
 {
   draggable_ = false;
   clickable_ = true;
@@ -54,13 +54,29 @@ void BuildTools::init(ShipView* shipView)
   list<Compartment*> comps = ItemsDB::getInstance().getCompartmentsByCategory(Compartment::Navigation);
   float lastTop = 0.1f;
   float aspect = size_.width / size_.height * Renderer::getInstance().getWidth() / (float)Renderer::getInstance().getHeight();
+  firstButton_ = 0;
+  if (comps.size() == 0) {
+    Logger::getInstance().log(ERROR_LOG_NAME, "Compartments list empty.");
+  }
+  int count = 0;
   for (auto itr = comps.begin(); itr != comps.end(); ++itr) {
     Compartment* comp = *itr;
     float width = 0.8f;
+    if (comp->getWidth() < 5) {
+      width = 0.8f / (5-(float)comp->getWidth());
+    }
     float height = width * aspect * comp->getHeight() / (float)comp->getWidth();
     CompartmentButton* button = new CompartmentButton(Rect(0.1f, lastTop, width, height), comp, shipView_);
     addWidget(button);
+    compButtons_.push_back(button);
     lastTop += height + 0.02f;
+    if (lastTop >= 0.95f) {
+      lastButton_ = count;
+    }
+    if (lastButton_ != -1) {
+      button->setVisible(false);
+    }
+    ++count;
   }
 }
 
@@ -127,4 +143,34 @@ void BuildTools::render()
   //  }
   //  lastTop += tileHeight * comp->getHeight() * 1.2f;
   //}
+}
+
+void BuildTools::onMouseWheelScroll( int direction )
+{
+  if (direction == -1 && compButtons_[compButtons_.size()-1]->isVisible()) {
+    return;
+  }
+  firstButton_ -= direction;
+  if (firstButton_ < 0) {
+    firstButton_ = 0;
+    return;
+  }
+  float lastTop = compButtons_[0]->getSize().top;
+  bool fitsScreen = true;
+  for (int i=0; i<(int)compButtons_.size(); ++i) {
+    CompartmentButton* button = compButtons_[i];
+    Rect oldSize = button->getSize();
+    if (i < firstButton_ || !fitsScreen) {
+      button->setVisible(false);
+    } else {
+      oldSize.top = lastTop;
+      button->resize(oldSize);
+      lastTop += oldSize.height + 0.02f;
+      button->setVisible(true);
+      if (lastTop >= 0.95f) {
+        fitsScreen = false;
+        button->setVisible(false);
+      }
+    }
+  }
 }
