@@ -8,20 +8,21 @@
 #include "RoomParser.h"
 #include "ItemsDB.h"
 
-const char* Version = "0.0.3.";
+const char* Version = "0.0.4.";
 //TODO for next major version:
 //1. Complete editor
 //TODO for next minor version:
 //0.0.4:
 //1.V Compartments by category display at tools panel
 //2.V Compartments and items building / display at ShipView
-//3. Support of multiple decks and compartments by categories in the build tools
-//4. Implement scrollbar in tools menu
+//3.V Support of multiple decks and compartments by categories in the build tools
+//4.V Implement scrollbar in tools menu
 //0.0.5:
 //1. Multiple layers in ship view
 //2. Compartment purposes and additional parameters
 //3. Links between compartments
 //4. Info panel with ship parameters
+//5. Selection of which deck to show as ghost (upper or lower)
 //0.0.6
 //1. Oxygen system (compressors, pipes, dispensers)
 //2. Power system (cables, producers, consumers)
@@ -36,6 +37,9 @@ const char* Version = "0.0.3.";
 //Compartments creation and file parsing
 //Scroll in the compartments menu
 //Compartments sorted by categories
+//Multiple decks support. Upper deck shows ghost image of the lower one in the empty space
+//Redesigned GUI. Implemented progress bar
+//***Shifted to 0.0.4 at build #614
 
 SGame::SGame():state_(Menu),stateRunnig_(false)
 {

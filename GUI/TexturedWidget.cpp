@@ -33,6 +33,7 @@ void Widget::renderFrameRec()
   if (activeTexture_) {
     activeTexture_->render();
   }
+  customFrameRender();
   //Draw all the children
   for (auto itr = children_.begin(); itr != children_.end(); ++itr) {
     Widget* child = *itr;
@@ -130,7 +131,7 @@ void Widget::click()
 void Widget::hoverEnter()
 {
   hovered_ = true;
-  if (hoveredTexture_) {
+  if (hoveredTexture_ && !highlighted_) {
     activeTexture_ = hoveredTexture_;
   }
   onHoverEnter();

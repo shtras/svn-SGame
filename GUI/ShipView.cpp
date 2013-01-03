@@ -3,7 +3,7 @@
 #include "Renderer.h"
 #include "CompartmentButton.h"
 
-ShipView::ShipView(Rect size):Widget(size),layoutWidth_(50), layoutHeight_(50), zoom_(1.0f), offsetX_(0.0f), offsetY_(0.0f),
+ShipView::ShipView(Rect size):Widget(size),layoutWidth_(50), layoutHeight_(50), zoom_(0.5f), offsetX_(0.0f), offsetY_(0.0f),
   scrolling_(false), lastMouseX_(0), lastMouseY_(0),hoveredLeft_(-1), hoveredTop_(-1), hoverWidth_(1), hoverHeight_(1),tileWidth_(0),
   tileHeight_(0),drawing_(false),drawingStartX_(-1), drawingStartY_(-1),desiredZoom_(1.0f),zoomStep_(0),action_(BuildWalls),
   tilesTexWidth_(0), tilesTexHeight_(0), hoveredComp_(NULL),activeDeckIdx_(-1),activeDeck_(NULL)
@@ -16,6 +16,7 @@ ShipView::ShipView(Rect size):Widget(size),layoutWidth_(50), layoutHeight_(50), 
   }
   activeDeck_ = decks_[0];
   activeDeckIdx_ = 0;
+  desiredZoom_ = zoom_;
 }
 
 ShipView::~ShipView()
@@ -31,7 +32,7 @@ void ShipView::render()
   renderer.setColor(Vector4(255,255,255,100));
   renderer.drawTexRect(size_, renderer.getBGTex(), Rect(0,0,1,1));
   renderer.resetColor();
-  renderer.setTextSize(0.8f);
+  renderer.setTextSize(1.5f * zoom_);
   float aspect = renderer.getWidth() / (float)renderer.getHeight();
   //Renderer::getInstance().flushVerts();
   //glScissor(50, 50, 250, 250);
@@ -77,6 +78,7 @@ void ShipView::render()
       if (wallValue == DeckView::Wall && wallCode == 0) {
         wallCode = 10; //horizontal wall;
       }
+      bool renderingLowerLevelWall = false;
       if (i >= hoveredLeft_ && j >= hoveredTop_ && i < hoveredLeft_ + hoverWidth_ && j < hoveredTop_ + hoverHeight_) {
         renderer.setColor(Vector4(155,255,55,200));
         CString coord = CString(i) + "," + CString(j);
@@ -85,6 +87,14 @@ void ShipView::render()
         }
         renderer.renderText(tileX + tileWidth_*0.5f - renderer.getCharWidth()*coord.getSize()*0.5f, tileY + tileHeight_*0.5f - renderer.getCharHeight()*0.5f, coord);
       } else if (wallValue == DeckView::Empty) {
+        if (activeDeckIdx_ > 0) {
+          int prevWallValue = decks_[activeDeckIdx_-1]->getWall(i, j);
+          if (prevWallValue != DeckView::Empty) {
+            wallValue = prevWallValue;
+            renderingLowerLevelWall = true;
+            wallCode = decks_[activeDeckIdx_-1]->getWallCode(i, j);
+          }
+        }
         renderer.setColor(Vector4(255,255,255,50));
       }
       if (hoveredComp_ && i >= hoveredComp_->getX() && i < hoveredComp_->getX() + hoveredComp_->getWidth() &&
@@ -350,6 +360,24 @@ void ShipView::setHoveredDimensions(int width, int height)
 {
   hoverWidth_ = width;
   hoverHeight_ = height;
+}
+
+void ShipView::deckUp()
+{
+  ++activeDeckIdx_;
+  if (activeDeckIdx_ > 2) {
+    activeDeckIdx_ = 2;
+  }
+  activeDeck_ = decks_[activeDeckIdx_];
+}
+
+void ShipView::deckDown()
+{
+  --activeDeckIdx_;
+  if (activeDeckIdx_ < 0) {
+    activeDeckIdx_ = 0;
+  }
+  activeDeck_ = decks_[activeDeckIdx_];
 }
 
 DeckView::DeckView(int width, int height):width_(width), height_(height)

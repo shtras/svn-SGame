@@ -54,6 +54,7 @@ public:
   Widget(Rect size);
   virtual ~Widget();
   void renderFrameRec();
+  virtual void customFrameRender() {}
   void renderContRec();
   virtual void render() {}
   void initRegular(TextureParams params);

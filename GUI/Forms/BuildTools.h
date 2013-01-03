@@ -3,6 +3,7 @@
 #include "ShipView.h"
 #include "Button.h"
 #include "CompartmentButton.h"
+#include "ProgressBar.h"
 
 class BuildTools: public Window
 {
@@ -17,13 +18,17 @@ private:
   void floorClick();
   void doorClick();
   void categoryClick(void* param);
+  void upClick();
+  void downClick();
   ShipView* shipView_;
   Button* buildButton_;
   Button* floorButton_;
   Button* doorButton_;
   Button* eraseButton_;
+  Text* deckText_;
   vector<Button*> categoryButtons_;
   map<int, vector<CompartmentButton*> > compButtons_;
   int firstButton_;
   Compartment::Category currentCategory_;
+  ProgressBar* progressBar_;
 };

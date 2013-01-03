@@ -23,6 +23,9 @@ public:
   void buildDoor();
   void erase();
   void setHoveredDimensions(int width, int height);
+  void deckUp();
+  void deckDown();
+  int getActiveDeck() {return activeDeckIdx_;}
 private:
   enum Action {BuildWalls, BuildFloor, BuildDoor, Erase};
   void drawCompartments();
