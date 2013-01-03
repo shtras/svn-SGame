@@ -96,7 +96,7 @@ bool Renderer::init()
   Logger::getInstance().log(INFO_LOG_NAME, "Finished loading textures.");
 
   toolTip_ = new TexturedWidget(Rect(0,0,0,0));
-  TextureParams params = {164,152,26,21,2,2,2,2};
+  TextureParams params = {164,152,20,20,2,2,2,2};
   toolTip_->init(params);
 
   return true;

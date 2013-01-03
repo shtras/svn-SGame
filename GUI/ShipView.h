@@ -2,6 +2,8 @@
 #include "TexturedWidget.h"
 #include "Ship.h"
 
+class DeckView;
+
 class ShipView: public Widget, public has_slots<>
 {
 public:
@@ -23,18 +25,10 @@ public:
   void setHoveredDimensions(int width, int height);
 private:
   enum Action {BuildWalls, BuildFloor, BuildDoor, Erase};
-  enum TileType {Empty = -1, Floor = 0, Wall = 1, Door = 2};
   void drawCompartments();
-  Compartment* getCompartment(int x, int y);
-  ShipView::TileType getWall(int x, int y);
-  int hasWall(int x, int y);
-  void setWall(int x, int y, TileType value);
   void plantWalls();
   void eraseArea();
-  int getWallCode(int i, int j);
-  void setDoor(int x, int y);
-  bool hasDoorsAround(int x, int y);
-  void eraseDoorsAround(int x, int y);
+
   Ship* ship_;
   int layoutWidth_;
   int layoutHeight_;
@@ -50,16 +44,40 @@ private:
   int hoveredTop_;
   int hoverWidth_;
   int hoverHeight_;
-
+  DeckView* activeDeck_;
+  vector<DeckView*> decks_;
+  int activeDeckIdx_;
   float tileWidth_;
   float tileHeight_;
   bool drawing_;
   int drawingStartX_;
   int drawingStartY_;
-  TileType* wallLayout_;
   Action action_;
   int tilesTexWidth_;
   int tilesTexHeight_;
-  list<Compartment*> compartments_;
   Compartment* hoveredComp_;
+};
+
+class DeckView
+{
+public:
+  enum TileType {Empty = -1, Floor = 0, Wall = 1, Door = 2};
+  DeckView(int width, int height);
+  ~DeckView();
+  int getWallCode(int i, int j);
+  void setDoor(int x, int y);
+  bool hasDoorsAround(int x, int y);
+  void eraseDoorsAround(int x, int y);
+  Compartment* getCompartment(int x, int y);
+  TileType getWall(int x, int y);
+  int hasWall(int x, int y);
+  void setWall(int x, int y, TileType value);
+  void addCompartment(Compartment* comp);
+  void removeCompartment(Compartment* comp);
+  list<Compartment*>& getCompartments() {return compartments_;}
+private:
+  TileType* wallLayout_;
+  list<Compartment*> compartments_;
+  int width_;
+  int height_;
 };

@@ -4,7 +4,7 @@
 #include "ItemsDB.h"
 #include "CompartmentButton.h"
 
-BuildTools::BuildTools( Rect size ):Window(size),firstButton_(-1), currentCategory_((Compartment::Category)1)
+BuildTools::BuildTools( Rect size ):Window(size),firstButton_(-1), currentCategory_((Compartment::Category)0)
 {
   draggable_ = false;
   clickable_ = true;
@@ -58,15 +58,17 @@ void BuildTools::init(ShipView* shipView)
   float lastX = 0.02f;
   float lastY = 0.08f;
   firstButton_ = 0;
+  float width = 0.317f;
   for (int i=0; i<Compartment::LastCategory; ++i) {
-    Rect size(lastX, lastY, 0.32f, 0.05f);
+    Rect size(lastX, lastY, width, 0.05f);
     Button* but = new Button(size);
     but->setCaption(Compartment::categoryName((Compartment::Category)i));
     but->setParam((void*)i);
     but->sig1Click.connect(this, &BuildTools::categoryClick);
+    but->setColor(Vector4(255,0,0,255));
     categoryButtons_.push_back(but);
     addWidget(but);
-    lastX += 0.33f;
+    lastX += width + 0.001f;
     if (lastX >= 0.7f) {
       lastX = 0.02f;
       lastY += 0.05f;

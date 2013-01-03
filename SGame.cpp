@@ -144,7 +144,7 @@ bool SGame::initMenu()
 {
   Renderer& renderer = Renderer::getInstance();
   stateRunnig_ = true;
-  Window* menuWindow = new Window(Rect(0.1, 0.1, 0.4, 0.8));
+  Window* menuWindow = new Window(Rect(0.3, 0.1, 0.4, 0.8));
   renderer.addWidget(menuWindow);
 
   Button* editorButton = new Button(Rect(0.1, 0.1, 0.8, 0.1));
@@ -174,7 +174,7 @@ bool SGame::initEditor()
   Window* topPanel = new Window(Rect(0.0, 0.0, 1.0, 0.05));
   Renderer::getInstance().addWidget(topPanel);
 
-  Button* menuButton = new Button(Rect(0.9, 0.1, 0.1, 0.8));
+  Button* menuButton = new Button(Rect(0.9, 0.1, 0.098, 0.8));
   menuButton->setCaption("Quit");
   menuButton->setColor(Vector4(0, 0, 255, 255));
   menuButton->setTextSize(2);

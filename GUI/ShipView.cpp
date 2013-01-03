@@ -6,22 +6,20 @@
 ShipView::ShipView(Rect size):Widget(size),layoutWidth_(50), layoutHeight_(50), zoom_(1.0f), offsetX_(0.0f), offsetY_(0.0f),
   scrolling_(false), lastMouseX_(0), lastMouseY_(0),hoveredLeft_(-1), hoveredTop_(-1), hoverWidth_(1), hoverHeight_(1),tileWidth_(0),
   tileHeight_(0),drawing_(false),drawingStartX_(-1), drawingStartY_(-1),desiredZoom_(1.0f),zoomStep_(0),action_(BuildWalls),
-  tilesTexWidth_(0), tilesTexHeight_(0), hoveredComp_(NULL)
+  tilesTexWidth_(0), tilesTexHeight_(0), hoveredComp_(NULL),activeDeckIdx_(-1),activeDeck_(NULL)
 {
-  wallLayout_ = new TileType[layoutHeight_ * layoutWidth_];
-  for (int i=0; i<layoutHeight_ * layoutWidth_; ++i) {
-    wallLayout_[i] = Empty;
-  }
   tilesTexWidth_ = Renderer::getInstance().getTilesTexWidth();
   tilesTexHeight_ = Renderer::getInstance().getTilesTexHeight();
+  for (int i=0; i<3; ++i) {
+    DeckView* deck = new DeckView(layoutWidth_, layoutHeight_);
+    decks_.push_back(deck);
+  }
+  activeDeck_ = decks_[0];
+  activeDeckIdx_ = 0;
 }
 
 ShipView::~ShipView()
 {
-  delete[] wallLayout_;
-  for (auto itr = compartments_.begin(); itr != compartments_.end(); ++itr) {
-    delete *itr;
-  }
 }
 
 void ShipView::render()
@@ -71,12 +69,12 @@ void ShipView::render()
       //}
       Rect tilePos(tileX, tileY, tileWidth_, tileHeight_);
       Rect texPos(0.0f, 0.0f, tileTexWidth, tileTexHeight);
-      int wallValue = getWall(i, j);
+      int wallValue = activeDeck_->getWall(i, j);
       int wallCode = 0;
-      if (wallValue == Wall || wallValue == Door) {
-        wallCode = getWallCode(i, j);
+      if (wallValue == DeckView::Wall || wallValue == DeckView::Door) {
+        wallCode = activeDeck_->getWallCode(i, j);
       }
-      if (wallValue == Wall && wallCode == 0) {
+      if (wallValue == DeckView::Wall && wallCode == 0) {
         wallCode = 10; //horizontal wall;
       }
       if (i >= hoveredLeft_ && j >= hoveredTop_ && i < hoveredLeft_ + hoverWidth_ && j < hoveredTop_ + hoverHeight_) {
@@ -86,7 +84,7 @@ void ShipView::render()
           coord += " " + CString(drawEndX - drawStartX) + "," + CString(drawEndY - drawStartY);
         }
         renderer.renderText(tileX + tileWidth_*0.5f - renderer.getCharWidth()*coord.getSize()*0.5f, tileY + tileHeight_*0.5f - renderer.getCharHeight()*0.5f, coord);
-      } else if (wallValue == Empty) {
+      } else if (wallValue == DeckView::Empty) {
         renderer.setColor(Vector4(255,255,255,50));
       }
       if (hoveredComp_ && i >= hoveredComp_->getX() && i < hoveredComp_->getX() + hoveredComp_->getWidth() &&
@@ -98,11 +96,11 @@ void ShipView::render()
       }
       texPos.top = wallCode / 4 * 64.0f / (float)tilesTexHeight_ + 1/(float)tilesTexHeight_;
       texPos.left = wallCode % 4 * 64.0f / (float)tilesTexWidth_ + 1/(float)tilesTexWidth_;
-      if (wallValue == Floor) {
+      if (wallValue == DeckView::Floor) {
         texPos.left = 257.0f / (float)tilesTexWidth_;
         texPos.top = 1.0f / (float)tilesTexHeight_;
       }
-      if (wallValue == Door) {
+      if (wallValue == DeckView::Door) {
         assert (wallCode == 10 || wallCode == 5);
         texPos.left = 257.0f / tilesTexWidth_;
         if (wallCode == 10) {
@@ -119,8 +117,6 @@ void ShipView::render()
       renderer.setColor(Vector4(255,255,255,255));
     }
   }
-  renderer.setTextSize(1);
-  renderer.renderText(0, 0, CString(zoom_, 5) + " " + CString(desiredZoom_, 5) + " " + CString(zoomStep_, 5));
   drawCompartments();
   //glScissor(0, 0, 1600, 900);
 }
@@ -129,7 +125,7 @@ void ShipView::drawCompartments()
 {
   Renderer& renderer = Renderer::getInstance();
   GLuint tilesTex = renderer.getTilesTex();
-  for (auto itr = compartments_.begin(); itr != compartments_.end(); ++itr) {
+  for (auto itr = activeDeck_->getCompartments().begin(); itr != activeDeck_->getCompartments().end(); ++itr) {
     Compartment* comp = *itr;
     if (hoveredComp_ == comp) {
       renderer.setColor(Vector4(125, 200, 210, 255));
@@ -195,7 +191,7 @@ void ShipView::onMouseMove()
 
   hoveredLeft_ = (int)(((lastMouseX_-size_.left) - offsetX_*zoom_)/tileWidth_);
   hoveredTop_ = (int)(((lastMouseY_ - size_.top) - offsetY_*zoom_)/tileHeight_);
-  hoveredComp_ = getCompartment(hoveredLeft_, hoveredTop_);
+  hoveredComp_ = activeDeck_->getCompartment(hoveredLeft_, hoveredTop_);
 }
 
 void ShipView::onMouseWheelScroll(int direction)
@@ -228,7 +224,7 @@ void ShipView::onLMUp()
   } else if (action_ == Erase || action_ == BuildFloor) {
     eraseArea();
   } else if (action_ == BuildDoor) {
-    setDoor(hoveredLeft_, hoveredTop_);
+    activeDeck_->setDoor(hoveredLeft_, hoveredTop_);
   }
   drawing_ = false;
 }
@@ -245,7 +241,7 @@ void ShipView::onDrop(Widget* w)
   int y = hoveredTop_;
   int width = comp->getWidth();
   int height = comp->getHeight();
-  for (auto itr = compartments_.begin(); itr != compartments_.end(); ++itr) {
+  for (auto itr = activeDeck_->getCompartments().begin(); itr != activeDeck_->getCompartments().end(); ++itr) {
     Compartment* otherComp = *itr;
     int otherX = otherComp->getX();
     int otherY = otherComp->getY();
@@ -261,7 +257,7 @@ void ShipView::onDrop(Widget* w)
   }
   for (int i=x; i<x+width; ++i) {
     for (int j=y; j<y+height; ++j) {
-      if (getWall(i,j) != Floor && getWall(i,j) != Empty) {
+      if (activeDeck_->getWall(i,j) != DeckView::Floor && activeDeck_->getWall(i,j) != DeckView::Empty) {
         //Wall or door
         return;
       }
@@ -270,45 +266,7 @@ void ShipView::onDrop(Widget* w)
   Compartment* newComp = new Compartment(*comp);
   newComp->setX(hoveredLeft_);
   newComp->setY(hoveredTop_);
-  compartments_.push_back(newComp);
-}
-
-ShipView::TileType ShipView::getWall( int x, int y )
-{
-  if (x < 0 || x >= layoutWidth_ || y < 0 || y >= layoutHeight_) {
-    return Empty;
-  }
-  return wallLayout_[y*layoutWidth_ + x];
-}
-
-int ShipView::hasWall( int x, int y )
-{
-  if (x < 0 || x >= layoutWidth_ || y < 0 || y >= layoutHeight_) {
-    return 0;
-  }
-  return (wallLayout_[y*layoutWidth_ + x]==Wall || wallLayout_[y*layoutWidth_ + x]==Door)?1:0;
-}
-
-void ShipView::setWall( int x, int y, TileType value )
-{
-  if (x < 0 || x >= layoutWidth_ || y < 0 || y >= layoutHeight_) {
-    assert(0);
-  }
-  if (value == Wall || value == Floor || value == Door) {
-    if (hasDoorsAround(x, y) && value != Floor) {
-      //Can't create doors or walls around a door
-      return;
-    }
-    if (getWall(x, y) == Door) {
-      //Can only erase door, not replace
-      return;
-    }
-  }
-  if ((value == Wall || value == Door) && getCompartment(x,y)) {
-    //Can't build over compartment
-    return;
-  }
-  wallLayout_[y*layoutWidth_ + x] = value;
+  activeDeck_->addCompartment(newComp);
 }
 
 void ShipView::plantWalls()
@@ -325,12 +283,12 @@ void ShipView::plantWalls()
   int stepHor = drawingStartX_ > hoveredLeft_?-1:1;
   int stepVer = drawingStartY_ > hoveredTop_?-1:1;
   for (int i=drawingStartX_; i!= hoveredLeft_ + stepHor; i += stepHor) {
-    setWall(i, drawingStartY_, Wall);
-    setWall(i, hoveredTop_, Wall);
+    activeDeck_->setWall(i, drawingStartY_, DeckView::Wall);
+    activeDeck_->setWall(i, hoveredTop_, DeckView::Wall);
   }
   for (int i=drawingStartY_; i != hoveredTop_ + stepVer; i += stepVer) {
-    setWall(drawingStartX_, i, Wall);
-    setWall(hoveredLeft_, i, Wall);
+    activeDeck_->setWall(drawingStartX_, i, DeckView::Wall);
+    activeDeck_->setWall(hoveredLeft_, i, DeckView::Wall);
   }
 }
 
@@ -344,26 +302,26 @@ void ShipView::eraseArea()
   }
   int stepHor = drawingStartX_ > hoveredLeft_?-1:1;
   int stepVer = drawingStartY_ > hoveredTop_?-1:1;
-  TileType value = Empty;
+  DeckView::TileType value = DeckView::Empty;
   if (action_ == BuildFloor) {
-    value = Floor;
+    value = DeckView::Floor;
   }
   for (int i=drawingStartX_; i!= hoveredLeft_ + stepHor; i += stepHor) {
     for (int j=drawingStartY_; j != hoveredTop_ + stepVer; j += stepVer) {
-      if (value == Floor && getWall(i, j) != Empty) {
+      if (value == DeckView::Floor && activeDeck_->getWall(i, j) != DeckView::Empty) {
         continue;
       }
-      if (value == Empty && getWall(i, j) == Wall) {
-        eraseDoorsAround(i, j);
+      if (value == DeckView::Empty && activeDeck_->getWall(i, j) == DeckView::Wall) {
+        activeDeck_->eraseDoorsAround(i, j);
       }
-      if (value == Empty) {
-        Compartment* comp = getCompartment(i,j);
+      if (value == DeckView::Empty) {
+        Compartment* comp = activeDeck_->getCompartment(i,j);
         if (comp) {
-          compartments_.remove(comp);
-          assert (!getCompartment(i,j));
+          activeDeck_->removeCompartment(comp);
+          assert (!activeDeck_->getCompartment(i,j));
         }
       }
-      setWall(i, j, value);
+      activeDeck_->setWall(i, j, value);
     }
   }
 }
@@ -388,7 +346,29 @@ void ShipView::buildDoor()
   action_ = BuildDoor;
 }
 
-Compartment* ShipView::getCompartment(int x, int y)
+void ShipView::setHoveredDimensions(int width, int height)
+{
+  hoverWidth_ = width;
+  hoverHeight_ = height;
+}
+
+DeckView::DeckView(int width, int height):width_(width), height_(height)
+{
+  wallLayout_ = new TileType[height_ * width_];
+  for (int i=0; i<height_ * width_; ++i) {
+    wallLayout_[i] = Empty;
+  }
+}
+
+DeckView::~DeckView()
+{
+  delete[] wallLayout_;
+  for (auto itr = compartments_.begin(); itr != compartments_.end(); ++itr) {
+    delete *itr;
+  }
+}
+
+Compartment* DeckView::getCompartment(int x, int y)
 {
   for (auto itr = compartments_.begin(); itr != compartments_.end(); ++itr) {
     Compartment* comp = *itr;
@@ -399,7 +379,7 @@ Compartment* ShipView::getCompartment(int x, int y)
   return NULL;
 }
 
-int ShipView::getWallCode( int i, int j )
+int DeckView::getWallCode( int i, int j )
 {
   int wallCode = 0;
   wallCode |= hasWall(i, j+1);
@@ -410,7 +390,7 @@ int ShipView::getWallCode( int i, int j )
   return wallCode;
 }
 
-void ShipView::setDoor( int x, int y )
+void DeckView::setDoor( int x, int y )
 {
   TileType type = getWall(x, y);
   if (type != Wall) {
@@ -424,12 +404,50 @@ void ShipView::setDoor( int x, int y )
   setWall(x, y, Door);
 }
 
-bool ShipView::hasDoorsAround( int x, int y )
+DeckView::TileType DeckView::getWall( int x, int y )
+{
+  if (x < 0 || x >= width_ || y < 0 || y >= height_) {
+    return Empty;
+  }
+  return wallLayout_[y*width_ + x];
+}
+
+int DeckView::hasWall( int x, int y )
+{
+  if (x < 0 || x >= width_ || y < 0 || y >= height_) {
+    return 0;
+  }
+  return (wallLayout_[y*width_ + x]==Wall || wallLayout_[y*width_ + x]==Door)?1:0;
+}
+
+void DeckView::setWall( int x, int y, TileType value )
+{
+  if (x < 0 || x >= width_ || y < 0 || y >= height_) {
+    assert(0);
+  }
+  if (value == Wall || value == Floor || value == Door) {
+    if (hasDoorsAround(x, y) && value != Floor) {
+      //Can't create doors or walls around a door
+      return;
+    }
+    if (getWall(x, y) == Door) {
+      //Can only erase door, not replace
+      return;
+    }
+  }
+  if ((value == Wall || value == Door) && getCompartment(x,y)) {
+    //Can't build over compartment
+    return;
+  }
+  wallLayout_[y*width_ + x] = value;
+}
+
+bool DeckView::hasDoorsAround( int x, int y )
 {
   return getWall(x-1,y) == Door || getWall(x+1, y) == Door || getWall(x, y-1) == Door || getWall(x, y+1) == Door;
 }
 
-void ShipView::eraseDoorsAround( int x, int y )
+void DeckView::eraseDoorsAround( int x, int y )
 {
   if (getWall(x-1,y) == Door) {
     setWall(x-1, y, Empty);
@@ -445,8 +463,13 @@ void ShipView::eraseDoorsAround( int x, int y )
   }
 }
 
-void ShipView::setHoveredDimensions(int width, int height)
+void DeckView::addCompartment( Compartment* comp )
 {
-  hoverWidth_ = width;
-  hoverHeight_ = height;
+  compartments_.push_back(comp);
 }
+
+void DeckView::removeCompartment( Compartment* comp )
+{
+  compartments_.remove(comp);
+}
+

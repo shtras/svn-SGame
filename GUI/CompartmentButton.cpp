@@ -4,8 +4,8 @@
 
 CompartmentButton::CompartmentButton(Rect size, Compartment* comp, ShipView* shipView):Button(size, false),comp_(comp),shipView_(shipView)
 {
-  TextureParams params1 = {100, 152, 31, 31, 11, 11, 11, 11};
-  TextureParams params2 = {132, 152, 31, 31, 11, 11, 11, 11};
+  TextureParams params1 = {100, 152, 31, 31, 4, 4, 4, 4};
+  TextureParams params2 = {132, 152, 31, 31, 4, 4, 4, 4};
   initRegular(params1);
   initHovered(params2);
   initPressed(params2);

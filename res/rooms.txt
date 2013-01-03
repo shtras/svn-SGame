@@ -217,7 +217,7 @@ CompartmentInfo {
 		}
 	}
 	Compartment {
-		Category=3
+		Category=2
 		Name=Reactor
 		Width=2
 		Height=2
