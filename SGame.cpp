@@ -135,7 +135,7 @@ bool SGame::mainLoop()
     Renderer::getInstance().setTextSize(1);
     Renderer::getInstance().setColor(Vector4(255, 255, 255, 255));
     CString fpsString = "FPS: " + CString(fps, 2);
-    Renderer::getInstance().renderText(1.0f - fpsString.getSize()*Renderer::getInstance().getCharWidth(), 0.0f, fpsString);
+    Renderer::getInstance().renderText(0.5f - fpsString.getSize()*Renderer::getInstance().getCharWidth()*0.5f, 0.0f, fpsString);
     Renderer::getInstance().renderText(1.0f - version.getSize()*Renderer::getInstance().getCharWidth(), 1.0f - Renderer::getInstance().getCharHeight(), version);
 
     Renderer::getInstance().renderEnd();
@@ -180,8 +180,8 @@ bool SGame::initEditor()
 
   Button* menuButton = new Button(Rect(0.9, 0.1, 0.098, 0.8));
   menuButton->setCaption("Quit");
-  menuButton->setColor(Vector4(0, 0, 255, 255));
-  menuButton->setTextSize(2);
+  menuButton->setColor(Vector4(255, 0, 0, 255));
+  menuButton->setTextSize(1.8f);
   topPanel->addWidget(menuButton);
   menuButton->sigClick.connect(this, &SGame::toggleMenu);
   stateRunnig_ = true;
