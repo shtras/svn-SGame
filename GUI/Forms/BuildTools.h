@@ -10,20 +10,20 @@ public:
   BuildTools(Rect size);
   ~BuildTools();
   void init(ShipView* shipView);
-  void onClick();
-  void render();
   void onMouseWheelScroll(int direction);
 private:
   void buildClick();
   void eraseClick();
   void floorClick();
   void doorClick();
+  void categoryClick(void* param);
   ShipView* shipView_;
   Button* buildButton_;
   Button* floorButton_;
   Button* doorButton_;
   Button* eraseButton_;
-  vector<CompartmentButton*> compButtons_;
+  vector<Button*> categoryButtons_;
+  map<int, vector<CompartmentButton*> > compButtons_;
   int firstButton_;
-  int lastButton_;
+  Compartment::Category currentCategory_;
 };

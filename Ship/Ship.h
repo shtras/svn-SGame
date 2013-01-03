@@ -49,7 +49,7 @@ class Compartment
 {
   friend class RoomParser;
 public:
-  enum Category {Common = 0, Navigation, LastCategory};
+  enum Category {Common = 0, Navigation, Power, LifeSupport, Living, LastCategory};
   Compartment();
   Compartment(const Compartment& other);
   ~Compartment();
@@ -62,6 +62,8 @@ public:
   void setY(int y) {top_ = y;}
   int getWidth() {return width_;}
   int getHeight() {return height_;}
+  CString getName() {return name_;}
+  static CString categoryName(Category cat);
 private:
   Category category_;
   int left_;

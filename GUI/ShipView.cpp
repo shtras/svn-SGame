@@ -89,6 +89,10 @@ void ShipView::render()
       } else if (wallValue == Empty) {
         renderer.setColor(Vector4(255,255,255,50));
       }
+      if (hoveredComp_ && i >= hoveredComp_->getX() && i < hoveredComp_->getX() + hoveredComp_->getWidth() &&
+          j >= hoveredComp_->getY() && j < hoveredComp_->getY() + hoveredComp_->getHeight()) {
+        renderer.setColor(Vector4(125, 200, 210, 255));
+      }
       if (drawing_ && i >= drawStartX && i <= drawEndX && j >= drawStartY && j <= drawEndY) {
         renderer.setColor(Vector4(255,155,55,200));
       }

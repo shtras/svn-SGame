@@ -11,6 +11,20 @@
 const char* Version = "0.0.3.";
 //TODO for next major version:
 //1. Complete editor
+//TODO for next minor version:
+//0.0.4:
+//1.V Compartments by category display at tools panel
+//2.V Compartments and items building / display at ShipView
+//3. Support of multiple decks and compartments by categories in the build tools
+//4. Implement scrollbar in tools menu
+//0.0.5:
+//1. Multiple layers in ship view
+//2. Compartment purposes and additional parameters
+//3. Links between compartments
+//4. Info panel with ship parameters
+//0.0.6
+//1. Oxygen system (compressors, pipes, dispensers)
+//2. Power system (cables, producers, consumers)
 //***Shifted to 0.0.2 at build #349
 //Implemented GUI, basic editor
 //Floor, walls building, erase
@@ -18,9 +32,10 @@ const char* Version = "0.0.3.";
 //Doors building
 //Items database
 //Parsing of rooms.txt - compartments and items description file
-//TODO for next minor version:
-//1. Compartments by category display at tools panel
-//2. Compartments and items building / display at ShipView
+//***Progress:
+//Compartments creation and file parsing
+//Scroll in the compartments menu
+//Compartments sorted by categories
 
 SGame::SGame():state_(Menu),stateRunnig_(false)
 {

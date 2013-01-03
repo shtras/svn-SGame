@@ -2,7 +2,7 @@
 #include "Button.h"
 #include "Renderer.h"
 
-Button::Button(Rect size, bool defaultTexture/* = true*/):Text(size)
+Button::Button(Rect size, bool defaultTexture/* = true*/):Text(size),param_((void*)0xbadbeef)
 {
   if (defaultTexture) {
     TextureParams params = {1, 63, 32, 15, 5, 4, 5, 4};
@@ -22,7 +22,11 @@ Button::~Button()
 
 void Button::onClick()
 {
-  sigClick.emit();
+  if (param_ != (void*)0xbadbeef) {
+    sig1Click.emit(param_);
+  } else {
+    sigClick.emit();
+  }
 }
 
 void Button::init( TextureParams regular, TextureParams hovered, TextureParams pressed )

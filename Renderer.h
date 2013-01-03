@@ -61,17 +61,17 @@ public:
   void clearWindows();
   int getTilesTexWidth() {return tilesTexWidth_;}
   int getTilesTexHeight() {return tilesTexHeight_;}
+  void setWidgetForTooltip(Widget* w) {renderTooltipFor_ = w;}
 private:
   Renderer();
   ~Renderer();
-
+  void renderToolTip(CString text);
   void loadFonts();
   void loadTexture(CString fileName, GLuint& tex);
   void loadTexture(CString fileName, GLuint& tex, int& width, int& height);
   void renderTextLines();
   void renderTextLine(TextToRender& ttr);
   void addVertex(float x, float y, float u, float v);
-public:
   void flushVerts();
   GLuint font_;
   GLuint gui_;
@@ -107,4 +107,6 @@ public:
   bool renderingDragged_;
   int flushes_;
   int vertices_;
+  Widget* renderTooltipFor_;
+  TexturedWidget* toolTip_;
 };

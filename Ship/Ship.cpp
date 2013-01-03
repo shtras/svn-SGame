@@ -92,6 +92,31 @@ Compartment::~Compartment()
   }
 }
 
+CString Compartment::categoryName(Category cat)
+{
+  switch (cat) {
+  case Common:
+    return "Common";
+  case Navigation:
+    return "Navigation";
+  case Power:
+    return "Power";
+  case LifeSupport:
+    return "Life support";
+  case Living:
+    return "Living";
+  case LastCategory:
+    assert(0);
+    Logger::getInstance().log(ERROR_LOG_NAME, "Attempted to get last category name");
+    break;
+  default:
+    assert(0);
+    Logger::getInstance().log(ERROR_LOG_NAME, "Unknown category");
+    break;
+  }
+  return "";
+}
+
 Item::Item()
 {
 }

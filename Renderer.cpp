@@ -95,6 +95,10 @@ bool Renderer::init()
   loadTexture("res/bg.png", bgTex_);
   Logger::getInstance().log(INFO_LOG_NAME, "Finished loading textures.");
 
+  toolTip_ = new TexturedWidget(Rect(0,0,0,0));
+  TextureParams params = {164,152,26,21,2,2,2,2};
+  toolTip_->init(params);
+
   return true;
 }
 
@@ -114,6 +118,7 @@ void Renderer::clear()
 void Renderer::render()
 {
   //First render GUI frames for each widget. Then run virtual render function for each widget.
+  setWidgetForTooltip(NULL);
   globalGUIWindow_->renderFrameRec();
   if (draggedWidget_) {
     renderingDragged_ = true;
@@ -129,6 +134,9 @@ void Renderer::render()
     renderingDragged_ = false;
   }
   globalGUIWindow_->renderContRec();
+  if (renderTooltipFor_) {
+    renderToolTip(renderTooltipFor_->getToolTip());
+  }
 }
 
 void Renderer::renderEnd()
@@ -362,4 +370,19 @@ void Renderer::resetColor()
 void Renderer::clearWindows()
 {
   globalGUIWindow_->clear();
+}
+
+void Renderer::renderToolTip(CString text)
+{
+  setTextSize(1.0f);
+  float x = getMouseX();
+  float y = getMouseY();
+  float width = getCharWidth() * text.getSize() * 1.02f;
+  float height = getCharHeight() * 1.02f;
+  y -= height;
+  toolTip_->resize(Rect(x, y, width, height));
+  toolTip_->render();
+  setColor(Vector3(0,0,0));
+  renderText(x + width * 0.01f, y + height * 0.01f, text);
+  resetColor();
 }

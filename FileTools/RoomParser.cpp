@@ -1,6 +1,6 @@
 #include "StdAfx.h"
 #include "RoomParser.h"
-#include "..\Ship\ItemsDB.h"
+#include "ItemsDB.h"
 
 RoomParser::RoomParser():linePushed_(false)
 {
@@ -39,7 +39,7 @@ Section* RoomParser::parseSection()
   Section* res = new Section();
   CString caption = getNextLine();
   assert(caption.contains('{'));
-  res->setName(caption.tokenize('{')[0]);
+  res->setName(caption.tokenize('{')[0].toLower());
   
   while (1) {
     CString line = getNextLine();
@@ -73,7 +73,7 @@ Section* RoomParser::parseSection()
       return NULL;
     }
     Property prop;
-    prop.propName = parts[0];
+    prop.propName = parts[0].toLower();
     prop.value = parts[1];
     res->addProperty(prop);
   }
@@ -92,7 +92,7 @@ CString RoomParser::getNextLine()
   while(!file.eof()) {
     getline(file, inStr);
     CString line(inStr.c_str());
-    line = line.toLower();
+    //line = line.toLower();
     line.replace('\t', ' ');
     line = line.remove(' ');
     if (line.contains(';')) {

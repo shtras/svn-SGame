@@ -22,10 +22,11 @@ Widget::~Widget()
 
 void Widget::renderFrameRec()
 {
+  Renderer& renderer = Renderer::getInstance();
   if (!visible_) {
     return;
   }
-  if (!Renderer::getInstance().renderingDragged() && Renderer::getInstance().getDraggedWidget() == this) {
+  if (!renderer.renderingDragged() && renderer.getDraggedWidget() == this) {
     return;
   }
   Renderer::getInstance().setColor(Vector3(255,255,255));
@@ -36,6 +37,9 @@ void Widget::renderFrameRec()
   for (auto itr = children_.begin(); itr != children_.end(); ++itr) {
     Widget* child = *itr;
     child->renderFrameRec();
+  }
+  if (hovered_ && toolTip_ != "") {
+    renderer.setWidgetForTooltip(this);
   }
 }
 
@@ -141,6 +145,9 @@ void Widget::hoverExit()
     activeTexture_ = pressedTexture_;
   }
   onHoverExit();
+  for (auto itr = children_.begin(); itr != children_.end(); ++itr) {
+    (*itr)->hoverExit();
+  }
 }
 
 void Widget::drag()
@@ -221,6 +228,9 @@ void Widget::clear()
 
 bool Widget::handleEvent( SDL_Event& event, float fx, float fy )
 {
+  if (!visible_) {
+    return false;
+  }
   if (Renderer::getInstance().getDraggedWidget() == this) {
     return false; //Dragged widget doesn't receive events
   }

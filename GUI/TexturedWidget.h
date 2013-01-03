@@ -96,6 +96,8 @@ public:
   bool isHighlighted() {return highlighted_;}
   bool isVisible() {return visible_;}
   void setVisible(bool value) {visible_ = value;}
+  void setToolTip(CString toolTip) {toolTip_ = toolTip;}
+  CString getToolTip() {return toolTip_;}
 protected:
   Rect size_;
   bool clickable_;
@@ -113,4 +115,5 @@ private:
   bool dragged_;
   bool highlighted_;
   bool visible_;
+  CString toolTip_;
 };
