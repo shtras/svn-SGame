@@ -22,7 +22,22 @@ void Text::render()
     Renderer::getInstance().setTextSize(newSize);
   }
   Renderer::getInstance().setColor(color_);
-  Renderer::getInstance().renderText(size_.left + size_.width/2 - caption_.getSize()*Renderer::getInstance().getCharWidth()/2.0f, 
+  float left = size_.left;
+  if (align_ != Widget::LeftAlign) {
+    left = size_.left + size_.width/2 - caption_.getSize()*Renderer::getInstance().getCharWidth()/2.0f;
+  }
+  Renderer::getInstance().renderText(left, 
     size_.top + size_.height/2 - Renderer::getInstance().getCharHeight()*0.5f, caption_);
   Renderer::getInstance().resetColor();
+}
+
+FramedText::FramedText( Rect size ):Text(size)
+{
+  TextureParams params = {1, 79, 65, 17, 7, 7, 7, 7};
+  initRegular(params);
+}
+
+FramedText::~FramedText()
+{
+
 }

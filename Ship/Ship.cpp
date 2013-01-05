@@ -78,7 +78,12 @@ Compartment::Compartment()
 }
 
 Compartment::Compartment(const Compartment& other):left_(other.left_), top_(other.top_), width_(other.width_), height_(other.height_), name_(other.name_),
-  category_(other.category_)
+  category_(other.category_),minCrew_(other.minCrew_),maxCrew_(other.maxCrew_),powerRequired_(other.powerRequired_),powerProduced_(other.powerProduced_),
+  crewCapacity_(other.crewCapacity_)
+
+
+
+
 {
   for (auto itr = other.items_.begin(); itr != other.items_.end(); ++itr) {
     items_.push_back(new Item(**itr));

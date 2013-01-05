@@ -190,6 +190,11 @@ bool RoomParser::processCompartment( Section* sec )
   CString name = "";
   int width = -1;
   int height = -1;
+  int minCrew = 0;
+  int maxCrew = 0;
+  int powerRequired = 0;
+  int powerProduced = 0;
+  int crewCapacity = 0;
   for (auto itr = sec->getProperties().begin(); itr != sec->getProperties().end(); ++itr) {
     const Property& prop = *itr;
     if (prop.propName == "category") {
@@ -200,6 +205,17 @@ bool RoomParser::processCompartment( Section* sec )
       width = parseInt(prop.value);
     } else if (prop.propName == "height") {
       height = parseInt(prop.value);
+    } else if (prop.propName == "mincrew") {
+      minCrew = parseInt(prop.value);
+    } else if (prop.propName == "maxcrew") {
+      maxCrew = parseInt(prop.value);
+    } else if (prop.propName == "powerrequired") {
+      powerRequired = parseInt(prop.value);;
+    } else if (prop.propName == "required") {
+    } else if (prop.propName == "powerproduced") {
+      powerProduced = parseInt(prop.value);
+    } else if (prop.propName == "crewcapacity") {
+      crewCapacity = parseInt(prop.value);
     } else {
       Logger::getInstance().log(ERROR_LOG_NAME, "Invalid property: " + prop.propName);
       return false;
@@ -214,6 +230,11 @@ bool RoomParser::processCompartment( Section* sec )
   comp->width_ = width;
   comp->height_ = height;
   comp->category_ = (Compartment::Category)category;
+  comp->minCrew_ = minCrew;
+  comp->maxCrew_ = maxCrew;
+  comp->powerRequired_ = powerRequired;
+  comp->powerProduced_ = powerProduced;
+  comp->crewCapacity_ = crewCapacity;
   for (auto itr = sec->getSubSections().begin(); itr != sec->getSubSections().end(); ++itr) {
     Section* subSec = *itr;
     assert(subSec);

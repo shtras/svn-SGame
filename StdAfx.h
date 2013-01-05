@@ -4,6 +4,7 @@
 #include <vector>
 #include <list>
 #include <map>
+#include <queue>
 #include <algorithm>
 #include <assert.h>
 using namespace std;

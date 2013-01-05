@@ -32,7 +32,7 @@ void ShipView::render()
   renderer.setColor(Vector4(255,255,255,100));
   renderer.drawTexRect(size_, renderer.getBGTex(), Rect(0,0,1,1));
   renderer.resetColor();
-  renderer.setTextSize(1.5f * zoom_);
+  renderer.setTextSize(1.0f * zoom_);
   float aspect = renderer.getWidth() / (float)renderer.getHeight();
   //Renderer::getInstance().flushVerts();
   //glScissor(50, 50, 250, 250);

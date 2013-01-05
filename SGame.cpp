@@ -7,6 +7,7 @@
 #include "VersionInfo.h"
 #include "RoomParser.h"
 #include "ItemsDB.h"
+#include "BuildInfo.h"
 
 const char* Version = "0.0.4.";
 //TODO for next major version:
@@ -186,12 +187,15 @@ bool SGame::initEditor()
   menuButton->sigClick.connect(this, &SGame::toggleMenu);
   stateRunnig_ = true;
 
-  ShipView* view = new ShipView(Rect(0.2, 0.05, 0.8, 0.95));
+  ShipView* view = new ShipView(Rect(0.2, 0.05, 0.6, 0.95));
   Renderer::getInstance().addWidget(view);
 
   BuildTools* tools = new BuildTools(Rect(0.0, 0.05, 0.2, 0.95));
   tools->init(view);
   Renderer::getInstance().addWidget(tools);
+
+  BuildInfo* info = new BuildInfo(Rect(0.8, 0.05, 0.2, 0.95));
+  Renderer::getInstance().addWidget(info);
   return true;
 }
 

@@ -51,6 +51,7 @@ private:
 class Widget
 {
 public:
+  enum Align {NoAlign, LeftAlign, UpAlign, RightAlign, DownAlign};
   Widget(Rect size);
   virtual ~Widget();
   void renderFrameRec();
@@ -86,6 +87,7 @@ public:
   virtual void onDrop(Widget* w) {}
   virtual void onMouseMove() {}
   virtual void onMouseWheelScroll(int direction) {}
+  virtual void onResize() {}
   //Child care
   void addWidget(Widget* widget);
   void removeWidget(Widget* widget);
@@ -99,6 +101,7 @@ public:
   void setVisible(bool value) {visible_ = value;}
   void setToolTip(CString toolTip) {toolTip_ = toolTip;}
   CString getToolTip() {return toolTip_;}
+  void setAlign(Align align) {align_ = align;}
 protected:
   Rect size_;
   bool clickable_;
@@ -109,6 +112,7 @@ protected:
   TexturedWidget* hoveredTexture_;
   TexturedWidget* pressedTexture_;
   TexturedWidget* activeTexture_;
+  Align align_;
 private:
   Widget();
   bool hovered_;

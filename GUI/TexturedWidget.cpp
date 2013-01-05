@@ -4,7 +4,7 @@
 
 Widget::Widget(Rect size):
   size_(size), regularTexture_(NULL), hoveredTexture_(NULL), pressedTexture_(NULL), activeTexture_(NULL), hovered_(false), pressed_(false), clickable_(false),
-  draggable_(false), dragged_(false),highlighted_(false),scrollTransparrent_(false),visible_(true)
+  draggable_(false), dragged_(false),highlighted_(false),scrollTransparrent_(false),visible_(true),align_(NoAlign)
 {
 
 }
@@ -211,6 +211,7 @@ void Widget::resize( Rect size )
     newSize.height = child->size_.height * heightChange;
     child->resize(newSize);
   }
+  onResize();
 }
 
 void Widget::removeWidget( Widget* widget )

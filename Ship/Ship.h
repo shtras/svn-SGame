@@ -72,6 +72,11 @@ private:
   int height_;
   CString name_;
   list<Item*> items_;
+  int minCrew_;
+  int maxCrew_;
+  int powerRequired_;
+  int powerProduced_;
+  int crewCapacity_;
 };
 
 class Item
