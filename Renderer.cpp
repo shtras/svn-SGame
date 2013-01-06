@@ -8,7 +8,7 @@
 
 Renderer::Renderer():font_(0),currVertIdx_(0),color_(Vector4(255,255,255,255)),activeTex_(-1),width_(1600), height_(900), textSize_(1.0f), guiTexHeight_(-1), guiTexWidth_(-1),
   globalGUIWindow_(NULL), draggedWidget_(NULL), offsetX_(0), offsetY_(0), xAtStartDrag_(0), yAtStartDrag_(0), startMouseX_(0), startMouseY_(0),
-  renderingDragged_(false),lastColor_(Vector4(255,255,255,255)),flushes_(0),vertices_(0),tilesTexWidth_(0),tilesTexHeight_(0)
+  renderingDragged_(false),lastColor_(Vector4(255,255,255,255)),flushes_(0),vertices_(0),tilesTexWidth_(0),tilesTexHeight_(0), floatingWidget_(NULL)
 {
   fontMap_['!'] = 0;
   fontMap_['@'] = 1;
@@ -120,21 +120,29 @@ void Renderer::render()
   //First render GUI frames for each widget. Then run virtual render function for each widget.
   setWidgetForTooltip(NULL);
   globalGUIWindow_->renderFrameRec();
-  if (draggedWidget_) {
+  globalGUIWindow_->renderContRec();
+  if (draggedWidget_ || floatingWidget_) {
     renderingDragged_ = true;
     offsetX_ = mouseX_ - startMouseX_;
     offsetY_ = mouseY_ - startMouseY_;
     float lastOpacity = (float)color_[3];
-    color_[3] = 100;
-    draggedWidget_->renderFrameRec();
-    draggedWidget_->renderContRec();
+    if (draggedWidget_) {
+      color_[3] = 100;
+      draggedWidget_->renderFrameRec();
+      draggedWidget_->renderContRec();
+    } else {
+      color_[3] = 200;
+      offsetX_ = mouseX_;
+      offsetY_ = mouseY_;
+      floatingWidget_->renderFrameRec();
+      floatingWidget_->renderContRec();
+    }
     color_[3] = lastOpacity;
     offsetX_ = 0;
     offsetY_ = 0;
     renderingDragged_ = false;
   }
-  globalGUIWindow_->renderContRec();
-  if (renderTooltipFor_ && !draggedWidget_) {
+  if (renderTooltipFor_ && !draggedWidget_ && !floatingWidget_) {
     renderToolTip(renderTooltipFor_->getToolTip());
   }
 }
@@ -337,6 +345,11 @@ void Renderer::setDraggedWidget( Widget* w )
     startMouseY_ = mouseY_;
   }
   draggedWidget_ = w;
+}
+
+void Renderer::setFloatingWidget( Widget* w )
+{
+  floatingWidget_ = w;
 }
 
 float Renderer::getCharWidth()

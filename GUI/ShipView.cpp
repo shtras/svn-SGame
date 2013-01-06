@@ -6,7 +6,7 @@
 ShipView::ShipView(Rect size):Widget(size),layoutWidth_(50), layoutHeight_(50), zoom_(0.5f), offsetX_(0.0f), offsetY_(0.0f),
   scrolling_(false), lastMouseX_(0), lastMouseY_(0),hoveredLeft_(-1), hoveredTop_(-1), hoverWidth_(1), hoverHeight_(1),tileWidth_(0),
   tileHeight_(0),drawing_(false),drawingStartX_(-1), drawingStartY_(-1),desiredZoom_(1.0f),zoomStep_(0),action_(BuildWalls),
-  tilesTexWidth_(0), tilesTexHeight_(0), hoveredComp_(NULL),activeDeckIdx_(-1),activeDeck_(NULL),buildInfo_(NULL)
+  tilesTexWidth_(0), tilesTexHeight_(0), hoveredComp_(NULL),activeDeckIdx_(-1),activeDeck_(NULL),buildInfo_(NULL),hoveredCompInfo_(NULL)
 {
   tilesTexWidth_ = Renderer::getInstance().getTilesTexWidth();
   tilesTexHeight_ = Renderer::getInstance().getTilesTexHeight();
@@ -18,10 +18,12 @@ ShipView::ShipView(Rect size):Widget(size),layoutWidth_(50), layoutHeight_(50), 
   activeDeck_ = ship_->getDeck(0);
   activeDeckIdx_ = 0;
   desiredZoom_ = zoom_;
+  hoveredCompInfo_ = new Window(Rect(0.0, 0.0, 0.2, 0.2));
 }
 
 ShipView::~ShipView()
 {
+  delete hoveredCompInfo_;
 }
 
 void ShipView::render()
@@ -222,6 +224,7 @@ void ShipView::onHoverExit()
   hoveredTop_ = -1;
   drawingStartX_ = -1;
   drawingStartY_ = -1;
+  Renderer::getInstance().setFloatingWidget(NULL);
 }
 
 void ShipView::onMouseMove()
@@ -240,6 +243,11 @@ void ShipView::onMouseMove()
   hoveredLeft_ = (int)(((lastMouseX_-size_.left) - offsetX_*zoom_)/tileWidth_);
   hoveredTop_ = (int)(((lastMouseY_ - size_.top) - offsetY_*zoom_)/tileHeight_);
   hoveredComp_ = activeDeck_->getCompartment(hoveredLeft_, hoveredTop_);
+  if (hoveredComp_) {
+    Renderer::getInstance().setFloatingWidget(hoveredCompInfo_);
+  } else {
+    Renderer::getInstance().setFloatingWidget(NULL);
+  }
 }
 
 void ShipView::onMouseWheelScroll(int direction)

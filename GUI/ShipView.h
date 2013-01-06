@@ -62,6 +62,7 @@ private:
   int tilesTexHeight_;
   Compartment* hoveredComp_;
   BuildInfo* buildInfo_;
+  Window* hoveredCompInfo_;
 };
 //
 //class DeckView

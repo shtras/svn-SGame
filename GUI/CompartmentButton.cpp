@@ -1,9 +1,11 @@
 #include "StdAfx.h"
 #include "CompartmentButton.h"
 #include "Renderer.h"
+#include "Text.h"
 
-CompartmentButton::CompartmentButton(Rect size, Compartment* comp, ShipView* shipView):Button(size, false),comp_(comp),shipView_(shipView)
+CompartmentButton::CompartmentButton(Rect size, Compartment* comp, ShipView* shipView):Button(size, false),comp_(comp),shipView_(shipView),hoverWindow_(NULL)
 {
+  assert(comp);
   TextureParams params1 = {100, 152, 31, 31, 4, 4, 4, 4};
   TextureParams params2 = {132, 152, 31, 31, 4, 4, 4, 4};
   initRegular(params1);
@@ -11,10 +13,51 @@ CompartmentButton::CompartmentButton(Rect size, Compartment* comp, ShipView* shi
   initPressed(params2);
   draggable_ = true;
   scrollTransparrent_ = true;
+
+  double top = 0.01;
+  double height = 0.1;
+  hoverWindow_ = new Window(Rect(0.0, 0.0, 0.2, 0.2));
+  Text* t = new Text(Rect(0.01, top, 0.98, height));
+  t->setCaption(comp->getName());
+  hoverWindow_->addWidget(t);
+  top += height + 0.01;
+
+  if (comp->getMinCrew() > 0 || comp->getMaxCrew() > 0) {
+    t = new Text(Rect(0.01, top, 0.98, height));
+    t->setCaption("Required crew: " + CString(comp->getMinCrew()) + "(" + CString(comp->getMaxCrew()) + ")");
+    t->setAlign(Widget::LeftAlign);
+    hoverWindow_->addWidget(t);
+    top += height + 0.01;
+  }
+
+  if (comp->getPowerProduced() > 0) {
+    t = new Text(Rect(0.01, top, 0.98, height));
+    t->setCaption("Produced power: " + CString(comp->getPowerProduced()));
+    t->setAlign(Widget::LeftAlign);
+    hoverWindow_->addWidget(t);
+    top += height + 0.01;
+  }
+
+  if (comp->getPowerRequired() > 0) {
+    t = new Text(Rect(0.01, top, 0.98, height));
+    t->setCaption("Required power: " + CString(comp->getPowerRequired()));
+    t->setAlign(Widget::LeftAlign);
+    hoverWindow_->addWidget(t);
+    top += height + 0.01;
+  }
+
+  if (comp->getCrewCapacity() > 0) {
+    t = new Text(Rect(0.01, top, 0.98, height));
+    t->setCaption("Crew capacity: " + CString(comp->getCrewCapacity()));
+    t->setAlign(Widget::LeftAlign);
+    hoverWindow_->addWidget(t);
+    top += height + 0.01;
+  }
 }
 
 CompartmentButton::~CompartmentButton()
 {
+  delete hoverWindow_;
 }
 
 void CompartmentButton::render()
@@ -42,4 +85,14 @@ void CompartmentButton::onDrag()
 void CompartmentButton::onStopDrag()
 {
   shipView_->setHoveredDimensions(1,1);
+}
+
+void CompartmentButton::onHoverEnter()
+{
+  Renderer::getInstance().setFloatingWidget(hoverWindow_);
+}
+
+void CompartmentButton::onHoverExit()
+{
+  Renderer::getInstance().setFloatingWidget(NULL);
 }

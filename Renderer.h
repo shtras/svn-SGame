@@ -48,6 +48,8 @@ public:
   void handleGUIEvent(SDL_Event& event);
   void setDraggedWidget(Widget* w);
   Widget* getDraggedWidget() {return draggedWidget_;}
+  void setFloatingWidget(Widget* w);
+  Widget* getFloatingWidget() {return floatingWidget_;}
   bool renderingDragged() {return renderingDragged_;}
   float getOffsetX() {return startMouseX_ - mouseX_;}
   float getOffsetY() {return startMouseY_ - mouseY_;}
@@ -109,4 +111,5 @@ private:
   int vertices_;
   Widget* renderTooltipFor_;
   TexturedWidget* toolTip_;
+  Widget* floatingWidget_;
 };
