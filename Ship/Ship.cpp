@@ -175,17 +175,13 @@ int Deck::hasWall( int x, int y )
   return (getTileType(x, y)==Tile::Wall || getTileType(x, y)==Tile::Door)?1:0;
 }
 
-Compartment::Compartment()
+Compartment::Compartment():rotation_(0)
 {
 }
 
 Compartment::Compartment(const Compartment& other):left_(other.left_), top_(other.top_), width_(other.width_), height_(other.height_), name_(other.name_),
   category_(other.category_),minCrew_(other.minCrew_),maxCrew_(other.maxCrew_),powerRequired_(other.powerRequired_),powerProduced_(other.powerProduced_),
-  crewCapacity_(other.crewCapacity_)
-
-
-
-
+  crewCapacity_(other.crewCapacity_),/*Maybe this one is not needed -->*/rotation_(other.rotation_)
 {
   for (auto itr = other.items_.begin(); itr != other.items_.end(); ++itr) {
     items_.push_back(new Item(**itr));

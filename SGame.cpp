@@ -20,10 +20,10 @@ const char* Version = "0.0.4.";
 //4.V Implement scrollbar in tools menu
 //0.0.5:
 //1. Multiple layers in ship view
-//2. Compartment purposes and additional parameters
+//2.V Compartment purposes and additional parameters
 //3. Links between compartments
-//4. Info panel with ship parameters
-//5. Selection of which deck to show as ghost (upper or lower)
+//4.V Info panel with ship parameters
+//5.V Selection of which deck to show as ghost (upper or lower)
 //0.0.6
 //1. Oxygen system (compressors, pipes, dispensers)
 //2. Power system (cables, producers, consumers)
@@ -44,6 +44,8 @@ const char* Version = "0.0.4.";
 //Implemented ship statistics and compartment parameters
 //Added floor rendering at wall tiles
 //***Demo released on build #718
+//Implemented compartment rotation
+//Implemented ghost deck selection
 
 SGame::SGame():state_(Menu),stateRunnig_(false)
 {

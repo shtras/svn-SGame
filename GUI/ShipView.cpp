@@ -6,7 +6,8 @@
 ShipView::ShipView(Rect size):Widget(size),layoutWidth_(50), layoutHeight_(50), zoom_(0.5f), offsetX_(0.0f), offsetY_(0.0f),
   scrolling_(false), lastMouseX_(0), lastMouseY_(0),hoveredLeft_(-1), hoveredTop_(-1), hoverWidth_(1), hoverHeight_(1),tileWidth_(0),
   tileHeight_(0),drawing_(false),drawingStartX_(-1), drawingStartY_(-1),desiredZoom_(1.0f),zoomStep_(0),action_(BuildWalls),
-  tilesTexWidth_(0), tilesTexHeight_(0), hoveredComp_(NULL),activeDeckIdx_(-1),activeDeck_(NULL),buildInfo_(NULL),hoveredCompInfo_(NULL)
+  tilesTexWidth_(0), tilesTexHeight_(0), hoveredComp_(NULL),activeDeckIdx_(-1),activeDeck_(NULL),buildInfo_(NULL),hoveredCompInfo_(NULL),
+  draggedCompartmentRoataion_(0),draggedComp_(NULL),ghostDeckIdx_(-1)
 {
   tilesTexWidth_ = Renderer::getInstance().getTilesTexWidth();
   tilesTexHeight_ = Renderer::getInstance().getTilesTexHeight();
@@ -90,11 +91,11 @@ void ShipView::render()
         }
         renderer.renderText(tileX + tileWidth_*0.5f - renderer.getCharWidth()*coord.getSize()*0.5f, tileY + tileHeight_*0.5f - renderer.getCharHeight()*0.5f, coord);
       } else if (wallValue == Tile::Empty) {
-        if (activeDeckIdx_ > 0) {
-          int prevWallValue = ship_->getDeck(activeDeckIdx_-1)->getTileType(i, j);
+        if (ghostDeckIdx_ >= 0) {
+          int prevWallValue = ship_->getDeck(ghostDeckIdx_)->getTileType(i, j);
           if (prevWallValue != Tile::Empty) {
             wallValue = prevWallValue;
-            wallCode = ship_->getDeck(activeDeckIdx_-1)->getWallCode(i, j);
+            wallCode = ship_->getDeck(ghostDeckIdx_)->getWallCode(i, j);
             if (wallValue != Tile::Floor) {
               renderPrevFloorCorners = true;
             }
@@ -186,6 +187,7 @@ void ShipView::drawCompartments()
       Item* item = *itemItr;
       int x = item->getX() + comp->getX();
       int y = item->getY() + comp->getY();
+      int rotation = item->getRotation();
       float tileX = x*tileWidth_ + offsetX_*zoom_ + size_.left;
       float tileY = y*tileHeight_ + offsetY_*zoom_ + size_.top;
       if (tileX < size_.left || tileX+tileWidth_ > size_.left + size_.width) {
@@ -195,7 +197,7 @@ void ShipView::drawCompartments()
         continue;
       }
       Rect pos(tileX, tileY, tileWidth_, tileHeight_);
-      Rect texPos(item->getTexX() + item->getRotation() * item->getTexWidth() + item->getTexWidth()*0.01f, item->getTexY() + item->getTexHeight()*0.01f, item->getTexWidth()*0.98f, item->getTexHeight()*0.98f);
+      Rect texPos(item->getTexX() + rotation * item->getTexWidth() + item->getTexWidth()*0.01f, item->getTexY() + item->getTexHeight()*0.01f, item->getTexWidth()*0.98f, item->getTexHeight()*0.98f);
       renderer.drawTexRect(pos, tilesTex, texPos);
     }
     renderer.resetColor();
@@ -243,7 +245,7 @@ void ShipView::onMouseMove()
   hoveredLeft_ = (int)(((lastMouseX_-size_.left) - offsetX_*zoom_)/tileWidth_);
   hoveredTop_ = (int)(((lastMouseY_ - size_.top) - offsetY_*zoom_)/tileHeight_);
   hoveredComp_ = activeDeck_->getCompartment(hoveredLeft_, hoveredTop_);
-  if (hoveredComp_) {
+  if (hoveredComp_ && !drawing_) {
     Renderer::getInstance().setFloatingWidget(hoveredCompInfo_);
   } else {
     Renderer::getInstance().setFloatingWidget(NULL);
@@ -252,6 +254,20 @@ void ShipView::onMouseMove()
 
 void ShipView::onMouseWheelScroll(int direction)
 {
+  assert (direction == 1 || direction == -1);
+  if (draggedComp_) {
+    draggedCompartmentRoataion_ -= direction;
+    if (draggedCompartmentRoataion_ > 3) {
+      draggedCompartmentRoataion_ = 0;
+    }
+    if (draggedCompartmentRoataion_ < 0) {
+      draggedCompartmentRoataion_ = 3;
+    }
+    int temp = hoverWidth_;
+    hoverWidth_ = hoverHeight_;
+    hoverHeight_ = temp;
+    return;
+  }
   if (direction > 0) {
     if (desiredZoom_ > 3.0f) {
       return;
@@ -292,11 +308,12 @@ void ShipView::onDrop(Widget* w)
     return;
   }
   Compartment* comp = cb->getCompartment();
+  assert (draggedComp_ == comp);
   //Check overlapping
   int x = hoveredLeft_;
   int y = hoveredTop_;
-  int width = comp->getWidth();
-  int height = comp->getHeight();
+  int width = hoverWidth_;
+  int height = hoverHeight_;
   for (auto itr = activeDeck_->getCompartments().begin(); itr != activeDeck_->getCompartments().end(); ++itr) {
     Compartment* otherComp = *itr;
     int otherX = otherComp->getX();
@@ -322,8 +339,46 @@ void ShipView::onDrop(Widget* w)
   Compartment* newComp = new Compartment(*comp);
   newComp->setX(hoveredLeft_);
   newComp->setY(hoveredTop_);
+  newComp->width_ = hoverWidth_;
+  newComp->height_ = hoverHeight_;
+  //Rotate items in the compartment
+  if (draggedCompartmentRoataion_ != 0) {
+    for (auto itr = newComp->getItems().begin(); itr != newComp->getItems().end(); ++itr) {
+      Item* item = *itr;
+      int newRot = item->getRotation() + draggedCompartmentRoataion_;
+      if (newRot > 3) {
+        newRot -= 4;
+      }
+      if (newRot < 0) {
+        newRot += 4;
+      }
+      item->setRotation(newRot);
+      int x = item->getX();
+      int y = item->getY();
+      switch (draggedCompartmentRoataion_)
+      {
+      case 1:
+        item->setX(comp->getHeight() - y - 1);
+        item->setY(x);
+        break;
+      case 2:
+        item->setX(comp->getWidth() - x - 1);
+        item->setY(comp->getHeight() - y - 1);
+        break;
+      case 3:
+        item->setX(y);
+        item->setY(comp->getWidth() - x - 1);
+        break;
+      default:
+        assert(0);
+        break;
+      }
+      assert(item->getX() >= 0 && item->getX() < newComp->getWidth() && item->getY() >= 0 && item->getY() < newComp->getHeight());
+    }
+  }
   activeDeck_->addCompartment(newComp);
   buildInfo_->updateValues(ship_);
+  draggedCompartmentRoataion_ = 0;
 }
 
 void ShipView::plantWalls()
@@ -406,6 +461,7 @@ void ShipView::buildDoor()
 
 void ShipView::setHoveredDimensions(int width, int height)
 {
+  draggedCompartmentRoataion_ = 0;
   hoverWidth_ = width;
   hoverHeight_ = height;
 }
@@ -433,6 +489,22 @@ void ShipView::setBuildInfo( BuildInfo* info )
   assert(info);
   buildInfo_ = info;
   buildInfo_->updateValues(ship_);
+}
+
+void ShipView::ghostDeckUp()
+{
+  ++ghostDeckIdx_;
+  if (ghostDeckIdx_ > 2) {
+    ghostDeckIdx_ = 2;
+  }
+}
+
+void ShipView::ghostDeckDown()
+{
+  --ghostDeckIdx_;
+  if (ghostDeckIdx_ < -1) {
+    ghostDeckIdx_ = -1;
+  }
 }
 
 //DeckView::DeckView(int width, int height):width_(width), height_(height)

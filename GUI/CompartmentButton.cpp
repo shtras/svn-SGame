@@ -80,11 +80,13 @@ void CompartmentButton::render()
 void CompartmentButton::onDrag()
 {
   shipView_->setHoveredDimensions(comp_->getWidth(), comp_->getHeight());
+  shipView_->setDraggedComp(comp_);
 }
 
 void CompartmentButton::onStopDrag()
 {
   shipView_->setHoveredDimensions(1,1);
+  shipView_->setDraggedComp(NULL);
 }
 
 void CompartmentButton::onHoverEnter()

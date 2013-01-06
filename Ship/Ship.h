@@ -71,6 +71,7 @@ private:
 class Compartment
 {
   friend class RoomParser;
+  friend class ShipView;
 public:
   enum Category {Common = 0, Navigation, Power, LifeSupport, Living, LastCategory};
   Compartment();
@@ -85,6 +86,7 @@ public:
   void setY(int y) {top_ = y;}
   int getWidth() {return width_;}
   int getHeight() {return height_;}
+  int getRotation() {return rotation_;}
   int getMinCrew() {return minCrew_;}
   int getMaxCrew() {return maxCrew_;}
   int getPowerRequired() {return powerRequired_;}
@@ -98,6 +100,7 @@ private:
   int top_;
   int width_;
   int height_;
+  int rotation_;
   CString name_;
   list<Item*> items_;
   int minCrew_;
@@ -126,6 +129,9 @@ public:
   float getTexY() {return texY_;}
   float getTexWidth() {return texWidth_;}
   float getTexHeight() {return texHeight_;}
+  void setRotation(int value) {rotation_ = value;}
+  void setX(int value) {x_ = value;}
+  void setY(int value) {y_ = value;}
 private:
   int id_;
   int x_;

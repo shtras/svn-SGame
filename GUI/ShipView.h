@@ -26,8 +26,12 @@ public:
   void setHoveredDimensions(int width, int height);
   void deckUp();
   void deckDown();
+  void ghostDeckUp();
+  void ghostDeckDown();
   int getActiveDeck() {return activeDeckIdx_;}
+  int getGhostDeck() {return ghostDeckIdx_;}
   void setBuildInfo(BuildInfo* info);
+  void setDraggedComp(Compartment* comp) {draggedComp_ = comp;}
 private:
   enum Action {BuildWalls, BuildFloor, BuildDoor, Erase};
   void drawCompartments();
@@ -52,6 +56,7 @@ private:
   Deck* activeDeck_;
   //vector<DeckView*> decks_;
   int activeDeckIdx_;
+  int ghostDeckIdx_;
   float tileWidth_;
   float tileHeight_;
   bool drawing_;
@@ -63,6 +68,8 @@ private:
   Compartment* hoveredComp_;
   BuildInfo* buildInfo_;
   Window* hoveredCompInfo_;
+  int draggedCompartmentRoataion_;
+  Compartment* draggedComp_;
 };
 //
 //class DeckView

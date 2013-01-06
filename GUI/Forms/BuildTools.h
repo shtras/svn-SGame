@@ -20,12 +20,16 @@ private:
   void categoryClick(void* param);
   void upClick();
   void downClick();
+  void ghostUpClick();
+  void ghostDownClick();
+  void updateGhostText();
   ShipView* shipView_;
   Button* buildButton_;
   Button* floorButton_;
   Button* doorButton_;
   Button* eraseButton_;
   Text* deckText_;
+  Text* ghostDeckText_;
   vector<Button*> categoryButtons_;
   map<int, vector<CompartmentButton*> > compButtons_;
   int firstButton_;

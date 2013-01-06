@@ -55,23 +55,39 @@ void BuildTools::init(ShipView* shipView)
   addWidget(eraseButton_);
   eraseButton_->setToolTip("Demolish");
 
-  Button* upButton = new Button(Rect(0.9, 0.02, 0.08, 0.025));
+  Button* upButton = new Button(Rect(0.8, 0.01, 0.08, 0.023));
   upButton->setCaption("+");
   addWidget(upButton);
   upButton->setColor(Vector4(255,0,0,255));
   upButton->sigClick.connect(this, &BuildTools::upClick);
   upButton->setToolTip("Up one deck");
-  Button* downButton = new Button(Rect(0.9, 0.045, 0.08, 0.025));
+  Button* downButton = new Button(Rect(0.8, 0.05, 0.08, 0.023));
   downButton->setCaption("-");
   addWidget(downButton);
   downButton->setColor(Vector4(255,0,0,255));
   downButton->sigClick.connect(this, &BuildTools::downClick);
   downButton->setToolTip("Down one deck");
-
-  deckText_ = new Text(Rect(0.8, 0.02, 0.1, 0.05));
+  deckText_ = new Text(Rect(0.8, 0.03, 0.08, 0.02));
   deckText_->setCaption("D" + CString(shipView_->getActiveDeck()+1));
   addWidget(deckText_);
   deckText_->setToolTip("Current deck");
+
+  Button* upGhostButton = new Button(Rect(0.88, 0.01, 0.08, 0.023));
+  upGhostButton->setCaption("+");
+  addWidget(upGhostButton);
+  upGhostButton->setColor(Vector4(255,0,0,255));
+  upGhostButton->sigClick.connect(this, &BuildTools::ghostUpClick);
+  upGhostButton->setToolTip("Ghost deck up");
+  Button* downGhostButton = new Button(Rect(0.88, 0.05, 0.08, 0.023));
+  downGhostButton->setCaption("-");
+  addWidget(downGhostButton);
+  downGhostButton->setColor(Vector4(255,0,0,255));
+  downGhostButton->sigClick.connect(this, &BuildTools::ghostDownClick);
+  downGhostButton->setToolTip("Ghost deck down");
+  ghostDeckText_ = new Text(Rect(0.88, 0.03, 0.08, 0.02));
+  updateGhostText();
+  addWidget(ghostDeckText_);
+  ghostDeckText_->setToolTip("Ghost deck");
 
   progressBar_ = new ProgressBar(Rect(0.95, 0.2, 0.03, 0.75));
   addWidget(progressBar_);
@@ -255,10 +271,34 @@ void BuildTools::upClick()
 {
   shipView_->deckUp();
   deckText_->setCaption("D" + CString(shipView_->getActiveDeck()+1));
+  ghostUpClick();
 }
 
 void BuildTools::downClick()
 {
   shipView_->deckDown();
   deckText_->setCaption("D" + CString(shipView_->getActiveDeck()+1));
+  ghostDownClick();
+}
+
+void BuildTools::ghostUpClick()
+{
+  shipView_->ghostDeckUp();
+  updateGhostText();
+}
+
+void BuildTools::ghostDownClick()
+{
+  shipView_->ghostDeckDown();
+  updateGhostText();
+}
+
+void BuildTools::updateGhostText()
+{
+  int ghostDeckIdx = shipView_->getGhostDeck();
+  if (ghostDeckIdx == -1) {
+    ghostDeckText_->setCaption("-");
+  } else {
+    ghostDeckText_->setCaption("G" + CString(ghostDeckIdx+1));
+  }
 }
