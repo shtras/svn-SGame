@@ -2,9 +2,12 @@
 #include "Ship.h"
 #include "Renderer.h"
 
-Ship::Ship()
+Ship::Ship(int width, int height):minCrew_(0),maxCrew_(0),powerRequired_(0),powerProduced_(0),crewCapacity_(0)
 {
-
+  for (int i=0; i<3; ++i) {
+    Deck* deck = new Deck(this, width, height);
+    decks_.push_back(deck);
+  }
 }
 
 Ship::~Ship()
@@ -15,12 +18,29 @@ Ship::~Ship()
   }
 }
 
-Deck::Deck(int height, int width):
-  width_(width), height_(height)
+Deck* Ship::getDeck( int i )
+{
+  if (i < 0 || i >= (int)decks_.size()) {
+    return NULL;
+  }
+  return decks_[i];
+}
+
+void Ship::updateParameters( int dMinCrew, int dMaxCrew, int dPowerProduced, int dPowerRequired, int dCrewCapacity )
+{
+  minCrew_ += dMinCrew;
+  maxCrew_ += dMaxCrew;
+  powerRequired_ += dPowerProduced;
+  powerProduced_ += dPowerRequired;
+  crewCapacity_ += dCrewCapacity;
+}
+
+Deck::Deck(Ship* ship, int width, int height):
+  ship_(ship), width_(width), height_(height)
 {
   tileLayout_ = new Tile*[width_ * height_];
   for (int i=0; i<width_*height_; ++i) {
-    tileLayout_[i] = new Tile();
+    tileLayout_[i] = new Tile(i%width_, i/height_);
   }
 }
 
@@ -39,6 +59,13 @@ Deck::~Deck()
 void Deck::addCompartment(Compartment* comp)
 {
   compartments_.push_back(comp);
+  ship_->updateParameters(comp->getMinCrew(), comp->getMaxCrew(), comp->getPowerRequired(), comp->getPowerProduced(), comp->getCrewCapacity());
+}
+
+void Deck::removeCompartment( Compartment* comp )
+{
+  compartments_.remove(comp);
+  ship_->updateParameters(-comp->getMinCrew(), -comp->getMaxCrew(), -comp->getPowerRequired(), -comp->getPowerProduced(), -comp->getCrewCapacity());
 }
 
 Tile* Deck::getTile(int x, int y)
@@ -49,16 +76,26 @@ Tile* Deck::getTile(int x, int y)
   return tileLayout_[y*width_ + x];
 }
 
-void Deck::setTile(int x, int y, Tile* tile)
+void Deck::setTileType(int x, int y, Tile::TileType tile)
 {
-  if (x < 0 || y < 0 || x >= width_ || y >= height_) {
+  if (x < 0 || x >= width_ || y < 0 || y >= height_) {
+    assert(0);
+  }
+  if (tile == Tile::Wall || tile == Tile::Floor || tile == Tile::Door) {
+    if (hasDoorsAround(x, y) && tile != Tile::Floor) {
+      //Can't create doors or walls around a door
+      return;
+    }
+    if (getTileType(x, y) == Tile::Door) {
+      //Can only erase door, not replace
+      return;
+    }
+  }
+  if ((tile == Tile::Wall || tile == Tile::Door) && getCompartment(x,y)) {
+    //Can't build over compartment
     return;
   }
-  if (tile == tileLayout_[y*width_ + x]) {
-    return;
-  }
-  delete tileLayout_[y*width_ + x];
-  tileLayout_[y*width_ + x] = tile;
+  tileLayout_[y*width_ + x]->setType(tile);
 }
 
 Tile::TileType Deck::getTileType(int x, int y)
@@ -71,6 +108,71 @@ Tile::TileType Deck::getTileType(int x, int y)
     return Tile::Empty;
   }
   return tile->getType();
+}
+
+int Deck::getWallCode( int i, int j )
+{
+  int wallCode = 0;
+  wallCode |= hasWall(i, j+1);
+  wallCode |= (hasWall(i+1, j) << 1);
+  wallCode |= (hasWall(i, j-1) << 2);
+  wallCode |= (hasWall(i-1, j) << 3);
+  assert (wallCode >= 0 && wallCode < 16);
+  return wallCode;
+}
+
+void Deck::setDoor( int x, int y )
+{
+  Tile::TileType type = getTileType(x, y);
+  if (type != Tile::Wall) {
+    return;
+  }
+  int wallCode = getWallCode(x, y);
+  if (wallCode != 10 && wallCode != 5) {
+    //Not a horizontal or vertical straight wall
+    return;
+  }
+  setTileType(x, y, Tile::Door);
+}
+
+bool Deck::hasDoorsAround( int x, int y )
+{
+  return getTileType(x-1,y) == Tile::Door || getTileType(x+1, y) == Tile::Door || getTileType(x, y-1) == Tile::Door || getTileType(x, y+1) == Tile::Door;
+}
+
+void Deck::eraseDoorsAround( int x, int y )
+{
+  if (getTileType(x-1,y) == Tile::Door) {
+    setTileType(x-1, y, Tile::Empty);
+  }
+  if (getTileType(x+1,y) == Tile::Door) {
+    setTileType(x+1, y, Tile::Empty);
+  }
+  if (getTileType(x,y-1) == Tile::Door) {
+    setTileType(x, y-1, Tile::Empty);
+  }
+  if (getTileType(x,y+1) == Tile::Door) {
+    setTileType(x, y+1, Tile::Empty);
+  }
+}
+
+Compartment* Deck::getCompartment( int x, int y )
+{
+  for (auto itr = compartments_.begin(); itr != compartments_.end(); ++itr) {
+    Compartment* comp = *itr;
+    if (x >= comp->getX() && x < comp->getX() + comp->getWidth() && y >= comp->getY() && y < comp->getY() + comp->getHeight()) {
+      return comp;
+    }
+  }
+  return NULL;
+}
+
+int Deck::hasWall( int x, int y )
+{
+  if (x < 0 || x >= width_ || y < 0 || y >= height_) {
+    return 0;
+  }
+  return (getTileType(x, y)==Tile::Wall || getTileType(x, y)==Tile::Door)?1:0;
 }
 
 Compartment::Compartment()
@@ -155,7 +257,7 @@ void Item::setTexHeight(int height)
   texHeight_ = height / (float)Renderer::getInstance().getTilesTexHeight();
 }
 
-Tile::Tile():type_(Empty)
+Tile::Tile(int x, int y):type_(Empty), x_(x), y_(y)
 {
 }
 

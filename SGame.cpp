@@ -41,6 +41,9 @@ const char* Version = "0.0.4.";
 //Multiple decks support. Upper deck shows ghost image of the lower one in the empty space
 //Redesigned GUI. Implemented progress bar
 //***Shifted to 0.0.4 at build #614
+//Implemented ship statistics and compartment parameters
+//Added floor rendering at wall tiles
+//***Demo released on build #718
 
 SGame::SGame():state_(Menu),stateRunnig_(false)
 {
@@ -102,13 +105,13 @@ bool SGame::run()
 
 bool SGame::mainLoop()
 {
-//   typedef BOOL (APIENTRY *PFNWGLSWAPINTERVALFARPROC)( int );
-//   PFNWGLSWAPINTERVALFARPROC wglSwapIntervalEXT = 0;
-//   wglSwapIntervalEXT = (PFNWGLSWAPINTERVALFARPROC)wglGetProcAddress( "wglSwapIntervalEXT" );
-// 
-//   if( wglSwapIntervalEXT ) {
-//     wglSwapIntervalEXT(0);
-//   } 
+   //typedef BOOL (APIENTRY *PFNWGLSWAPINTERVALFARPROC)( int );
+   //PFNWGLSWAPINTERVALFARPROC wglSwapIntervalEXT = 0;
+   //wglSwapIntervalEXT = (PFNWGLSWAPINTERVALFARPROC)wglGetProcAddress( "wglSwapIntervalEXT" );
+ 
+   //if( wglSwapIntervalEXT ) {
+   //  wglSwapIntervalEXT(0);
+   //} 
   int fpsTimeBase = SDL_GetTicks();
   int currTime = fpsTimeBase;
   int lastTime = currTime;
@@ -196,6 +199,7 @@ bool SGame::initEditor()
 
   BuildInfo* info = new BuildInfo(Rect(0.8, 0.05, 0.2, 0.95));
   Renderer::getInstance().addWidget(info);
+  view->setBuildInfo(info);
   return true;
 }
 

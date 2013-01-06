@@ -48,7 +48,7 @@ CompartmentInfo {
 		Height=3
 		MinCrew=2
 		MaxCrew=6
-		PowerRequired=1 ; Power per crew member
+		PowerRequired=6
 		Item {
 			ID=1 ; Table
 			X=0
@@ -129,6 +129,7 @@ CompartmentInfo {
 		Height=2
 		MinCrew=1
 		MaxCrew=1
+		PowerRequired=1
 		Item {
 			ID=1 ; Table
 			X=0

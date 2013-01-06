@@ -134,7 +134,7 @@ void Renderer::render()
     renderingDragged_ = false;
   }
   globalGUIWindow_->renderContRec();
-  if (renderTooltipFor_) {
+  if (renderTooltipFor_ && !draggedWidget_) {
     renderToolTip(renderTooltipFor_->getToolTip());
   }
 }
@@ -224,8 +224,14 @@ void Renderer::renderTextLine(TextToRender& ttr)
     } else if (c >= '0' && c <= '9')  {
       tx = (c-'0') / 26.0f;
       ty = 0.5f;
-    } else if (c == '.' || c == ',') {
-      tx = (c == '.')?0:1/26.0f;
+    } else if (c == '.' || c == ',' || c == '/') {
+      if (c == '.') {
+        tx = 0;
+      } else if (c == ',') {
+        tx = 1/26.0f;
+      } else {
+        tx = 2/26.0f;
+      }
       ty = 0.75f;
     } else if (fontMap_.count(c) != 0) {
       tx = (fontMap_[c] + 10) / 26.0f;

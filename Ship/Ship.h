@@ -8,19 +8,32 @@ class Tile;
 class Ship
 {
 public:
-  Ship();
+  Ship(int width, int height);
   ~Ship();
+  Deck* getDeck(int i);
+  void updateParameters(int dMinCrew, int dMaxCrew, int dPowerProduced, int dPowerRequired, int dCrewCapacity);
+  int getMinCrew() {return minCrew_;}
+  int getMaxCrew() {return maxCrew_;}
+  int getPowerRequired() {return powerRequired_;}
+  int getPowerProduced() {return powerProduced_;}
+  int getCrewCapacity() {return crewCapacity_;}
 private:
   vector<Deck*> decks_;
+  int minCrew_;
+  int maxCrew_;
+  int powerRequired_;
+  int powerProduced_;
+  int crewCapacity_;
 };
 
 class Tile
 {
 public:
-  Tile();
+  Tile(int x, int y);
   ~Tile();
   enum TileType {Empty, Wall, Floor, Door};
   TileType getType() {return type_;}
+  void setType(TileType type) {type_ = type;}
 private:
   TileType type_;
   int x_;
@@ -30,12 +43,21 @@ private:
 class Deck
 {
 public:
-  Deck(int height, int width);
+  Deck(Ship* ship, int width, int height);
   ~Deck();
   Tile* getTile(int x, int y);
-  void setTile(int x, int y, Tile* tile);
+  void setTileType(int x, int y, Tile::TileType tile);
   Tile::TileType getTileType(int x, int y);
   void addCompartment(Compartment* comp);
+  void removeCompartment(Compartment* comp);
+
+  int getWallCode(int i, int j);
+  void setDoor(int x, int y);
+  bool hasDoorsAround(int x, int y);
+  void eraseDoorsAround(int x, int y);
+  Compartment* getCompartment(int x, int y);
+  int hasWall(int x, int y);
+  list<Compartment*>& getCompartments() {return compartments_;}
 private:
   Deck();
 
@@ -43,6 +65,7 @@ private:
   int height_;
   Tile** tileLayout_;
   list<Compartment*> compartments_;
+  Ship* ship_;
 };
 
 class Compartment
@@ -62,6 +85,11 @@ public:
   void setY(int y) {top_ = y;}
   int getWidth() {return width_;}
   int getHeight() {return height_;}
+  int getMinCrew() {return minCrew_;}
+  int getMaxCrew() {return maxCrew_;}
+  int getPowerRequired() {return powerRequired_;}
+  int getPowerProduced() {return powerProduced_;}
+  int getCrewCapacity() {return crewCapacity_;}
   CString getName() {return name_;}
   static CString categoryName(Category cat);
 private:

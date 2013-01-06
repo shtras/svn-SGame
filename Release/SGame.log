@@ -1,4 +1,4 @@
-﻿Build started 23/12/2012 16:15:48.
+﻿Build started 06/01/2013 14:23:05.
      1>Project "C:\projects\Games_new\SGame\SGame.vcxproj" on node 2 (Build target(s)).
      1>InitializeBuildStatus:
          Creating "Release\SGame.unsuccessfulbuild" because "AlwaysCreate" was specified.
@@ -6,34 +6,47 @@
          build_num.exe
          :VCEnd
        ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /I. /IShip /IGeneric /ISDL /IMath /IGUI /IGUI/Forms /Zi /nologo /W3 /WX- /MP /O2 /Ob2 /Oi /Ot /Oy- /GL /D WIN32 /D _CRT_SECURE_NO_WARNINGS /D RELEASE /D NDEBUG /D _WINDOWS /D _UNICODE /D UNICODE /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Yc"stdafx.h" /Fp"Release\SGame.pch" /Fo"Release\\" /Fd"Release\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt StdAfx.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /I. /IShip /IFileTools /IGeneric /ISDL /IMath /IGUI /IGUI/Forms /Zi /nologo /W3 /WX- /O2 /Ob2 /Oi /Ot /Oy- /GL /D WIN32 /D _CRT_SECURE_NO_WARNINGS /D RELEASE /D NDEBUG /D _WINDOWS /D _UNICODE /D UNICODE /Gm /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Yc"stdafx.h" /Fp"Release\SGame.pch" /Fo"Release\\" /Fd"Release\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt StdAfx.cpp
          StdAfx.cpp
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /I. /IShip /IGeneric /ISDL /IMath /IGUI /IGUI/Forms /Zi /nologo /W3 /WX- /MP /O2 /Ob2 /Oi /Ot /Oy- /GL /D WIN32 /D _CRT_SECURE_NO_WARNINGS /D RELEASE /D NDEBUG /D _WINDOWS /D _UNICODE /D UNICODE /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"Release\SGame.pch" /Fo"Release\\" /Fd"Release\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt auxFuncs.cpp Generic\CString.cpp GUI\Button.cpp GUI\Forms\BuildTools.cpp GUI\GlobalWindow.cpp GUI\GUIManager.cpp GUI\ShipView.cpp GUI\Text.cpp GUI\TexturedWidget.cpp GUI\Window.cpp Logger.cpp Math\Matrix.cpp Math\Vector.cpp Renderer.cpp SGame.cpp Ship\Ship.cpp
-         auxFuncs.cpp
-         CString.cpp
-         Button.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /I. /IShip /IFileTools /IGeneric /ISDL /IMath /IGUI /IGUI/Forms /Zi /nologo /W3 /WX- /O2 /Ob2 /Oi /Ot /Oy- /GL /D WIN32 /D _CRT_SECURE_NO_WARNINGS /D RELEASE /D NDEBUG /D _WINDOWS /D _UNICODE /D UNICODE /Gm /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"Release\SGame.pch" /Fo"Release\\" /Fd"Release\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt FileTools\RoomParser.cpp GUI\Button.cpp GUI\CompartmentButton.cpp GUI\Forms\BuildInfo.cpp GUI\Forms\BuildTools.cpp GUI\GUIManager.cpp GUI\GlobalWindow.cpp GUI\ProgressBar.cpp GUI\ShipView.cpp GUI\Text.cpp GUI\TextArea.cpp GUI\TexturedWidget.cpp GUI\Window.cpp Generic\CString.cpp Logger.cpp Math\Matrix.cpp Math\Vector.cpp Renderer.cpp SGame.cpp Ship\ItemsDB.cpp Ship\Ship.cpp auxFuncs.cpp
+         SGame.cpp
+         ShipView.cpp
          BuildTools.cpp
+         Compiling...
+         CompartmentButton.cpp
+         Skipping... (no relevant changes detected)
+         auxFuncs.cpp
+         Ship.cpp
+         ItemsDB.cpp
+         Renderer.cpp
+         Vector.cpp
+         Matrix.cpp
+         Logger.cpp
+         CString.cpp
+         Window.cpp
+         TexturedWidget.cpp
+         TextArea.cpp
+         Text.cpp
+         ProgressBar.cpp
          GlobalWindow.cpp
          GUIManager.cpp
-         ShipView.cpp
-         Text.cpp
-         TexturedWidget.cpp
-         Window.cpp
-         Logger.cpp
-         Matrix.cpp
-         Vector.cpp
-         Renderer.cpp
-         SGame.cpp
-         Ship.cpp
+         BuildInfo.cpp
+         Button.cpp
+         RoomParser.cpp
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\projects\Games_new\SGame\Release\SGame.exe" /INCREMENTAL:NO /NOLOGO /LIBPATH:lib opengl32.lib SDL.lib SDLMain.lib SDL_Image.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\projects\Games_new\SGame\Release\SGame.pdb" /SUBSYSTEM:WINDOWS /OPT:REF /OPT:ICF /LTCG /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\projects\Games_new\SGame\Release\SGame.lib" /MACHINE:X86 /SAFESEH Release\auxFuncs.obj
+         Release\RoomParser.obj
          Release\CString.obj
          Release\Button.obj
+         Release\CompartmentButton.obj
+         Release\BuildInfo.obj
          Release\BuildTools.obj
          Release\GlobalWindow.obj
          Release\GUIManager.obj
+         Release\ProgressBar.obj
          Release\ShipView.obj
          Release\Text.obj
+         Release\TextArea.obj
          Release\TexturedWidget.obj
          Release\Window.obj
          Release\Logger.obj
@@ -41,6 +54,7 @@
          Release\Vector.obj
          Release\Renderer.obj
          Release\SGame.obj
+         Release\ItemsDB.obj
          Release\Ship.obj
          Release\StdAfx.obj
          Generating code
@@ -53,4 +67,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:03.70
+Time Elapsed 00:00:32.00

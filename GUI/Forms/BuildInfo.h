@@ -2,19 +2,16 @@
 #include "Window.h"
 #include "Text.h"
 #include "TextArea.h"
+#include "Ship.h"
 
 class BuildInfo: public Window
 {
 public:
   BuildInfo(Rect size);
   ~BuildInfo();
+  void updateValues(Ship* ship);
 private:
-  FramedText* sizeText_;
-  FramedText* minCrewRequiredText_;
-  FramedText* maxCrewRequiredText_;
-  FramedText* minPowerRequiredText_;
-  FramedText* maxPowerRequiredText_;
-  FramedText* powerProducedText_;
-  FramedText* crewCapacityText_;
+  FramedText* crewText_;
+  FramedText* powerText_;
   TextArea* ta_;
 };

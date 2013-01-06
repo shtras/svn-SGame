@@ -6,15 +6,16 @@
 ShipView::ShipView(Rect size):Widget(size),layoutWidth_(50), layoutHeight_(50), zoom_(0.5f), offsetX_(0.0f), offsetY_(0.0f),
   scrolling_(false), lastMouseX_(0), lastMouseY_(0),hoveredLeft_(-1), hoveredTop_(-1), hoverWidth_(1), hoverHeight_(1),tileWidth_(0),
   tileHeight_(0),drawing_(false),drawingStartX_(-1), drawingStartY_(-1),desiredZoom_(1.0f),zoomStep_(0),action_(BuildWalls),
-  tilesTexWidth_(0), tilesTexHeight_(0), hoveredComp_(NULL),activeDeckIdx_(-1),activeDeck_(NULL)
+  tilesTexWidth_(0), tilesTexHeight_(0), hoveredComp_(NULL),activeDeckIdx_(-1),activeDeck_(NULL),buildInfo_(NULL)
 {
   tilesTexWidth_ = Renderer::getInstance().getTilesTexWidth();
   tilesTexHeight_ = Renderer::getInstance().getTilesTexHeight();
-  for (int i=0; i<3; ++i) {
-    DeckView* deck = new DeckView(layoutWidth_, layoutHeight_);
-    decks_.push_back(deck);
-  }
-  activeDeck_ = decks_[0];
+  //for (int i=0; i<3; ++i) {
+  //  DeckView* deck = new DeckView(layoutWidth_, layoutHeight_);
+  //  decks_.push_back(deck);
+  //}
+  ship_ = new Ship(layoutWidth_, layoutHeight_);
+  activeDeck_ = ship_->getDeck(0);
   activeDeckIdx_ = 0;
   desiredZoom_ = zoom_;
 }
@@ -70,29 +71,31 @@ void ShipView::render()
       //}
       Rect tilePos(tileX, tileY, tileWidth_, tileHeight_);
       Rect texPos(0.0f, 0.0f, tileTexWidth, tileTexHeight);
-      int wallValue = activeDeck_->getWall(i, j);
+      int wallValue = activeDeck_->getTileType(i, j);
       int wallCode = 0;
-      if (wallValue == DeckView::Wall || wallValue == DeckView::Door) {
+      bool renderPrevFloorCorners = false;
+      if (wallValue == Tile::Wall || wallValue == Tile::Door) {
         wallCode = activeDeck_->getWallCode(i, j);
       }
-      if (wallValue == DeckView::Wall && wallCode == 0) {
+      if (wallValue == Tile::Wall && wallCode == 0) {
         wallCode = 10; //horizontal wall;
       }
-      bool renderingLowerLevelWall = false;
       if (i >= hoveredLeft_ && j >= hoveredTop_ && i < hoveredLeft_ + hoverWidth_ && j < hoveredTop_ + hoverHeight_) {
         renderer.setColor(Vector4(155,255,55,200));
         CString coord = CString(i) + "," + CString(j);
         if (drawing_) {
-          coord += " " + CString(drawEndX - drawStartX) + "," + CString(drawEndY - drawStartY);
+          coord += " " + CString(drawEndX - drawStartX + 1) + "," + CString(drawEndY - drawStartY + 1);
         }
         renderer.renderText(tileX + tileWidth_*0.5f - renderer.getCharWidth()*coord.getSize()*0.5f, tileY + tileHeight_*0.5f - renderer.getCharHeight()*0.5f, coord);
-      } else if (wallValue == DeckView::Empty) {
+      } else if (wallValue == Tile::Empty) {
         if (activeDeckIdx_ > 0) {
-          int prevWallValue = decks_[activeDeckIdx_-1]->getWall(i, j);
-          if (prevWallValue != DeckView::Empty) {
+          int prevWallValue = ship_->getDeck(activeDeckIdx_-1)->getTileType(i, j);
+          if (prevWallValue != Tile::Empty) {
             wallValue = prevWallValue;
-            renderingLowerLevelWall = true;
-            wallCode = decks_[activeDeckIdx_-1]->getWallCode(i, j);
+            wallCode = ship_->getDeck(activeDeckIdx_-1)->getWallCode(i, j);
+            if (wallValue != Tile::Floor) {
+              renderPrevFloorCorners = true;
+            }
           }
         }
         renderer.setColor(Vector4(255,255,255,50));
@@ -104,13 +107,19 @@ void ShipView::render()
       if (drawing_ && i >= drawStartX && i <= drawEndX && j >= drawStartY && j <= drawEndY) {
         renderer.setColor(Vector4(255,155,55,200));
       }
+      if (wallValue == Tile::Wall || wallValue == Tile::Door) {
+        renderFloorSection(activeDeck_, i, j, tilePos, texPos);
+      }
+      if (renderPrevFloorCorners) {
+        //renderFloorSection(ship_->getDeck(activeDeckIdx_-1), i, j, tilePos, texPos);
+      }
       texPos.top = wallCode / 4 * 64.0f / (float)tilesTexHeight_ + 1/(float)tilesTexHeight_;
       texPos.left = wallCode % 4 * 64.0f / (float)tilesTexWidth_ + 1/(float)tilesTexWidth_;
-      if (wallValue == DeckView::Floor) {
+      if (wallValue == Tile::Floor) {
         texPos.left = 257.0f / (float)tilesTexWidth_;
         texPos.top = 1.0f / (float)tilesTexHeight_;
       }
-      if (wallValue == DeckView::Door) {
+      if (wallValue == Tile::Door) {
         assert (wallCode == 10 || wallCode == 5);
         texPos.left = 257.0f / tilesTexWidth_;
         if (wallCode == 10) {
@@ -129,6 +138,35 @@ void ShipView::render()
   }
   drawCompartments();
   //glScissor(0, 0, 1600, 900);
+}
+
+void ShipView::renderFloorSection(Deck* deck, int i, int j, Rect& tilePos, Rect& texPos)
+{
+  //@TODO: Move this info to Tile class
+  Renderer& renderer = Renderer::getInstance();
+  GLuint texTile = renderer.getTilesTex();
+  float texX = 257.0f / (float)tilesTexWidth_;
+  float texY = 1.0f / (float)tilesTexHeight_;
+  if (deck->getTileType(i-1, j) == Tile::Floor || deck->getTileType(i, j-1) == Tile::Floor || deck->getTileType(i-1, j-1) == Tile::Floor) {
+    Rect upLeft       (tilePos.left, tilePos.top, tilePos.width*0.5f, tilePos.height*0.5f);
+    Rect texUpLeft    (texX,         texY,        texPos.width*0.5f,  texPos.height*0.5f);
+    renderer.drawTexRect(upLeft, texTile, texUpLeft);
+  }
+  if (deck->getTileType(i+1, j) == Tile::Floor || deck->getTileType(i, j-1) == Tile::Floor || deck->getTileType(i+1, j-1) == Tile::Floor) {
+    Rect upRight      (tilePos.left + tilePos.width*0.5f, tilePos.top, tilePos.width*0.5f, tilePos.height*0.5f);
+    Rect texUpRight   (texX + texPos.width*0.5f,          texY,        texPos.width*0.5f,  texPos.height*0.5f);
+    renderer.drawTexRect(upRight, texTile, texUpRight);
+  }
+  if (deck->getTileType(i, j+1) == Tile::Floor || deck->getTileType(i+1, j) == Tile::Floor || deck->getTileType(i+1, j+1) == Tile::Floor) {
+    Rect downRight    (tilePos.left + tilePos.width*0.5f, tilePos.top+tilePos.height*0.5f, tilePos.width*0.5f, tilePos.height*0.5f);
+    Rect texDownRight (texX + texPos.width*0.5f,          texY+texPos.height*0.5f,         texPos.width*0.5f,  texPos.height*0.5f);
+    renderer.drawTexRect(downRight, texTile, texDownRight);
+  }
+  if (deck->getTileType(i, j+1) == Tile::Floor || deck->getTileType(i-1, j) == Tile::Floor || deck->getTileType(i-1, j+1) == Tile::Floor) {
+    Rect downLeft     (tilePos.left, tilePos.top + tilePos.height*0.5f, tilePos.width*0.5f, tilePos.height*0.5f);
+    Rect texDownLeft  (texX,         texY + texPos.height*0.5f,         texPos.width*0.5f,  texPos.height*0.5f);
+    renderer.drawTexRect(downLeft, texTile, texDownLeft);
+  }
 }
 
 void ShipView::drawCompartments()
@@ -267,7 +305,7 @@ void ShipView::onDrop(Widget* w)
   }
   for (int i=x; i<x+width; ++i) {
     for (int j=y; j<y+height; ++j) {
-      if (activeDeck_->getWall(i,j) != DeckView::Floor && activeDeck_->getWall(i,j) != DeckView::Empty) {
+      if (activeDeck_->getTileType(i,j) != Tile::Floor && activeDeck_->getTileType(i,j) != Tile::Empty) {
         //Wall or door
         return;
       }
@@ -277,6 +315,7 @@ void ShipView::onDrop(Widget* w)
   newComp->setX(hoveredLeft_);
   newComp->setY(hoveredTop_);
   activeDeck_->addCompartment(newComp);
+  buildInfo_->updateValues(ship_);
 }
 
 void ShipView::plantWalls()
@@ -293,12 +332,12 @@ void ShipView::plantWalls()
   int stepHor = drawingStartX_ > hoveredLeft_?-1:1;
   int stepVer = drawingStartY_ > hoveredTop_?-1:1;
   for (int i=drawingStartX_; i!= hoveredLeft_ + stepHor; i += stepHor) {
-    activeDeck_->setWall(i, drawingStartY_, DeckView::Wall);
-    activeDeck_->setWall(i, hoveredTop_, DeckView::Wall);
+    activeDeck_->setTileType(i, drawingStartY_, Tile::Wall);
+    activeDeck_->setTileType(i, hoveredTop_, Tile::Wall);
   }
   for (int i=drawingStartY_; i != hoveredTop_ + stepVer; i += stepVer) {
-    activeDeck_->setWall(drawingStartX_, i, DeckView::Wall);
-    activeDeck_->setWall(hoveredLeft_, i, DeckView::Wall);
+    activeDeck_->setTileType(drawingStartX_, i, Tile::Wall);
+    activeDeck_->setTileType(hoveredLeft_, i, Tile::Wall);
   }
 }
 
@@ -312,26 +351,27 @@ void ShipView::eraseArea()
   }
   int stepHor = drawingStartX_ > hoveredLeft_?-1:1;
   int stepVer = drawingStartY_ > hoveredTop_?-1:1;
-  DeckView::TileType value = DeckView::Empty;
+  Tile::TileType value = Tile::Empty;
   if (action_ == BuildFloor) {
-    value = DeckView::Floor;
+    value = Tile::Floor;
   }
   for (int i=drawingStartX_; i!= hoveredLeft_ + stepHor; i += stepHor) {
     for (int j=drawingStartY_; j != hoveredTop_ + stepVer; j += stepVer) {
-      if (value == DeckView::Floor && activeDeck_->getWall(i, j) != DeckView::Empty) {
+      if (value == Tile::Floor && activeDeck_->getTileType(i, j) != Tile::Empty) {
         continue;
       }
-      if (value == DeckView::Empty && activeDeck_->getWall(i, j) == DeckView::Wall) {
+      if (value == Tile::Empty && activeDeck_->getTileType(i, j) == Tile::Wall) {
         activeDeck_->eraseDoorsAround(i, j);
       }
-      if (value == DeckView::Empty) {
+      if (value == Tile::Empty) {
         Compartment* comp = activeDeck_->getCompartment(i,j);
         if (comp) {
           activeDeck_->removeCompartment(comp);
+          buildInfo_->updateValues(ship_);
           assert (!activeDeck_->getCompartment(i,j));
         }
       }
-      activeDeck_->setWall(i, j, value);
+      activeDeck_->setTileType(i, j, value);
     }
   }
 }
@@ -368,7 +408,7 @@ void ShipView::deckUp()
   if (activeDeckIdx_ > 2) {
     activeDeckIdx_ = 2;
   }
-  activeDeck_ = decks_[activeDeckIdx_];
+  activeDeck_ = ship_->getDeck(activeDeckIdx_);
 }
 
 void ShipView::deckDown()
@@ -377,127 +417,134 @@ void ShipView::deckDown()
   if (activeDeckIdx_ < 0) {
     activeDeckIdx_ = 0;
   }
-  activeDeck_ = decks_[activeDeckIdx_];
+  activeDeck_ = ship_->getDeck(activeDeckIdx_);
 }
 
-DeckView::DeckView(int width, int height):width_(width), height_(height)
+void ShipView::setBuildInfo( BuildInfo* info )
 {
-  wallLayout_ = new TileType[height_ * width_];
-  for (int i=0; i<height_ * width_; ++i) {
-    wallLayout_[i] = Empty;
-  }
+  assert(info);
+  buildInfo_ = info;
+  buildInfo_->updateValues(ship_);
 }
 
-DeckView::~DeckView()
-{
-  delete[] wallLayout_;
-  for (auto itr = compartments_.begin(); itr != compartments_.end(); ++itr) {
-    delete *itr;
-  }
-}
-
-Compartment* DeckView::getCompartment(int x, int y)
-{
-  for (auto itr = compartments_.begin(); itr != compartments_.end(); ++itr) {
-    Compartment* comp = *itr;
-    if (x >= comp->getX() && x < comp->getX() + comp->getWidth() && y >= comp->getY() && y < comp->getY() + comp->getHeight()) {
-      return comp;
-    }
-  }
-  return NULL;
-}
-
-int DeckView::getWallCode( int i, int j )
-{
-  int wallCode = 0;
-  wallCode |= hasWall(i, j+1);
-  wallCode |= (hasWall(i+1, j) << 1);
-  wallCode |= (hasWall(i, j-1) << 2);
-  wallCode |= (hasWall(i-1, j) << 3);
-  assert (wallCode >= 0 && wallCode < 16);
-  return wallCode;
-}
-
-void DeckView::setDoor( int x, int y )
-{
-  TileType type = getWall(x, y);
-  if (type != Wall) {
-    return;
-  }
-  int wallCode = getWallCode(x, y);
-  if (wallCode != 10 && wallCode != 5) {
-    //Not a horizontal or vertical straight wall
-    return;
-  }
-  setWall(x, y, Door);
-}
-
-DeckView::TileType DeckView::getWall( int x, int y )
-{
-  if (x < 0 || x >= width_ || y < 0 || y >= height_) {
-    return Empty;
-  }
-  return wallLayout_[y*width_ + x];
-}
-
-int DeckView::hasWall( int x, int y )
-{
-  if (x < 0 || x >= width_ || y < 0 || y >= height_) {
-    return 0;
-  }
-  return (wallLayout_[y*width_ + x]==Wall || wallLayout_[y*width_ + x]==Door)?1:0;
-}
-
-void DeckView::setWall( int x, int y, TileType value )
-{
-  if (x < 0 || x >= width_ || y < 0 || y >= height_) {
-    assert(0);
-  }
-  if (value == Wall || value == Floor || value == Door) {
-    if (hasDoorsAround(x, y) && value != Floor) {
-      //Can't create doors or walls around a door
-      return;
-    }
-    if (getWall(x, y) == Door) {
-      //Can only erase door, not replace
-      return;
-    }
-  }
-  if ((value == Wall || value == Door) && getCompartment(x,y)) {
-    //Can't build over compartment
-    return;
-  }
-  wallLayout_[y*width_ + x] = value;
-}
-
-bool DeckView::hasDoorsAround( int x, int y )
-{
-  return getWall(x-1,y) == Door || getWall(x+1, y) == Door || getWall(x, y-1) == Door || getWall(x, y+1) == Door;
-}
-
-void DeckView::eraseDoorsAround( int x, int y )
-{
-  if (getWall(x-1,y) == Door) {
-    setWall(x-1, y, Empty);
-  }
-  if (getWall(x+1,y) == Door) {
-    setWall(x+1, y, Empty);
-  }
-  if (getWall(x,y-1) == Door) {
-    setWall(x, y-1, Empty);
-  }
-  if (getWall(x,y+1) == Door) {
-    setWall(x, y+1, Empty);
-  }
-}
-
-void DeckView::addCompartment( Compartment* comp )
-{
-  compartments_.push_back(comp);
-}
-
-void DeckView::removeCompartment( Compartment* comp )
-{
-  compartments_.remove(comp);
-}
+//DeckView::DeckView(int width, int height):width_(width), height_(height)
+//{
+//  wallLayout_ = new TileType[height_ * width_];
+//  for (int i=0; i<height_ * width_; ++i) {
+//    wallLayout_[i] = Empty;
+//  }
+//}
+//
+//DeckView::~DeckView()
+//{
+//  delete[] wallLayout_;
+//  for (auto itr = compartments_.begin(); itr != compartments_.end(); ++itr) {
+//    delete *itr;
+//  }
+//}
+//
+//Compartment* DeckView::getCompartment(int x, int y)
+//{
+//  for (auto itr = compartments_.begin(); itr != compartments_.end(); ++itr) {
+//    Compartment* comp = *itr;
+//    if (x >= comp->getX() && x < comp->getX() + comp->getWidth() && y >= comp->getY() && y < comp->getY() + comp->getHeight()) {
+//      return comp;
+//    }
+//  }
+//  return NULL;
+//}
+//
+//int DeckView::getWallCode( int i, int j )
+//{
+//  int wallCode = 0;
+//  wallCode |= hasWall(i, j+1);
+//  wallCode |= (hasWall(i+1, j) << 1);
+//  wallCode |= (hasWall(i, j-1) << 2);
+//  wallCode |= (hasWall(i-1, j) << 3);
+//  assert (wallCode >= 0 && wallCode < 16);
+//  return wallCode;
+//}
+//
+//void DeckView::setDoor( int x, int y )
+//{
+//  TileType type = getWall(x, y);
+//  if (type != Wall) {
+//    return;
+//  }
+//  int wallCode = getWallCode(x, y);
+//  if (wallCode != 10 && wallCode != 5) {
+//    //Not a horizontal or vertical straight wall
+//    return;
+//  }
+//  setWall(x, y, Door);
+//}
+//
+//DeckView::TileType DeckView::getWall( int x, int y )
+//{
+//  if (x < 0 || x >= width_ || y < 0 || y >= height_) {
+//    return Empty;
+//  }
+//  return wallLayout_[y*width_ + x];
+//}
+//
+//int DeckView::hasWall( int x, int y )
+//{
+//  if (x < 0 || x >= width_ || y < 0 || y >= height_) {
+//    return 0;
+//  }
+//  return (wallLayout_[y*width_ + x]==Wall || wallLayout_[y*width_ + x]==Door)?1:0;
+//}
+//
+//void DeckView::setWall( int x, int y, TileType value )
+//{
+//  if (x < 0 || x >= width_ || y < 0 || y >= height_) {
+//    assert(0);
+//  }
+//  if (value == Wall || value == Floor || value == Door) {
+//    if (hasDoorsAround(x, y) && value != Floor) {
+//      //Can't create doors or walls around a door
+//      return;
+//    }
+//    if (getWall(x, y) == Door) {
+//      //Can only erase door, not replace
+//      return;
+//    }
+//  }
+//  if ((value == Wall || value == Door) && getCompartment(x,y)) {
+//    //Can't build over compartment
+//    return;
+//  }
+//  wallLayout_[y*width_ + x] = value;
+//}
+//
+//bool DeckView::hasDoorsAround( int x, int y )
+//{
+//  return getWall(x-1,y) == Door || getWall(x+1, y) == Door || getWall(x, y-1) == Door || getWall(x, y+1) == Door;
+//}
+//
+//void DeckView::eraseDoorsAround( int x, int y )
+//{
+//  if (getWall(x-1,y) == Door) {
+//    setWall(x-1, y, Empty);
+//  }
+//  if (getWall(x+1,y) == Door) {
+//    setWall(x+1, y, Empty);
+//  }
+//  if (getWall(x,y-1) == Door) {
+//    setWall(x, y-1, Empty);
+//  }
+//  if (getWall(x,y+1) == Door) {
+//    setWall(x, y+1, Empty);
+//  }
+//}
+//
+//void DeckView::addCompartment( Compartment* comp )
+//{
+//  compartments_.push_back(comp);
+//}
+//
+//void DeckView::removeCompartment( Compartment* comp )
+//{
+//  compartments_.remove(comp);
+//}
 

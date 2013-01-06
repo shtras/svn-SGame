@@ -22,7 +22,7 @@ void Text::render()
     Renderer::getInstance().setTextSize(newSize);
   }
   Renderer::getInstance().setColor(color_);
-  float left = size_.left;
+  float left = size_.left + 0.002f;
   if (align_ != Widget::LeftAlign) {
     left = size_.left + size_.width/2 - caption_.getSize()*Renderer::getInstance().getCharWidth()/2.0f;
   }
