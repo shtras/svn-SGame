@@ -17,14 +17,17 @@ const char* Version = "0.0.4.";
 //3.V Support of multiple decks and compartments by categories in the build tools
 //4.V Implement scrollbar in tools menu
 //0.0.5:
-//1. Multiple layers in ship view
+//1.V Multiple layers in ship view
 //2.V Compartment purposes and additional parameters
 //3. Links between compartments
+//3.1 Show required links in hover info
 //4.V Info panel with ship parameters
 //5.V Selection of which deck to show as ghost (upper or lower)
 //0.0.6
 //1. Oxygen system (compressors, pipes, dispensers)
+//1.1 Oxygen overview
 //2. Power system (cables, producers, consumers)
+//2.1 Power overview
 //***Shifted to 0.0.2 at build #349
 //Implemented GUI, basic editor
 //Floor, walls building, erase
@@ -44,6 +47,9 @@ const char* Version = "0.0.4.";
 //***Demo released on build #718
 //Implemented compartment rotation
 //Implemented ghost deck selection
+//Implemented accessibility and connectivity check for tiles
+//Implemented multiple layers (construction and accessibility)
+//Implemented main entrance to the ship (only one possible)
 
 SGame::SGame():state_(Menu),stateRunnig_(false)
 {

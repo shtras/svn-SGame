@@ -35,13 +35,17 @@ public:
   void setBuildInfo(BuildInfo* info);
   void setDraggedComp(Compartment* comp) {draggedComp_ = comp;}
   Ship* getShip() {return ship_;}
+  void constructionOverview();
+  void accessibilityOverview();
 private:
   enum Action {BuildWalls, BuildFloor, BuildDoor, Erase, Select, ChooseEntrance};
+  enum OverviewType {Construction, Accessibility};
   void drawCompartments();
   void plantWalls();
   void eraseArea();
   void setEntrance();
   void renderFloorSection(Deck* deck, int i, int j, Rect& tilePos, Rect& texPos);
+  void structureChanged();
   Ship* ship_;
   int layoutWidth_;
   int layoutHeight_;
@@ -74,7 +78,7 @@ private:
   Window* hoveredCompInfo_;
   int draggedCompartmentRoataion_;
   Compartment* draggedComp_;
-  Tile* entrance_;
+  OverviewType overviewType_;
 };
 //
 //class DeckView

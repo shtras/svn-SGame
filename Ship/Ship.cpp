@@ -2,7 +2,7 @@
 #include "Ship.h"
 #include "Renderer.h"
 
-Ship::Ship(int width, int height):minCrew_(0),maxCrew_(0),powerRequired_(0),powerProduced_(0),crewCapacity_(0)
+Ship::Ship(int width, int height):minCrew_(0),maxCrew_(0),powerRequired_(0),powerProduced_(0),crewCapacity_(0),entrance_(NULL),width_(width), height_(height)
 {
   for (int i=0; i<3; ++i) {
     Deck* deck = new Deck(this, width, height, i);
@@ -33,6 +33,86 @@ void Ship::updateParameters( int dMinCrew, int dMaxCrew, int dPowerProduced, int
   powerRequired_ += dPowerProduced;
   powerProduced_ += dPowerRequired;
   crewCapacity_ += dCrewCapacity;
+}
+
+void Ship::recalculateTiles()
+{
+  for (int i=0; i<decks_.size(); ++i) {
+    Deck* deck = decks_[i];
+    for (int x=0; x<width_; ++x) {
+      for (int y=0; y<height_; ++y) {
+        Tile* tile = deck->getTile(x, y);
+        tile->setConnected(false);
+        tile->setAccessible(false);
+      }
+    }
+  }
+  if (!entrance_) {
+    return;
+  }
+  recalculateTilesRec(entrance_->getDeckIdx(), entrance_->getX(), entrance_->getY(), true, true);
+}
+
+void Ship::recalculateTilesRec( int deckIdx, int x, int y, bool accessible, bool connected )
+{
+  if (!connected) {
+    assert(!accessible);
+    return;
+  }
+  Deck* deck = decks_[deckIdx];
+  Tile* tile = deck->getTile(x, y);
+  if (tile->isAccessible()) {
+    assert (tile->isConnected());
+    return;
+  }
+  if (tile->getType() == Tile::Empty) {
+    return;
+  }
+  if (!accessible && tile->isConnected()) {
+    return;
+  }
+  if (tile->getType() != Tile::Wall) {
+    tile->setAccessible(accessible);
+  } else {
+    accessible = false;
+  }
+  tile->setConnected(true);
+  Tile* left = deck->getTile(x-1, y);
+  if (left) {
+    recalculateTilesRec(deckIdx, x-1, y, accessible, true);
+  }
+  Tile* up = deck->getTile(x, y-1);
+  if (up) {
+    recalculateTilesRec(deckIdx, x, y-1, accessible, true);
+  }
+  Tile* right = deck->getTile(x+1, y);
+  if (right) {
+    recalculateTilesRec(deckIdx, x+1, y, accessible, true);
+  }
+  Tile* down = deck->getTile(x, y+1);
+  if (down) {
+    recalculateTilesRec(deckIdx, x, y+1, accessible, true);
+  }
+}
+
+bool Ship::recalculateTile( Tile* tile, bool& accessible )
+{
+  if (tile->getType() != Tile::Empty) {
+    if (tile->isAccessible()) {
+      assert (tile->isConnected());
+    }
+    tile->setConnected(true);
+    if (accessible) {
+      if (tile->getType() != Tile::Wall) {
+        accessible = true;
+      } else {
+        tile->setAccessible(accessible);
+      }
+    }
+    return true;
+  } else {
+    return false;
+  }
 }
 
 Deck::Deck(Ship* ship, int width, int height,int idx):

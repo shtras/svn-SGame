@@ -8,7 +8,7 @@ ShipView::ShipView(Rect size):Widget(size),layoutWidth_(50), layoutHeight_(50), 
   scrolling_(false), lastMouseX_(0), lastMouseY_(0),hoveredLeft_(-1), hoveredTop_(-1), hoverWidth_(1), hoverHeight_(1),tileWidth_(0),
   tileHeight_(0),drawing_(false),drawingStartX_(-1), drawingStartY_(-1),desiredZoom_(1.0f),zoomStep_(0),action_(BuildWalls),
   tilesTexWidth_(0), tilesTexHeight_(0), hoveredComp_(NULL),activeDeckIdx_(-1),activeDeck_(NULL),buildInfo_(NULL),hoveredCompInfo_(NULL),
-  draggedCompartmentRoataion_(0),draggedComp_(NULL),ghostDeckIdx_(-1),entrance_(NULL)
+  draggedCompartmentRoataion_(0),draggedComp_(NULL),ghostDeckIdx_(-1),overviewType_(Construction)
 {
   tilesTexWidth_ = Renderer::getInstance().getTilesTexWidth();
   tilesTexHeight_ = Renderer::getInstance().getTilesTexHeight();
@@ -112,6 +112,15 @@ void ShipView::render()
       if (drawing_ && i >= drawStartX && i <= drawEndX && j >= drawStartY && j <= drawEndY) {
         renderer.setColor(Vector4(255,155,55,200));
       }
+      if (overviewType_ == Accessibility && tile->getType() != Tile::Empty) {
+        if (tile->isAccessible()) {
+          renderer.setColor(Vector4(0, 255, 0, 255));
+        } else if (tile->isConnected()) {
+          renderer.setColor(Vector4(0, 0, 255, 255));
+        } else {
+          renderer.setColor(Vector4(255, 0, 0, 255));
+        }
+      }
       if (wallValue == Tile::Wall || wallValue == Tile::Door) {
         renderFloorSection(activeDeck_, i, j, tilePos, texPos);
       }
@@ -133,7 +142,7 @@ void ShipView::render()
           texPos.top = 129.0f / tilesTexHeight_;
         }
         if (tile->isEntrance()) {
-          assert (tile == entrance_);
+          assert (tile == ship_->getEntrance());
           renderer.setColor(Vector4(200, 200, 200, 255));
         }
       }
@@ -309,6 +318,7 @@ void ShipView::onLMUp()
     setEntrance();
   }
   drawing_ = false;
+  structureChanged();
 }
 
 void ShipView::onDrop(Widget* w)
@@ -389,6 +399,7 @@ void ShipView::onDrop(Widget* w)
   activeDeck_->addCompartment(newComp);
   buildInfo_->updateValues();
   draggedCompartmentRoataion_ = 0;
+  structureChanged();
 }
 
 void ShipView::plantWalls()
@@ -447,9 +458,9 @@ void ShipView::eraseArea()
       activeDeck_->setTileType(i, j, value);
     }
   }
-  if (entrance_ && entrance_->getType() != Tile::Door) {
-    assert (!entrance_->isEntrance());
-    entrance_ = NULL;
+  if (ship_->getEntrance() && ship_->getEntrance()->getType() != Tile::Door) {
+    assert (!ship_->getEntrance()->isEntrance());
+    ship_->setEntrance(NULL);
   }
 }
 
@@ -537,12 +548,27 @@ void ShipView::setEntrance()
   if (type != Tile::Door) {
     return;
   }
-  if (entrance_) {
-    entrance_->setEntrance(false);
+  if (ship_->getEntrance()) {
+    ship_->getEntrance()->setEntrance(false);
   }
   Tile* tile = activeDeck_->getTile(hoveredLeft_, hoveredTop_);
   tile->setEntrance(!tile->isEntrance());
-  entrance_ = tile;
+  ship_->setEntrance(tile);
+}
+
+void ShipView::structureChanged()
+{
+  ship_->recalculateTiles();
+}
+
+void ShipView::constructionOverview()
+{
+  overviewType_ = Construction;
+}
+
+void ShipView::accessibilityOverview()
+{
+  overviewType_ = Accessibility;
 }
 
 //DeckView::DeckView(int width, int height):width_(width), height_(height)

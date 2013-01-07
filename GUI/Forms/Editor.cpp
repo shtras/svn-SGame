@@ -52,17 +52,17 @@ ShipEditor::ShipEditor( Rect size ):Widget(size)
   oxygenOverlayButton_->sigClick.connect(this, &ShipEditor::oxygenClick);
   buttonLeft += buttonWidth;
 
-  ShipView* view = new ShipView(Rect(0.2, 0.05, 0.6, 0.95));
-  addWidget(view);
+  view_ = new ShipView(Rect(0.2, 0.05, 0.6, 0.95));
+  addWidget(view_);
 
   BuildTools* tools = new BuildTools(Rect(0.0, 0.05, 0.2, 0.95));
-  tools->init(view);
+  tools->init(view_);
   addWidget(tools);
 
   BuildInfo* info = new BuildInfo(Rect(0.8, 0.05, 0.2, 0.95));
-  info->init(view);
+  info->init(view_);
   addWidget(info);
-  view->setBuildInfo(info);
+  view_->setBuildInfo(info);
 }
 
 ShipEditor::~ShipEditor()
@@ -72,6 +72,7 @@ ShipEditor::~ShipEditor()
 
 void ShipEditor::constructionClick()
 {
+  view_->constructionOverview();
   constructionOverlayButton_->setHighlighted(true);
   accessibilityOverlayButton_->setHighlighted(false);
   powerOverlayButton_->setHighlighted(false);
@@ -80,6 +81,7 @@ void ShipEditor::constructionClick()
 
 void ShipEditor::accessibilityClick()
 {
+  view_->accessibilityOverview();
   constructionOverlayButton_->setHighlighted(false);
   accessibilityOverlayButton_->setHighlighted(true);
   powerOverlayButton_->setHighlighted(false);

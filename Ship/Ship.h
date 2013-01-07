@@ -17,13 +17,21 @@ public:
   int getPowerRequired() {return powerRequired_;}
   int getPowerProduced() {return powerProduced_;}
   int getCrewCapacity() {return crewCapacity_;}
+  void setEntrance(Tile* tile) {entrance_ = tile;}
+  Tile* getEntrance() {return entrance_;}
+  void recalculateTiles();
 private:
+  void recalculateTilesRec(int deckIdx, int x, int y, bool accessible, bool connected);
+  bool recalculateTile(Tile* tile, bool& accessible);
   vector<Deck*> decks_;
   int minCrew_;
   int maxCrew_;
   int powerRequired_;
   int powerProduced_;
   int crewCapacity_;
+  Tile* entrance_;
+  int width_;
+  int height_;
 };
 
 class Tile
@@ -41,6 +49,8 @@ public:
   void setAccessible(bool value) {accessible_ = value;}
   bool isConnected() {return connected_;}
   void setConnected(bool value) {connected_ = value;}
+  int getX() {return x_;}
+  int getY() {return y_;}
 private:
   TileType type_;
   int x_;
