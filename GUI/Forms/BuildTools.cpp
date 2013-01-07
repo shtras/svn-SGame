@@ -18,7 +18,7 @@ BuildTools::~BuildTools()
 void BuildTools::init(ShipView* shipView)
 {
   shipView_ = shipView;
-  buildButton_ = new Button(Rect(0.02, 0.02, 0.16, 0.05), false);
+  buildButton_ = new Button(Rect(0.02, 0.02, 0.15, 0.05), false);
   TextureParams regular = {100, 0, 54, 37, 10, 6, 10, 6};
   TextureParams hovered = {155, 0, 54, 37, 10, 6, 10, 6};
   TextureParams pressed = {210, 0, 54, 37, 10, 6, 10, 6};
@@ -28,7 +28,7 @@ void BuildTools::init(ShipView* shipView)
   addWidget(buildButton_);
   buildButton_->setToolTip("Build walls");
 
-  floorButton_ = new Button(Rect(0.19, 0.02, 0.16, 0.05), false);
+  floorButton_ = new Button(Rect(0.17, 0.02, 0.15, 0.05), false);
   TextureParams regular2 = {100, 76, 54, 37, 10, 6, 10, 6};
   TextureParams hovered2 = {155, 76, 54, 37, 10, 6, 10, 6};
   TextureParams pressed2 = {210, 76, 54, 37, 10, 6, 10, 6};
@@ -37,7 +37,7 @@ void BuildTools::init(ShipView* shipView)
   addWidget(floorButton_);
   floorButton_->setToolTip("Build floor");
 
-  doorButton_ = new Button(Rect(0.36, 0.02, 0.16, 0.05), false);
+  doorButton_ = new Button(Rect(0.32, 0.02, 0.15, 0.05), false);
   TextureParams regular3 = {100, 114, 54, 37, 10, 6, 10, 6};
   TextureParams hovered3 = {155, 114, 54, 37, 10, 6, 10, 6};
   TextureParams pressed3 = {210, 114, 54, 37, 10, 6, 10, 6};
@@ -46,7 +46,7 @@ void BuildTools::init(ShipView* shipView)
   addWidget(doorButton_);
   doorButton_->setToolTip("Build door");
 
-  eraseButton_ = new Button(Rect(0.53, 0.02, 0.16, 0.05), false);
+  eraseButton_ = new Button(Rect(0.47, 0.02, 0.15, 0.05), false);
   TextureParams regular1 = {100, 38, 54, 37, 10, 6, 10, 6};
   TextureParams hovered1 = {155, 38, 54, 37, 10, 6, 10, 6};
   TextureParams pressed1 = {210, 38, 54, 37, 10, 6, 10, 6};
@@ -54,6 +54,15 @@ void BuildTools::init(ShipView* shipView)
   eraseButton_->sigClick.connect(this, &BuildTools::eraseClick);
   addWidget(eraseButton_);
   eraseButton_->setToolTip("Demolish");
+
+  selectButton_ = new Button(Rect(0.62, 0.02, 0.15, 0.05), false);
+  TextureParams regular4 = {100, 183, 54, 37, 10, 6, 10, 6};
+  TextureParams hovered4 = {155, 183, 54, 37, 10, 6, 10, 6};
+  TextureParams pressed4 = {210, 183, 54, 37, 10, 6, 10, 6};
+  selectButton_->init(regular4, hovered4, pressed4);
+  selectButton_->sigClick.connect(this, &BuildTools::selectClick);
+  addWidget(selectButton_);
+  selectButton_->setToolTip("Select");
 
   Button* upButton = new Button(Rect(0.8, 0.01, 0.08, 0.023));
   upButton->setCaption("+");
@@ -196,6 +205,7 @@ void BuildTools::buildClick()
   floorButton_->setHighlighted(false);
   doorButton_->setHighlighted(false);
   eraseButton_->setHighlighted(false);
+  selectButton_->setHighlighted(false);
 }
 
 void BuildTools::eraseClick()
@@ -205,6 +215,7 @@ void BuildTools::eraseClick()
   floorButton_->setHighlighted(false);
   doorButton_->setHighlighted(false);
   eraseButton_->setHighlighted(true);
+  selectButton_->setHighlighted(false);
 }
 
 void BuildTools::floorClick()
@@ -214,6 +225,7 @@ void BuildTools::floorClick()
   floorButton_->setHighlighted(true);
   doorButton_->setHighlighted(false);
   eraseButton_->setHighlighted(false);
+  selectButton_->setHighlighted(false);
 }
 
 void BuildTools::doorClick()
@@ -223,6 +235,16 @@ void BuildTools::doorClick()
   floorButton_->setHighlighted(false);
   doorButton_->setHighlighted(true);
   eraseButton_->setHighlighted(false);
+  selectButton_->setHighlighted(false);
+}
+
+void BuildTools::selectClick()
+{
+  buildButton_->setHighlighted(false);
+  floorButton_->setHighlighted(false);
+  doorButton_->setHighlighted(false);
+  eraseButton_->setHighlighted(false);
+  selectButton_->setHighlighted(true);
 }
 
 void BuildTools::onMouseWheelScroll( int direction )

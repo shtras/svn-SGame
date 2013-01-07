@@ -47,6 +47,7 @@ bool Renderer::init()
     return false;
   }
   Logger::getInstance().log(INFO_LOG_NAME, "SDL successfully initialized");
+  SDL_putenv("SDL_VIDEO_WINDOW_POS=20,40");
 
   SDL_WM_SetCaption("SGame", NULL);
 

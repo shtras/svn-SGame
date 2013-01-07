@@ -41,16 +41,28 @@ CompartmentInfo {
 		X=0
 		Y=383
 	}
+	Item {
+		ID=8
+		Name=ThrottleControl
+		X=0
+		Y=448
+	}
+	Item {
+		ID=9
+		Name=Controls
+		X=256
+		Y=192
+	}
 	Compartment {
 		Category=1 ; Navigation
 		Name=Bridge
-		Width=5
+		Width=2
 		Height=3
 		MinCrew=2
 		MaxCrew=6
 		PowerRequired=6
 		Item {
-			ID=1 ; Table
+			ID=9 ; Table
 			X=0
 			Y=0
 			Rotation=3 ; 270 degrees
@@ -62,19 +74,13 @@ CompartmentInfo {
 			Rotation=3
 		}
 		Item {
-			ID=1 ; Table
-			X=0
-			Y=1
-			Rotation=3 ; 270 degrees
-		}
-		Item {
-			ID=2 ; Chair
+			ID=8
 			X=1
 			Y=1
 			Rotation=3
 		}
 		Item {
-			ID=1 ; Table
+			ID=9 ; Table
 			X=0
 			Y=2
 			Rotation=3 ; 270 degrees
@@ -85,42 +91,6 @@ CompartmentInfo {
 			Y=2
 			Rotation=3
 		}
-		Item {
-			ID=1 ; Table
-			X=4
-			Y=0
-			Rotation=1 ; 270 degrees
-		}
-		Item {
-			ID=2 ; Chair
-			X=3
-			Y=0
-			Rotation=1
-		}
-		Item {
-			ID=1 ; Table
-			X=4
-			Y=1
-			Rotation=1 ; 270 degrees
-		}
-		Item {
-			ID=2 ; Chair
-			X=3
-			Y=1
-			Rotation=1
-		}
-		Item {
-			ID=1 ; Table
-			X=4
-			Y=2
-			Rotation=1 ; 270 degrees
-		}
-		Item {
-			ID=2 ; Chair
-			X=3
-			Y=2
-			Rotation=1
-		}		
 	}
 	Compartment {
 		Category=2

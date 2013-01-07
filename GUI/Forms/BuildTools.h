@@ -17,6 +17,7 @@ private:
   void eraseClick();
   void floorClick();
   void doorClick();
+  void selectClick();
   void categoryClick(void* param);
   void upClick();
   void downClick();
@@ -28,6 +29,7 @@ private:
   Button* floorButton_;
   Button* doorButton_;
   Button* eraseButton_;
+  Button* selectButton_;
   Text* deckText_;
   Text* ghostDeckText_;
   vector<Button*> categoryButtons_;
