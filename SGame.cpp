@@ -2,12 +2,10 @@
 #include "SGame.h"
 #include "Renderer.h"
 #include "Button.h"
-#include "ShipView.h"
-#include "BuildTools.h"
 #include "VersionInfo.h"
 #include "RoomParser.h"
 #include "ItemsDB.h"
-#include "BuildInfo.h"
+#include "Editor.h"
 
 const char* Version = "0.0.4.";
 //TODO for next major version:
@@ -141,7 +139,7 @@ bool SGame::mainLoop()
     Renderer::getInstance().setTextSize(1);
     Renderer::getInstance().setColor(Vector4(255, 255, 255, 255));
     CString fpsString = "FPS: " + CString(fps, 2);
-    Renderer::getInstance().renderText(0.5f - fpsString.getSize()*Renderer::getInstance().getCharWidth()*0.5f, 0.0f, fpsString);
+    Renderer::getInstance().renderText(0.0f, 0.0f, fpsString);
     Renderer::getInstance().renderText(1.0f - version.getSize()*Renderer::getInstance().getCharWidth(), 1.0f - Renderer::getInstance().getCharHeight(), version);
 
     Renderer::getInstance().renderEnd();
@@ -181,27 +179,9 @@ bool SGame::initMenu()
 
 bool SGame::initEditor()
 {
-  Window* topPanel = new Window(Rect(0.0, 0.0, 1.0, 0.05));
-  Renderer::getInstance().addWidget(topPanel);
-
-  Button* menuButton = new Button(Rect(0.9, 0.1, 0.098, 0.8));
-  menuButton->setCaption("Quit");
-  menuButton->setColor(Vector4(255, 0, 0, 255));
-  menuButton->setTextSize(1.8f);
-  topPanel->addWidget(menuButton);
-  menuButton->sigClick.connect(this, &SGame::toggleMenu);
+  ShipEditor* editor = new ShipEditor(Rect(0,0,1,1));
+  Renderer::getInstance().addWidget(editor);
   stateRunnig_ = true;
-
-  ShipView* view = new ShipView(Rect(0.2, 0.05, 0.6, 0.95));
-  Renderer::getInstance().addWidget(view);
-
-  BuildTools* tools = new BuildTools(Rect(0.0, 0.05, 0.2, 0.95));
-  tools->init(view);
-  Renderer::getInstance().addWidget(tools);
-
-  BuildInfo* info = new BuildInfo(Rect(0.8, 0.05, 0.2, 0.95));
-  Renderer::getInstance().addWidget(info);
-  view->setBuildInfo(info);
   return true;
 }
 
@@ -222,6 +202,9 @@ void SGame::handleEvent( SDL_Event& event )
   case SDL_MOUSEBUTTONUP:
   case SDL_MOUSEMOTION:
     Renderer::getInstance().handleGUIEvent(event);
+    break;
+  case SDL_VIDEORESIZE:
+    Renderer::getInstance().resize(event.resize.w, event.resize.h);
     break;
   default:
     break;

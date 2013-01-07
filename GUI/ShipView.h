@@ -1,9 +1,9 @@
 #pragma once
 #include "TexturedWidget.h"
 #include "Ship.h"
-#include "BuildInfo.h"
+#include "Window.h"
 
-class DeckView;
+class BuildInfo;
 
 class ShipView: public Widget, public has_slots<>
 {
@@ -23,6 +23,8 @@ public:
   void buildFloor();
   void buildDoor();
   void erase();
+  void select();
+  void chooseEntrance();
   void setHoveredDimensions(int width, int height);
   void deckUp();
   void deckDown();
@@ -32,11 +34,13 @@ public:
   int getGhostDeck() {return ghostDeckIdx_;}
   void setBuildInfo(BuildInfo* info);
   void setDraggedComp(Compartment* comp) {draggedComp_ = comp;}
+  Ship* getShip() {return ship_;}
 private:
-  enum Action {BuildWalls, BuildFloor, BuildDoor, Erase};
+  enum Action {BuildWalls, BuildFloor, BuildDoor, Erase, Select, ChooseEntrance};
   void drawCompartments();
   void plantWalls();
   void eraseArea();
+  void setEntrance();
   void renderFloorSection(Deck* deck, int i, int j, Rect& tilePos, Rect& texPos);
   Ship* ship_;
   int layoutWidth_;
@@ -70,6 +74,7 @@ private:
   Window* hoveredCompInfo_;
   int draggedCompartmentRoataion_;
   Compartment* draggedComp_;
+  Tile* entrance_;
 };
 //
 //class DeckView

@@ -7,6 +7,8 @@ public:
   static SGame& getInstance();
   bool init();
   bool run();
+  void toggleEditor();
+  void toggleMenu();
 private:
   bool mainLoop();
   bool initMenu();
@@ -15,8 +17,6 @@ private:
   bool finishEditor();
   void handleEvent(SDL_Event& event);
   void quit();
-  void toggleEditor();
-  void toggleMenu();
   void close();
   SGame();
   ~SGame();

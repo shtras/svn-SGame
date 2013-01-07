@@ -406,3 +406,18 @@ void Renderer::renderToolTip(CString text)
   renderText(x + width * 0.01f, y + height * 0.01f, text);
   resetColor();
 }
+
+void Renderer::resize(int width, int height)
+{
+  //float dx = width / (float)width_;
+  //float dy = height / (float)height_;
+  //width_ = width;
+  //height_ = height;
+  //Rect size = globalGUIWindow_->getSize();
+  //size.width *= dx;
+  //size.height *= dy;
+  //size.top *= dy;
+  //size.left *= dx;
+  //globalGUIWindow_->resize(size);
+  //glViewport(0, 0, width_, height_);
+}

@@ -1,8 +1,8 @@
 #include "StdAfx.h"
 #include "BuildInfo.h"
-#include "Button.h"
+#include "Ship.h"
 
-BuildInfo::BuildInfo( Rect size ):Window(size)
+BuildInfo::BuildInfo( Rect size ):Window(size),shipView_(NULL)
 {
   double top = 0.01;
   double height = 0.03;
@@ -41,8 +41,9 @@ BuildInfo::~BuildInfo()
 
 }
 
-void BuildInfo::updateValues( Ship* ship )
+void BuildInfo::updateValues()
 {
+  Ship* ship = shipView_->getShip();
   crewText_->setCaption(CString(ship->getMinCrew()) + "(" + CString(ship->getMaxCrew()) + ")/" + CString(ship->getCrewCapacity()));
   if (ship->getMinCrew() > ship->getCrewCapacity()) {
     crewText_->setColor(Vector4(255,100,100,255));
@@ -59,5 +60,10 @@ void BuildInfo::updateValues( Ship* ship )
   } else {
     powerText_->setColor(Vector4(255,255,255,255));
   }
+}
+
+void BuildInfo::init( ShipView* shipView )
+{
+  shipView_ = shipView;
 }
 

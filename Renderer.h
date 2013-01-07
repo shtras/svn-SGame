@@ -64,6 +64,7 @@ public:
   int getTilesTexWidth() {return tilesTexWidth_;}
   int getTilesTexHeight() {return tilesTexHeight_;}
   void setWidgetForTooltip(Widget* w) {renderTooltipFor_ = w;}
+  void resize(int width, int height);
 private:
   Renderer();
   ~Renderer();

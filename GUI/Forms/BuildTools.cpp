@@ -18,7 +18,8 @@ BuildTools::~BuildTools()
 void BuildTools::init(ShipView* shipView)
 {
   shipView_ = shipView;
-  buildButton_ = new Button(Rect(0.02, 0.02, 0.15, 0.05), false);
+  Rect toolButtonRect(0.02, 0.005, 0.15, 0.05);
+  buildButton_ = new Button(toolButtonRect, false);
   TextureParams regular = {100, 0, 54, 37, 10, 6, 10, 6};
   TextureParams hovered = {155, 0, 54, 37, 10, 6, 10, 6};
   TextureParams pressed = {210, 0, 54, 37, 10, 6, 10, 6};
@@ -27,8 +28,9 @@ void BuildTools::init(ShipView* shipView)
   buildButton_->setHighlighted(true);
   addWidget(buildButton_);
   buildButton_->setToolTip("Build walls");
+  toolButtonRect.left += toolButtonRect.width;
 
-  floorButton_ = new Button(Rect(0.17, 0.02, 0.15, 0.05), false);
+  floorButton_ = new Button(toolButtonRect, false);
   TextureParams regular2 = {100, 76, 54, 37, 10, 6, 10, 6};
   TextureParams hovered2 = {155, 76, 54, 37, 10, 6, 10, 6};
   TextureParams pressed2 = {210, 76, 54, 37, 10, 6, 10, 6};
@@ -36,8 +38,9 @@ void BuildTools::init(ShipView* shipView)
   floorButton_->sigClick.connect(this, &BuildTools::floorClick);
   addWidget(floorButton_);
   floorButton_->setToolTip("Build floor");
+  toolButtonRect.left += toolButtonRect.width;
 
-  doorButton_ = new Button(Rect(0.32, 0.02, 0.15, 0.05), false);
+  doorButton_ = new Button(toolButtonRect, false);
   TextureParams regular3 = {100, 114, 54, 37, 10, 6, 10, 6};
   TextureParams hovered3 = {155, 114, 54, 37, 10, 6, 10, 6};
   TextureParams pressed3 = {210, 114, 54, 37, 10, 6, 10, 6};
@@ -45,8 +48,9 @@ void BuildTools::init(ShipView* shipView)
   doorButton_->sigClick.connect(this, &BuildTools::doorClick);
   addWidget(doorButton_);
   doorButton_->setToolTip("Build door");
+  toolButtonRect.left += toolButtonRect.width;
 
-  eraseButton_ = new Button(Rect(0.47, 0.02, 0.15, 0.05), false);
+  eraseButton_ = new Button(toolButtonRect, false);
   TextureParams regular1 = {100, 38, 54, 37, 10, 6, 10, 6};
   TextureParams hovered1 = {155, 38, 54, 37, 10, 6, 10, 6};
   TextureParams pressed1 = {210, 38, 54, 37, 10, 6, 10, 6};
@@ -54,8 +58,9 @@ void BuildTools::init(ShipView* shipView)
   eraseButton_->sigClick.connect(this, &BuildTools::eraseClick);
   addWidget(eraseButton_);
   eraseButton_->setToolTip("Demolish");
+  toolButtonRect.left += toolButtonRect.width;
 
-  selectButton_ = new Button(Rect(0.62, 0.02, 0.15, 0.05), false);
+  selectButton_ = new Button(toolButtonRect, false);
   TextureParams regular4 = {100, 183, 54, 37, 10, 6, 10, 6};
   TextureParams hovered4 = {155, 183, 54, 37, 10, 6, 10, 6};
   TextureParams pressed4 = {210, 183, 54, 37, 10, 6, 10, 6};
@@ -63,6 +68,18 @@ void BuildTools::init(ShipView* shipView)
   selectButton_->sigClick.connect(this, &BuildTools::selectClick);
   addWidget(selectButton_);
   selectButton_->setToolTip("Select");
+  toolButtonRect.left = 0.02f;
+  toolButtonRect.top += toolButtonRect.height;
+
+  entranceButton_ = new Button(toolButtonRect, false);
+  TextureParams regular5 = {265, 38, 54, 37, 10, 6, 10, 6};
+  TextureParams hovered5 = {320, 38, 54, 37, 10, 6, 10, 6};
+  TextureParams pressed5 = {375, 38, 54, 37, 10, 6, 10, 6};
+  entranceButton_->init(regular5, hovered5, pressed5);
+  entranceButton_->sigClick.connect(this, &BuildTools::entranceClick);
+  addWidget(entranceButton_);
+  entranceButton_->setToolTip("Choose entrance");
+  toolButtonRect.left += toolButtonRect.width;
 
   Button* upButton = new Button(Rect(0.8, 0.01, 0.08, 0.023));
   upButton->setCaption("+");
@@ -98,12 +115,13 @@ void BuildTools::init(ShipView* shipView)
   addWidget(ghostDeckText_);
   ghostDeckText_->setToolTip("Ghost deck");
 
-  progressBar_ = new ProgressBar(Rect(0.95, 0.2, 0.03, 0.75));
+  float lastY = (float)(toolButtonRect.top + toolButtonRect.height + 0.01);
+
+  progressBar_ = new ProgressBar(Rect(0.95, 0.23, 0.03, 0.75));
   addWidget(progressBar_);
   progressBar_->setParams(10, 2, 7);
 
   float lastX = 0.02f;
-  float lastY = 0.08f;
   firstButton_ = 0;
   float width = 0.317f;
   int currentCount = 0;
@@ -206,6 +224,7 @@ void BuildTools::buildClick()
   doorButton_->setHighlighted(false);
   eraseButton_->setHighlighted(false);
   selectButton_->setHighlighted(false);
+  entranceButton_->setHighlighted(false);
 }
 
 void BuildTools::eraseClick()
@@ -216,6 +235,7 @@ void BuildTools::eraseClick()
   doorButton_->setHighlighted(false);
   eraseButton_->setHighlighted(true);
   selectButton_->setHighlighted(false);
+  entranceButton_->setHighlighted(false);
 }
 
 void BuildTools::floorClick()
@@ -226,6 +246,7 @@ void BuildTools::floorClick()
   doorButton_->setHighlighted(false);
   eraseButton_->setHighlighted(false);
   selectButton_->setHighlighted(false);
+  entranceButton_->setHighlighted(false);
 }
 
 void BuildTools::doorClick()
@@ -236,15 +257,29 @@ void BuildTools::doorClick()
   doorButton_->setHighlighted(true);
   eraseButton_->setHighlighted(false);
   selectButton_->setHighlighted(false);
+  entranceButton_->setHighlighted(false);
 }
 
 void BuildTools::selectClick()
 {
+  shipView_->select();
   buildButton_->setHighlighted(false);
   floorButton_->setHighlighted(false);
   doorButton_->setHighlighted(false);
   eraseButton_->setHighlighted(false);
   selectButton_->setHighlighted(true);
+  entranceButton_->setHighlighted(false);
+}
+
+void BuildTools::entranceClick()
+{
+  shipView_->chooseEntrance();
+  buildButton_->setHighlighted(false);
+  floorButton_->setHighlighted(false);
+  doorButton_->setHighlighted(false);
+  eraseButton_->setHighlighted(false);
+  selectButton_->setHighlighted(false);
+  entranceButton_->setHighlighted(true);
 }
 
 void BuildTools::onMouseWheelScroll( int direction )

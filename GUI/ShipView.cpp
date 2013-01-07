@@ -2,12 +2,13 @@
 #include "ShipView.h"
 #include "Renderer.h"
 #include "CompartmentButton.h"
+#include "BuildInfo.h"
 
 ShipView::ShipView(Rect size):Widget(size),layoutWidth_(50), layoutHeight_(50), zoom_(0.5f), offsetX_(0.0f), offsetY_(0.0f),
   scrolling_(false), lastMouseX_(0), lastMouseY_(0),hoveredLeft_(-1), hoveredTop_(-1), hoverWidth_(1), hoverHeight_(1),tileWidth_(0),
   tileHeight_(0),drawing_(false),drawingStartX_(-1), drawingStartY_(-1),desiredZoom_(1.0f),zoomStep_(0),action_(BuildWalls),
   tilesTexWidth_(0), tilesTexHeight_(0), hoveredComp_(NULL),activeDeckIdx_(-1),activeDeck_(NULL),buildInfo_(NULL),hoveredCompInfo_(NULL),
-  draggedCompartmentRoataion_(0),draggedComp_(NULL),ghostDeckIdx_(-1)
+  draggedCompartmentRoataion_(0),draggedComp_(NULL),ghostDeckIdx_(-1),entrance_(NULL)
 {
   tilesTexWidth_ = Renderer::getInstance().getTilesTexWidth();
   tilesTexHeight_ = Renderer::getInstance().getTilesTexHeight();
@@ -69,6 +70,7 @@ void ShipView::render()
       if (tileY < size_.top || tileY+tileHeight_ > size_.top + size_.height) {
         continue;
       }
+      Tile* tile = activeDeck_->getTile(i, j);
       //if (lastMouseX_ >= tileX && lastMouseX_ <= tileX + tileWidth_*hoverWidth_ && lastMouseY_ >= tileY && lastMouseY_ <= tileY + tileHeight_*hoverHeight_) {
       //  renderer.setColor(Vector4(100,255,50,200));
       //}
@@ -129,6 +131,10 @@ void ShipView::render()
           texPos.top = 65.0f / tilesTexHeight_;
         } else if (wallCode == 5) {
           texPos.top = 129.0f / tilesTexHeight_;
+        }
+        if (tile->isEntrance()) {
+          assert (tile == entrance_);
+          renderer.setColor(Vector4(200, 200, 200, 255));
         }
       }
       //texPos.left += 0.002f;
@@ -284,9 +290,11 @@ void ShipView::onMouseWheelScroll(int direction)
 
 void ShipView::onLMDown()
 {
-  drawing_ = true;
-  drawingStartX_ = hoveredLeft_;
-  drawingStartY_ = hoveredTop_;
+  if (action_ == BuildFloor || action_ == BuildWalls || action_ == Erase) {
+    drawing_ = true;
+    drawingStartX_ = hoveredLeft_;
+    drawingStartY_ = hoveredTop_;
+  }
 }
 
 void ShipView::onLMUp()
@@ -297,6 +305,8 @@ void ShipView::onLMUp()
     eraseArea();
   } else if (action_ == BuildDoor) {
     activeDeck_->setDoor(hoveredLeft_, hoveredTop_);
+  } else if (action_ == ChooseEntrance) {
+    setEntrance();
   }
   drawing_ = false;
 }
@@ -377,7 +387,7 @@ void ShipView::onDrop(Widget* w)
     }
   }
   activeDeck_->addCompartment(newComp);
-  buildInfo_->updateValues(ship_);
+  buildInfo_->updateValues();
   draggedCompartmentRoataion_ = 0;
 }
 
@@ -430,12 +440,16 @@ void ShipView::eraseArea()
         Compartment* comp = activeDeck_->getCompartment(i,j);
         if (comp) {
           activeDeck_->removeCompartment(comp);
-          buildInfo_->updateValues(ship_);
+          buildInfo_->updateValues();
           assert (!activeDeck_->getCompartment(i,j));
         }
       }
       activeDeck_->setTileType(i, j, value);
     }
+  }
+  if (entrance_ && entrance_->getType() != Tile::Door) {
+    assert (!entrance_->isEntrance());
+    entrance_ = NULL;
   }
 }
 
@@ -457,6 +471,16 @@ void ShipView::buildFloor()
 void ShipView::buildDoor()
 {
   action_ = BuildDoor;
+}
+
+void ShipView::select()
+{
+  action_ = Select;
+}
+
+void ShipView::chooseEntrance()
+{
+  action_ = ChooseEntrance;
 }
 
 void ShipView::setHoveredDimensions(int width, int height)
@@ -488,7 +512,7 @@ void ShipView::setBuildInfo( BuildInfo* info )
 {
   assert(info);
   buildInfo_ = info;
-  buildInfo_->updateValues(ship_);
+  buildInfo_->updateValues();
 }
 
 void ShipView::ghostDeckUp()
@@ -505,6 +529,20 @@ void ShipView::ghostDeckDown()
   if (ghostDeckIdx_ < -1) {
     ghostDeckIdx_ = -1;
   }
+}
+
+void ShipView::setEntrance()
+{
+  Tile::TileType type = activeDeck_->getTileType(hoveredLeft_, hoveredTop_);
+  if (type != Tile::Door) {
+    return;
+  }
+  if (entrance_) {
+    entrance_->setEntrance(false);
+  }
+  Tile* tile = activeDeck_->getTile(hoveredLeft_, hoveredTop_);
+  tile->setEntrance(!tile->isEntrance());
+  entrance_ = tile;
 }
 
 //DeckView::DeckView(int width, int height):width_(width), height_(height)

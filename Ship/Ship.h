@@ -29,21 +29,32 @@ private:
 class Tile
 {
 public:
-  Tile(int x, int y);
+  Tile(int x, int y, int deck);
   ~Tile();
   enum TileType {Empty, Wall, Floor, Door};
   TileType getType() {return type_;}
   void setType(TileType type) {type_ = type;}
+  void setEntrance(bool value) {entrance_ = value;}
+  bool isEntrance() {return entrance_;}
+  int getDeckIdx() {return deckIdx_;}
+  bool isAccessible() {return accessible_;}
+  void setAccessible(bool value) {accessible_ = value;}
+  bool isConnected() {return connected_;}
+  void setConnected(bool value) {connected_ = value;}
 private:
   TileType type_;
   int x_;
   int y_;
+  int deckIdx_;
+  bool accessible_;
+  bool connected_;
+  bool entrance_;
 };
 
 class Deck
 {
 public:
-  Deck(Ship* ship, int width, int height);
+  Deck(Ship* ship, int width, int height, int idx);
   ~Deck();
   Tile* getTile(int x, int y);
   void setTileType(int x, int y, Tile::TileType tile);
@@ -66,6 +77,7 @@ private:
   Tile** tileLayout_;
   list<Compartment*> compartments_;
   Ship* ship_;
+  int idx_;
 };
 
 class Compartment

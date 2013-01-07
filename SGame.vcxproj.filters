@@ -120,6 +120,9 @@
     <ClCompile Include="GUI\TextArea.cpp">
       <Filter>Source Files\GUI</Filter>
     </ClCompile>
+    <ClCompile Include="GUI\Forms\Editor.cpp">
+      <Filter>Source Files\GUI\Forms</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SGame.h">
@@ -196,6 +199,9 @@
     </ClInclude>
     <ClInclude Include="GUI\TextArea.h">
       <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI\Forms\Editor.h">
+      <Filter>Header Files\GUI\Forms</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

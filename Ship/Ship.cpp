@@ -5,7 +5,7 @@
 Ship::Ship(int width, int height):minCrew_(0),maxCrew_(0),powerRequired_(0),powerProduced_(0),crewCapacity_(0)
 {
   for (int i=0; i<3; ++i) {
-    Deck* deck = new Deck(this, width, height);
+    Deck* deck = new Deck(this, width, height, i);
     decks_.push_back(deck);
   }
 }
@@ -35,12 +35,12 @@ void Ship::updateParameters( int dMinCrew, int dMaxCrew, int dPowerProduced, int
   crewCapacity_ += dCrewCapacity;
 }
 
-Deck::Deck(Ship* ship, int width, int height):
-  ship_(ship), width_(width), height_(height)
+Deck::Deck(Ship* ship, int width, int height,int idx):
+  ship_(ship), width_(width), height_(height), idx_(idx)
 {
   tileLayout_ = new Tile*[width_ * height_];
   for (int i=0; i<width_*height_; ++i) {
-    tileLayout_[i] = new Tile(i%width_, i/height_);
+    tileLayout_[i] = new Tile(i%width_, i/height_, idx_);
   }
 }
 
@@ -76,13 +76,13 @@ Tile* Deck::getTile(int x, int y)
   return tileLayout_[y*width_ + x];
 }
 
-void Deck::setTileType(int x, int y, Tile::TileType tile)
+void Deck::setTileType(int x, int y, Tile::TileType value)
 {
   if (x < 0 || x >= width_ || y < 0 || y >= height_) {
     assert(0);
   }
-  if (tile == Tile::Wall || tile == Tile::Floor || tile == Tile::Door) {
-    if (hasDoorsAround(x, y) && tile != Tile::Floor) {
+  if (value == Tile::Wall || value == Tile::Floor || value == Tile::Door) {
+    if (hasDoorsAround(x, y) && value != Tile::Floor) {
       //Can't create doors or walls around a door
       return;
     }
@@ -91,11 +91,15 @@ void Deck::setTileType(int x, int y, Tile::TileType tile)
       return;
     }
   }
-  if ((tile == Tile::Wall || tile == Tile::Door) && getCompartment(x,y)) {
+  if ((value == Tile::Wall || value == Tile::Door) && getCompartment(x,y)) {
     //Can't build over compartment
     return;
   }
-  tileLayout_[y*width_ + x]->setType(tile);
+  Tile* tile = tileLayout_[y*width_ + x];
+  if (value != Tile::Door) {
+    tile->setEntrance(false);
+  }
+  tile->setType(value);
 }
 
 Tile::TileType Deck::getTileType(int x, int y)
@@ -253,7 +257,7 @@ void Item::setTexHeight(int height)
   texHeight_ = height / (float)Renderer::getInstance().getTilesTexHeight();
 }
 
-Tile::Tile(int x, int y):type_(Empty), x_(x), y_(y)
+Tile::Tile(int x, int y, int deck):type_(Empty), x_(x), y_(y), accessible_(false), connected_(false), deckIdx_(deck), entrance_(false)
 {
 }
 
