@@ -8,6 +8,8 @@ class BuildInfo;
 class ShipView: public Widget, public has_slots<>
 {
 public:
+  enum Action {BuildWalls, BuildFloor, BuildDoor, Erase, Select, ChooseEntrance, CreateConnection};
+  enum OverviewType {Construction, Accessibility};
   ShipView(Rect size);
   ~ShipView();
   void render();
@@ -19,12 +21,7 @@ public:
   void onLMDown();
   void onLMUp();
   void onDrop(Widget* w);
-  void buildWalls();
-  void buildFloor();
-  void buildDoor();
-  void erase();
-  void select();
-  void chooseEntrance();
+  void setAction(Action action);
   void setHoveredDimensions(int width, int height);
   void deckUp();
   void deckDown();
@@ -38,14 +35,13 @@ public:
   void constructionOverview();
   void accessibilityOverview();
 private:
-  enum Action {BuildWalls, BuildFloor, BuildDoor, Erase, Select, ChooseEntrance};
-  enum OverviewType {Construction, Accessibility};
   void drawCompartments();
   void plantWalls();
   void eraseArea();
   void setEntrance();
   void renderFloorSection(Deck* deck, int i, int j, Rect& tilePos, Rect& texPos);
   void structureChanged();
+  void createConnection();
   Ship* ship_;
   int layoutWidth_;
   int layoutHeight_;
@@ -79,6 +75,7 @@ private:
   int draggedCompartmentRoataion_;
   Compartment* draggedComp_;
   OverviewType overviewType_;
+  Compartment* selectedComp_;
 };
 //
 //class DeckView

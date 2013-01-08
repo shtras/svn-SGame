@@ -1,6 +1,6 @@
 #include "StdAfx.h"
 #include "ItemsDB.h"
-#include "..\FileTools\RoomParser.h"
+#include "RoomParser.h"
 
 ItemsDB& ItemsDB::getInstance()
 {

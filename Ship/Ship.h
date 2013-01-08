@@ -116,6 +116,10 @@ public:
   int getCrewCapacity() {return crewCapacity_;}
   CString getName() {return name_;}
   static CString categoryName(Category cat);
+  void connectTo(Compartment* comp);
+  void disconnectFrom(Compartment* comp);
+  set<Compartment*>& getConnections() {return connections_;}
+  bool isConnectedTo(Compartment* comp);
 private:
   Category category_;
   int left_;
@@ -130,6 +134,7 @@ private:
   int powerRequired_;
   int powerProduced_;
   int crewCapacity_;
+  set<Compartment*> connections_;
 };
 
 class Item

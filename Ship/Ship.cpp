@@ -37,7 +37,7 @@ void Ship::updateParameters( int dMinCrew, int dMaxCrew, int dPowerProduced, int
 
 void Ship::recalculateTiles()
 {
-  for (int i=0; i<decks_.size(); ++i) {
+  for (int i=0; i<(int)decks_.size(); ++i) {
     Deck* deck = decks_[i];
     for (int x=0; x<width_; ++x) {
       for (int y=0; y<height_; ++y) {
@@ -146,6 +146,11 @@ void Deck::removeCompartment( Compartment* comp )
 {
   compartments_.remove(comp);
   ship_->updateParameters(-comp->getMinCrew(), -comp->getMaxCrew(), -comp->getPowerRequired(), -comp->getPowerProduced(), -comp->getCrewCapacity());
+  for (auto itr = comp->getConnections().begin(); itr != comp->getConnections().end(); ++itr) {
+    Compartment* other = *itr;
+    other->disconnectFrom(comp);
+  }
+  delete comp;
 }
 
 Tile* Deck::getTile(int x, int y)
@@ -302,6 +307,23 @@ CString Compartment::categoryName(Category cat)
     break;
   }
   return "";
+}
+
+void Compartment::connectTo( Compartment* comp )
+{
+  assert (connections_.count(comp) == 0);
+  connections_.insert(comp);
+}
+
+void Compartment::disconnectFrom( Compartment* comp )
+{
+  assert (connections_.count(comp) == 1);
+  connections_.erase(comp);
+}
+
+bool Compartment::isConnectedTo( Compartment* comp )
+{
+  return connections_.count(comp) == 1;
 }
 
 Item::Item()

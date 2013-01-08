@@ -81,6 +81,16 @@ void BuildTools::init(ShipView* shipView)
   entranceButton_->setToolTip("Choose entrance");
   toolButtonRect.left += toolButtonRect.width;
 
+  connectionButton_ = new Button(toolButtonRect, false);
+  TextureParams regular6 = {265, 76, 54, 37, 10, 6, 10, 6};
+  TextureParams hovered6 = {320, 76, 54, 37, 10, 6, 10, 6};
+  TextureParams pressed6 = {375, 76, 54, 37, 10, 6, 10, 6};
+  connectionButton_->init(regular6, hovered6, pressed6);
+  connectionButton_->sigClick.connect(this, &BuildTools::createConnectionClick);
+  addWidget(connectionButton_);
+  connectionButton_->setToolTip("Create connection");
+  toolButtonRect.left += toolButtonRect.width;
+
   Button* upButton = new Button(Rect(0.8, 0.01, 0.08, 0.023));
   upButton->setCaption("+");
   addWidget(upButton);
@@ -141,7 +151,7 @@ void BuildTools::init(ShipView* shipView)
     }
 
     list<Compartment*> comps = ItemsDB::getInstance().getCompartmentsByCategory((Compartment::Category)i);
-    float lastTop = 0.2f;
+    float lastTop = 0.25f;
     float aspect = size_.width / size_.height * Renderer::getInstance().getWidth() / (float)Renderer::getInstance().getHeight();
     int count = 0;
     compButtons_[i] = vector<CompartmentButton*>();
@@ -218,68 +228,86 @@ void BuildTools::categoryClick(void* param)
 
 void BuildTools::buildClick()
 {
-  shipView_->buildWalls();
+  shipView_->setAction(ShipView::BuildWalls);
   buildButton_->setHighlighted(true);
   floorButton_->setHighlighted(false);
   doorButton_->setHighlighted(false);
   eraseButton_->setHighlighted(false);
   selectButton_->setHighlighted(false);
   entranceButton_->setHighlighted(false);
+  connectionButton_->setHighlighted(false);
 }
 
 void BuildTools::eraseClick()
 {
-  shipView_->erase();
+  shipView_->setAction(ShipView::Erase);
   buildButton_->setHighlighted(false);
   floorButton_->setHighlighted(false);
   doorButton_->setHighlighted(false);
   eraseButton_->setHighlighted(true);
   selectButton_->setHighlighted(false);
   entranceButton_->setHighlighted(false);
+  connectionButton_->setHighlighted(false);
 }
 
 void BuildTools::floorClick()
 {
-  shipView_->buildFloor();
+  shipView_->setAction(ShipView::BuildFloor);
   buildButton_->setHighlighted(false);
   floorButton_->setHighlighted(true);
   doorButton_->setHighlighted(false);
   eraseButton_->setHighlighted(false);
   selectButton_->setHighlighted(false);
   entranceButton_->setHighlighted(false);
+  connectionButton_->setHighlighted(false);
 }
 
 void BuildTools::doorClick()
 {
-  shipView_->buildDoor();
+  shipView_->setAction(ShipView::BuildDoor);
   buildButton_->setHighlighted(false);
   floorButton_->setHighlighted(false);
   doorButton_->setHighlighted(true);
   eraseButton_->setHighlighted(false);
   selectButton_->setHighlighted(false);
   entranceButton_->setHighlighted(false);
+  connectionButton_->setHighlighted(false);
 }
 
 void BuildTools::selectClick()
 {
-  shipView_->select();
+  shipView_->setAction(ShipView::Select);
   buildButton_->setHighlighted(false);
   floorButton_->setHighlighted(false);
   doorButton_->setHighlighted(false);
   eraseButton_->setHighlighted(false);
   selectButton_->setHighlighted(true);
   entranceButton_->setHighlighted(false);
+  connectionButton_->setHighlighted(false);
 }
 
 void BuildTools::entranceClick()
 {
-  shipView_->chooseEntrance();
+  shipView_->setAction(ShipView::ChooseEntrance);
   buildButton_->setHighlighted(false);
   floorButton_->setHighlighted(false);
   doorButton_->setHighlighted(false);
   eraseButton_->setHighlighted(false);
   selectButton_->setHighlighted(false);
   entranceButton_->setHighlighted(true);
+  connectionButton_->setHighlighted(false);
+}
+
+void BuildTools::createConnectionClick()
+{
+  shipView_->setAction(ShipView::CreateConnection);
+  buildButton_->setHighlighted(false);
+  floorButton_->setHighlighted(false);
+  doorButton_->setHighlighted(false);
+  eraseButton_->setHighlighted(false);
+  selectButton_->setHighlighted(false);
+  entranceButton_->setHighlighted(false);
+  connectionButton_->setHighlighted(true);
 }
 
 void BuildTools::onMouseWheelScroll( int direction )

@@ -8,7 +8,7 @@ ShipView::ShipView(Rect size):Widget(size),layoutWidth_(50), layoutHeight_(50), 
   scrolling_(false), lastMouseX_(0), lastMouseY_(0),hoveredLeft_(-1), hoveredTop_(-1), hoverWidth_(1), hoverHeight_(1),tileWidth_(0),
   tileHeight_(0),drawing_(false),drawingStartX_(-1), drawingStartY_(-1),desiredZoom_(1.0f),zoomStep_(0),action_(BuildWalls),
   tilesTexWidth_(0), tilesTexHeight_(0), hoveredComp_(NULL),activeDeckIdx_(-1),activeDeck_(NULL),buildInfo_(NULL),hoveredCompInfo_(NULL),
-  draggedCompartmentRoataion_(0),draggedComp_(NULL),ghostDeckIdx_(-1),overviewType_(Construction)
+  draggedCompartmentRoataion_(0),draggedComp_(NULL),ghostDeckIdx_(-1),overviewType_(Construction),selectedComp_(NULL)
 {
   tilesTexWidth_ = Renderer::getInstance().getTilesTexWidth();
   tilesTexHeight_ = Renderer::getInstance().getTilesTexHeight();
@@ -105,10 +105,17 @@ void ShipView::render()
         }
         renderer.setColor(Vector4(255,255,255,50));
       }
-      if (hoveredComp_ && i >= hoveredComp_->getX() && i < hoveredComp_->getX() + hoveredComp_->getWidth() &&
-          j >= hoveredComp_->getY() && j < hoveredComp_->getY() + hoveredComp_->getHeight()) {
+      Compartment* comp = activeDeck_->getCompartment(i, j);
+      if (hoveredComp_ && comp == hoveredComp_) {
         renderer.setColor(Vector4(125, 200, 210, 255));
       }
+      if (selectedComp_ && comp == selectedComp_) {
+        renderer.setColor(Vector4(125, 170, 190, 255));
+      }
+      if (selectedComp_ && comp && selectedComp_->isConnectedTo(comp)) {
+        renderer.setColor(Vector4(125, 125, 125, 255));
+      }
+      
       if (drawing_ && i >= drawStartX && i <= drawEndX && j >= drawStartY && j <= drawEndY) {
         renderer.setColor(Vector4(255,155,55,200));
       }
@@ -316,6 +323,15 @@ void ShipView::onLMUp()
     activeDeck_->setDoor(hoveredLeft_, hoveredTop_);
   } else if (action_ == ChooseEntrance) {
     setEntrance();
+  } else if (action_ == CreateConnection) {
+    if (!selectedComp_ && hoveredComp_) {
+      selectedComp_ = hoveredComp_;
+    }
+    if (selectedComp_ && hoveredComp_ && selectedComp_ != hoveredComp_) {
+      createConnection();
+    }
+  } else if (action_ == Select) {
+    selectedComp_ = hoveredComp_;
   }
   drawing_ = false;
   structureChanged();
@@ -450,6 +466,12 @@ void ShipView::eraseArea()
       if (value == Tile::Empty) {
         Compartment* comp = activeDeck_->getCompartment(i,j);
         if (comp) {
+          if (comp == selectedComp_) {
+            selectedComp_ = NULL;
+          }
+          if (comp == hoveredComp_) {
+            hoveredComp_ = NULL;
+          }
           activeDeck_->removeCompartment(comp);
           buildInfo_->updateValues();
           assert (!activeDeck_->getCompartment(i,j));
@@ -464,34 +486,9 @@ void ShipView::eraseArea()
   }
 }
 
-void ShipView::buildWalls()
+void ShipView::setAction( Action action )
 {
-  action_ = BuildWalls;
-}
-
-void ShipView::erase()
-{
-  action_ = Erase;
-}
-
-void ShipView::buildFloor()
-{
-  action_ = BuildFloor;
-}
-
-void ShipView::buildDoor()
-{
-  action_ = BuildDoor;
-}
-
-void ShipView::select()
-{
-  action_ = Select;
-}
-
-void ShipView::chooseEntrance()
-{
-  action_ = ChooseEntrance;
+  action_ = action;
 }
 
 void ShipView::setHoveredDimensions(int width, int height)
@@ -569,6 +566,18 @@ void ShipView::constructionOverview()
 void ShipView::accessibilityOverview()
 {
   overviewType_ = Accessibility;
+}
+
+void ShipView::createConnection()
+{
+  assert(selectedComp_ && hoveredComp_);
+  if (hoveredComp_->isConnectedTo(selectedComp_)) {
+    assert(selectedComp_->isConnectedTo(hoveredComp_));
+    return;
+  }
+  selectedComp_->connectTo(hoveredComp_);
+  hoveredComp_->connectTo(selectedComp_);
+  selectedComp_ = NULL;
 }
 
 //DeckView::DeckView(int width, int height):width_(width), height_(height)
