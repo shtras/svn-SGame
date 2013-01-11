@@ -44,10 +44,16 @@ void Ship::recalculateTiles()
         Tile* tile = deck->getTile(x, y);
         tile->setConnected(false);
         tile->setAccessible(false);
+        tile->setChecked(false);
       }
     }
   }
   if (!entrance_) {
+    return;
+  }
+  if (!isEntranceValid()) {
+    entrance_->setEntrance(false);
+    entrance_ = NULL;
     return;
   }
   recalculateTilesRec(entrance_->getDeckIdx(), entrance_->getX(), entrance_->getY(), true, true);
@@ -113,6 +119,48 @@ bool Ship::recalculateTile( Tile* tile, bool& accessible )
   } else {
     return false;
   }
+}
+
+bool Ship::isEntranceValid()
+{
+  assert(entrance_);
+  return outAccessible(entrance_);
+}
+
+bool Ship::outAccessible(Tile* tile)
+{
+  if (tile->isChecked()) {
+    return false;
+  }
+  if (tile != entrance_ && tile->getType() != Tile::Empty) {
+    return false;
+  }
+  tile->setChecked(true);
+  int x = tile->getX();
+  int y = tile->getY();
+  Deck* deck = decks_[tile->getDeckIdx()];
+  bool res = false;
+  Tile* left = deck->getTile(x-1, y);
+  if (!left) {
+    return true;
+  }
+  res |= outAccessible(left);
+  Tile* up = deck->getTile(x, y-1);
+  if (!up) {
+    return true;
+  }
+  res |= outAccessible(up);
+  Tile* right = deck->getTile(x+1, y);
+  if (!right) {
+    return true;
+  }
+  res |= outAccessible(right);
+  Tile* down = deck->getTile(x, y+1);
+  if (!down) {
+    return true;
+  }
+  res |= outAccessible(down);
+  return res;
 }
 
 Deck::Deck(Ship* ship, int width, int height,int idx):
@@ -275,6 +323,9 @@ Compartment::Compartment(const Compartment& other):left_(other.left_), top_(othe
   for (auto itr = other.items_.begin(); itr != other.items_.end(); ++itr) {
     items_.push_back(new Item(**itr));
   }
+  for (auto itr = other.requiredConnections_.begin(); itr != other.requiredConnections_.end(); ++itr) {
+    requiredConnections_.insert(*itr);
+  }
 }
 
 Compartment::~Compartment()
@@ -326,6 +377,22 @@ bool Compartment::isConnectedTo( Compartment* comp )
   return connections_.count(comp) == 1;
 }
 
+bool Compartment::isConnectedTo( CString compName )
+{
+  for (auto itr = connections_.begin(); itr != connections_.end(); ++itr) {
+    Compartment* comp = *itr;
+    if (comp->getName() == compName) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool Compartment::requiredConnection( CString compName )
+{
+  return requiredConnections_.count(compName) != 0 && !isConnectedTo(compName);
+}
+
 Item::Item()
 {
 }
@@ -359,7 +426,7 @@ void Item::setTexHeight(int height)
   texHeight_ = height / (float)Renderer::getInstance().getTilesTexHeight();
 }
 
-Tile::Tile(int x, int y, int deck):type_(Empty), x_(x), y_(y), accessible_(false), connected_(false), deckIdx_(deck), entrance_(false)
+Tile::Tile(int x, int y, int deck):type_(Empty), x_(x), y_(y), accessible_(false), connected_(false), checked_(false), deckIdx_(deck), entrance_(false)
 {
 }
 

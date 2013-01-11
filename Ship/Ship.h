@@ -23,6 +23,8 @@ public:
 private:
   void recalculateTilesRec(int deckIdx, int x, int y, bool accessible, bool connected);
   bool recalculateTile(Tile* tile, bool& accessible);
+  bool isEntranceValid();
+  bool outAccessible(Tile* tile);
   vector<Deck*> decks_;
   int minCrew_;
   int maxCrew_;
@@ -49,6 +51,8 @@ public:
   void setAccessible(bool value) {accessible_ = value;}
   bool isConnected() {return connected_;}
   void setConnected(bool value) {connected_ = value;}
+  bool isChecked() {return checked_;}
+  void setChecked(bool value) {checked_ = value;}
   int getX() {return x_;}
   int getY() {return y_;}
 private:
@@ -59,6 +63,7 @@ private:
   bool accessible_;
   bool connected_;
   bool entrance_;
+  bool checked_; //For entrance validation
 };
 
 class Deck
@@ -120,6 +125,9 @@ public:
   void disconnectFrom(Compartment* comp);
   set<Compartment*>& getConnections() {return connections_;}
   bool isConnectedTo(Compartment* comp);
+  set <CString>& getRequiredConnections() {return requiredConnections_;}
+  bool isConnectedTo(CString compName);
+  bool requiredConnection(CString compName);
 private:
   Category category_;
   int left_;
@@ -135,6 +143,7 @@ private:
   int powerProduced_;
   int crewCapacity_;
   set<Compartment*> connections_;
+  set<CString> requiredConnections_;
 };
 
 class Item

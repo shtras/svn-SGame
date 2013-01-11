@@ -7,7 +7,7 @@
 #include "ItemsDB.h"
 #include "Editor.h"
 
-const char* Version = "0.0.4.";
+const char* Version = "0.0.5.";
 //TODO for next major version:
 //1. Complete editor
 //TODO for next minor version:
@@ -19,7 +19,7 @@ const char* Version = "0.0.4.";
 //0.0.5:
 //1.V Multiple layers in ship view
 //2.V Compartment purposes and additional parameters
-//3. Links between compartments
+//3.V Links between compartments
 //3.1 Show required links in hover info
 //4.V Info panel with ship parameters
 //5.V Selection of which deck to show as ghost (upper or lower)
@@ -50,6 +50,9 @@ const char* Version = "0.0.4.";
 //Implemented accessibility and connectivity check for tiles
 //Implemented multiple layers (construction and accessibility)
 //Implemented main entrance to the ship (only one possible)
+//Added entrance validation
+//Added connections and additional info on hover windows
+//***Shifted to 0.0.5 at build #905
 
 SGame::SGame():state_(Menu),stateRunnig_(false)
 {

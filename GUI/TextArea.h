@@ -11,6 +11,7 @@ public:
   void pushLine(CString line);
   void onMouseWheelScroll(int direction);
   void render();
+  void clearLines();
 private:
   void resizePB();
   list<CString> lines_;

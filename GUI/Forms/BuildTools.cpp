@@ -91,6 +91,16 @@ void BuildTools::init(ShipView* shipView)
   connectionButton_->setToolTip("Create connection");
   toolButtonRect.left += toolButtonRect.width;
 
+  eraseConnectionButton_ = new Button(toolButtonRect, false);
+  TextureParams regular7 = {265, 114, 54, 37, 10, 6, 10, 6};
+  TextureParams hovered7 = {320, 114, 54, 37, 10, 6, 10, 6};
+  TextureParams pressed7 = {375, 114, 54, 37, 10, 6, 10, 6};
+  eraseConnectionButton_->init(regular7, hovered7, pressed7);
+  eraseConnectionButton_->sigClick.connect(this, &BuildTools::eraseConnectionClick);
+  addWidget(eraseConnectionButton_);
+  eraseConnectionButton_->setToolTip("Remove connection");
+  toolButtonRect.left += toolButtonRect.width;
+
   Button* upButton = new Button(Rect(0.8, 0.01, 0.08, 0.023));
   upButton->setCaption("+");
   addWidget(upButton);
@@ -236,6 +246,7 @@ void BuildTools::buildClick()
   selectButton_->setHighlighted(false);
   entranceButton_->setHighlighted(false);
   connectionButton_->setHighlighted(false);
+  eraseConnectionButton_->setHighlighted(false);
 }
 
 void BuildTools::eraseClick()
@@ -248,6 +259,7 @@ void BuildTools::eraseClick()
   selectButton_->setHighlighted(false);
   entranceButton_->setHighlighted(false);
   connectionButton_->setHighlighted(false);
+  eraseConnectionButton_->setHighlighted(false);
 }
 
 void BuildTools::floorClick()
@@ -260,6 +272,7 @@ void BuildTools::floorClick()
   selectButton_->setHighlighted(false);
   entranceButton_->setHighlighted(false);
   connectionButton_->setHighlighted(false);
+  eraseConnectionButton_->setHighlighted(false);
 }
 
 void BuildTools::doorClick()
@@ -272,6 +285,7 @@ void BuildTools::doorClick()
   selectButton_->setHighlighted(false);
   entranceButton_->setHighlighted(false);
   connectionButton_->setHighlighted(false);
+  eraseConnectionButton_->setHighlighted(false);
 }
 
 void BuildTools::selectClick()
@@ -284,6 +298,7 @@ void BuildTools::selectClick()
   selectButton_->setHighlighted(true);
   entranceButton_->setHighlighted(false);
   connectionButton_->setHighlighted(false);
+  eraseConnectionButton_->setHighlighted(false);
 }
 
 void BuildTools::entranceClick()
@@ -296,6 +311,7 @@ void BuildTools::entranceClick()
   selectButton_->setHighlighted(false);
   entranceButton_->setHighlighted(true);
   connectionButton_->setHighlighted(false);
+  eraseConnectionButton_->setHighlighted(false);
 }
 
 void BuildTools::createConnectionClick()
@@ -308,6 +324,20 @@ void BuildTools::createConnectionClick()
   selectButton_->setHighlighted(false);
   entranceButton_->setHighlighted(false);
   connectionButton_->setHighlighted(true);
+  eraseConnectionButton_->setHighlighted(false);
+}
+
+void BuildTools::eraseConnectionClick()
+{
+  shipView_->setAction(ShipView::RemoveConnection);
+  buildButton_->setHighlighted(false);
+  floorButton_->setHighlighted(false);
+  doorButton_->setHighlighted(false);
+  eraseButton_->setHighlighted(false);
+  selectButton_->setHighlighted(false);
+  entranceButton_->setHighlighted(false);
+  connectionButton_->setHighlighted(false);
+  eraseConnectionButton_->setHighlighted(true);
 }
 
 void BuildTools::onMouseWheelScroll( int direction )

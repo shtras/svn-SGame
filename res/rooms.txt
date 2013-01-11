@@ -58,8 +58,8 @@ CompartmentInfo {
 		Name=Bridge
 		Width=2
 		Height=3
-		MinCrew=2
-		MaxCrew=6
+		MinCrew=1
+		MaxCrew=2
 		PowerRequired=6
 		Item {
 			ID=9 ; Table

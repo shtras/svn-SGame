@@ -1,14 +1,14 @@
 #pragma once
 #include "TexturedWidget.h"
 #include "Ship.h"
-#include "Window.h"
+#include "CompHoverInfo.h"
 
 class BuildInfo;
 
 class ShipView: public Widget, public has_slots<>
 {
 public:
-  enum Action {BuildWalls, BuildFloor, BuildDoor, Erase, Select, ChooseEntrance, CreateConnection};
+  enum Action {BuildWalls, BuildFloor, BuildDoor, Erase, Select, ChooseEntrance, CreateConnection, RemoveConnection};
   enum OverviewType {Construction, Accessibility};
   ShipView(Rect size);
   ~ShipView();
@@ -42,6 +42,8 @@ private:
   void renderFloorSection(Deck* deck, int i, int j, Rect& tilePos, Rect& texPos);
   void structureChanged();
   void createConnection();
+  void removeConnection();
+  void addLogMessage(CString message);
   Ship* ship_;
   int layoutWidth_;
   int layoutHeight_;
@@ -71,7 +73,7 @@ private:
   int tilesTexHeight_;
   Compartment* hoveredComp_;
   BuildInfo* buildInfo_;
-  Window* hoveredCompInfo_;
+  CompHoverInfo* hoveredCompInfo_;
   int draggedCompartmentRoataion_;
   Compartment* draggedComp_;
   OverviewType overviewType_;

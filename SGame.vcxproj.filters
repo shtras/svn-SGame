@@ -123,6 +123,9 @@
     <ClCompile Include="GUI\Forms\Editor.cpp">
       <Filter>Source Files\GUI\Forms</Filter>
     </ClCompile>
+    <ClCompile Include="GUI\CompHoverInfo.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SGame.h">
@@ -202,6 +205,9 @@
     </ClInclude>
     <ClInclude Include="GUI\Forms\Editor.h">
       <Filter>Header Files\GUI\Forms</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI\CompHoverInfo.h">
+      <Filter>Header Files\GUI</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

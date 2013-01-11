@@ -60,7 +60,7 @@ void TextArea::render()
       continue;
     }
     CString& line = *itr;
-    renderer.renderText(size_.left + 0.01f, lastTop, line);
+    renderer.renderText(size_.left + 0.005f, lastTop, line);
     lastTop += charHeight;
   }
 }
@@ -72,4 +72,11 @@ void TextArea::resizePB()
     last = lines_.size();
   }
   pb_->setParams(lines_.size(), first_, last);
+}
+
+void TextArea::clearLines()
+{
+  lines_.clear();
+  pb_->setParams(0, 0, 0);
+  first_ = 0;
 }

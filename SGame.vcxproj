@@ -81,6 +81,7 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <MultiProcessorCompilation>false</MultiProcessorCompilation>
       <MinimalRebuild>true</MinimalRebuild>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -100,6 +101,7 @@
     <ClCompile Include="Generic\CString.cpp" />
     <ClCompile Include="GUI\Button.cpp" />
     <ClCompile Include="GUI\CompartmentButton.cpp" />
+    <ClCompile Include="GUI\CompHoverInfo.cpp" />
     <ClCompile Include="GUI\Forms\BuildInfo.cpp" />
     <ClCompile Include="GUI\Forms\BuildTools.cpp" />
     <ClCompile Include="GUI\Forms\Editor.cpp" />
@@ -129,6 +131,7 @@
     <ClInclude Include="Generic\CString.h" />
     <ClInclude Include="GUI\Button.h" />
     <ClInclude Include="GUI\CompartmentButton.h" />
+    <ClInclude Include="GUI\CompHoverInfo.h" />
     <ClInclude Include="GUI\Forms\BuildInfo.h" />
     <ClInclude Include="GUI\Forms\BuildTools.h" />
     <ClInclude Include="GUI\Forms\Editor.h" />

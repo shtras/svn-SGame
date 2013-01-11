@@ -11,6 +11,7 @@ public:
   ~BuildInfo();
   void init(ShipView* shipView);
   void updateValues();
+  void addLogMessage(CString message) {ta_->pushLine(message);}
 private:
   FramedText* crewText_;
   FramedText* powerText_;

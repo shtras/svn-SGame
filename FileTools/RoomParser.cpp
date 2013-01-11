@@ -195,6 +195,7 @@ bool RoomParser::processCompartment( Section* sec )
   int powerRequired = 0;
   int powerProduced = 0;
   int crewCapacity = 0;
+  set<CString> requiredConnections;
   for (auto itr = sec->getProperties().begin(); itr != sec->getProperties().end(); ++itr) {
     const Property& prop = *itr;
     if (prop.propName == "category") {
@@ -210,8 +211,13 @@ bool RoomParser::processCompartment( Section* sec )
     } else if (prop.propName == "maxcrew") {
       maxCrew = parseInt(prop.value);
     } else if (prop.propName == "powerrequired") {
-      powerRequired = parseInt(prop.value);;
+      powerRequired = parseInt(prop.value);
     } else if (prop.propName == "required") {
+      CString value = prop.value;
+      vector<CString> values = value.tokenize(',');
+      for (int i=0; i<(int)values.size(); ++i) {
+        requiredConnections.insert(values[i]);
+      }
     } else if (prop.propName == "powerproduced") {
       powerProduced = parseInt(prop.value);
     } else if (prop.propName == "crewcapacity") {
@@ -235,6 +241,7 @@ bool RoomParser::processCompartment( Section* sec )
   comp->powerRequired_ = powerRequired;
   comp->powerProduced_ = powerProduced;
   comp->crewCapacity_ = crewCapacity;
+  comp->requiredConnections_ = requiredConnections;
   for (auto itr = sec->getSubSections().begin(); itr != sec->getSubSections().end(); ++itr) {
     Section* subSec = *itr;
     assert(subSec);

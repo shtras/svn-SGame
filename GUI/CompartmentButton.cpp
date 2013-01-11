@@ -53,6 +53,15 @@ CompartmentButton::CompartmentButton(Rect size, Compartment* comp, ShipView* shi
     hoverWindow_->addWidget(t);
     top += height + 0.01;
   }
+
+  for (auto itr = comp_->getRequiredConnections().begin(); itr != comp_->getRequiredConnections().end(); ++itr) {
+    CString connection = *itr;
+    t = new Text(Rect(0.01, top, 0.98, height));
+    t->setCaption("Requires: " + connection);
+    t->setAlign(Widget::LeftAlign);
+    hoverWindow_->addWidget(t);
+    top += height + 0.01;
+  }
 }
 
 CompartmentButton::~CompartmentButton()

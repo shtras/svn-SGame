@@ -20,7 +20,7 @@ ShipView::ShipView(Rect size):Widget(size),layoutWidth_(50), layoutHeight_(50), 
   activeDeck_ = ship_->getDeck(0);
   activeDeckIdx_ = 0;
   desiredZoom_ = zoom_;
-  hoveredCompInfo_ = new Window(Rect(0.0, 0.0, 0.2, 0.2));
+  hoveredCompInfo_ = new CompHoverInfo(Rect(0.0, 0.0, 0.2, 0.2));
 }
 
 ShipView::~ShipView()
@@ -268,6 +268,7 @@ void ShipView::onMouseMove()
   hoveredTop_ = (int)(((lastMouseY_ - size_.top) - offsetY_*zoom_)/tileHeight_);
   hoveredComp_ = activeDeck_->getCompartment(hoveredLeft_, hoveredTop_);
   if (hoveredComp_ && !drawing_) {
+    hoveredCompInfo_->setCompartment(hoveredComp_);
     Renderer::getInstance().setFloatingWidget(hoveredCompInfo_);
   } else {
     Renderer::getInstance().setFloatingWidget(NULL);
@@ -323,18 +324,26 @@ void ShipView::onLMUp()
     activeDeck_->setDoor(hoveredLeft_, hoveredTop_);
   } else if (action_ == ChooseEntrance) {
     setEntrance();
-  } else if (action_ == CreateConnection) {
+  } else if (action_ == CreateConnection || action_ == RemoveConnection) {
     if (!selectedComp_ && hoveredComp_) {
       selectedComp_ = hoveredComp_;
     }
     if (selectedComp_ && hoveredComp_ && selectedComp_ != hoveredComp_) {
-      createConnection();
+      if (action_ == CreateConnection) {
+        createConnection();
+      } else {
+        removeConnection();
+      }
     }
   } else if (action_ == Select) {
     selectedComp_ = hoveredComp_;
   }
   drawing_ = false;
+  Tile* lastEntrance = ship_->getEntrance();
   structureChanged();
+  if (lastEntrance != ship_->getEntrance()) {
+    addLogMessage("Entrance is blocked. Deleted");
+  }
 }
 
 void ShipView::onDrop(Widget* w)
@@ -549,7 +558,7 @@ void ShipView::setEntrance()
     ship_->getEntrance()->setEntrance(false);
   }
   Tile* tile = activeDeck_->getTile(hoveredLeft_, hoveredTop_);
-  tile->setEntrance(!tile->isEntrance());
+  tile->setEntrance(true);
   ship_->setEntrance(tile);
 }
 
@@ -575,9 +584,36 @@ void ShipView::createConnection()
     assert(selectedComp_->isConnectedTo(hoveredComp_));
     return;
   }
+  if (hoveredComp_->isConnectedTo(selectedComp_->getName()) || selectedComp_->isConnectedTo(hoveredComp_->getName())) {
+    addLogMessage("Already connected to this type");
+    return;
+  }
+  if (!hoveredComp_->requiredConnection(selectedComp_->getName()) && !selectedComp_->requiredConnection(hoveredComp_->getName())) {
+    addLogMessage("Wrong connection");
+    return;
+  }
   selectedComp_->connectTo(hoveredComp_);
   hoveredComp_->connectTo(selectedComp_);
+  addLogMessage(hoveredComp_->getName() + " connected to " + selectedComp_->getName());
   selectedComp_ = NULL;
+}
+
+void ShipView::removeConnection()
+{
+  assert(selectedComp_ && hoveredComp_);
+  if (!hoveredComp_->isConnectedTo(selectedComp_)) {
+    assert(!selectedComp_->isConnectedTo(hoveredComp_));
+    addLogMessage("Connection does not exist");
+    return;
+  }
+  selectedComp_->disconnectFrom(hoveredComp_);
+  hoveredComp_->disconnectFrom(selectedComp_);
+  addLogMessage("Connection removed");
+}
+
+void ShipView::addLogMessage( CString message )
+{
+  buildInfo_->addLogMessage(message);
 }
 
 //DeckView::DeckView(int width, int height):width_(width), height_(height)

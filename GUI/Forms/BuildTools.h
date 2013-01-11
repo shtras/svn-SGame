@@ -20,6 +20,7 @@ private:
   void selectClick();
   void entranceClick();
   void createConnectionClick();
+  void eraseConnectionClick();
   void categoryClick(void* param);
   void upClick();
   void downClick();
@@ -34,6 +35,7 @@ private:
   Button* selectButton_;
   Button* entranceButton_;
   Button* connectionButton_;
+  Button* eraseConnectionButton_;
   Text* deckText_;
   Text* ghostDeckText_;
   vector<Button*> categoryButtons_;
