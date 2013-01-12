@@ -53,6 +53,18 @@ CompartmentInfo {
 		X=256
 		Y=192
 	}
+	Item {
+		ID=10
+		Name=Engine1
+		X=0
+		Y=512
+	}
+	Item {
+		ID=11
+		Name=Engine2
+		X=0
+		Y=576
+	}
 	Compartment {
 		Category=1 ; Navigation
 		Name=Bridge
@@ -198,6 +210,24 @@ CompartmentInfo {
 			X=3
 			Y=1
 			Rotation=2
+		}
+	}
+	Compartment {
+		Category=0
+		Name=Engine
+		Width=2
+		Height=1
+		Item {
+			ID=10
+			X=0
+			Y=0
+			Rotation=0
+		}
+		Item {
+			ID=11
+			X=1
+			Y=0
+			Rotation=0
 		}
 	}
 }

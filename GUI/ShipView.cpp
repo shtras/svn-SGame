@@ -92,18 +92,25 @@ void ShipView::render()
           coord += " " + CString(drawEndX - drawStartX + 1) + "," + CString(drawEndY - drawStartY + 1);
         }
         renderer.renderText(tileX + tileWidth_*0.5f - renderer.getCharWidth()*coord.getSize()*0.5f, tileY + tileHeight_*0.5f - renderer.getCharHeight()*0.5f, coord);
-      } else if (wallValue == Tile::Empty) {
+      } else if (wallValue == Tile::Empty || wallValue == Tile::Floor) {
+        if (wallValue == Tile::Empty) {
+          renderer.setColor(Vector4(255,255,255,50));
+        }
         if (ghostDeckIdx_ >= 0) {
           int prevWallValue = ship_->getDeck(ghostDeckIdx_)->getTileType(i, j);
-          if (prevWallValue != Tile::Empty) {
+          if (wallValue == Tile::Empty && prevWallValue != Tile::Empty) {
             wallValue = prevWallValue;
             wallCode = ship_->getDeck(ghostDeckIdx_)->getWallCode(i, j);
             if (wallValue != Tile::Floor) {
               renderPrevFloorCorners = true;
             }
           }
+          if (wallValue == Tile::Floor && prevWallValue == Tile::Stair) {
+            wallValue = Tile::Stair;
+            renderPrevFloorCorners = true;
+            renderer.setColor(Vector4(255,255,50,200));
+          }
         }
-        renderer.setColor(Vector4(255,255,255,50));
       }
       Compartment* comp = activeDeck_->getCompartment(i, j);
       if (hoveredComp_ && comp == hoveredComp_) {
@@ -153,6 +160,10 @@ void ShipView::render()
           renderer.setColor(Vector4(200, 200, 200, 255));
         }
       }
+      if (wallValue == Tile::Stair) {
+        texPos.left = 321.0f / (float)tilesTexWidth_;
+        texPos.top = 1.0f / (float)tilesTexHeight_;
+      }
       //texPos.left += 0.002f;
       //texPos.top += 0.004f;
       //texPos.width -= 0.004f;
@@ -165,6 +176,14 @@ void ShipView::render()
   //glScissor(0, 0, 1600, 900);
 }
 
+bool ShipView::isFloorOrStair( Deck* deck, int x, int y )
+{
+  if (deck->getTileType(x, y) == Tile::Floor || deck->getTileType(x, y) == Tile::Stair) {
+    return true;
+  }
+  return false;
+}
+
 void ShipView::renderFloorSection(Deck* deck, int i, int j, Rect& tilePos, Rect& texPos)
 {
   //@TODO: Move this info to Tile class
@@ -172,22 +191,22 @@ void ShipView::renderFloorSection(Deck* deck, int i, int j, Rect& tilePos, Rect&
   GLuint texTile = renderer.getTilesTex();
   float texX = 257.0f / (float)tilesTexWidth_;
   float texY = 1.0f / (float)tilesTexHeight_;
-  if (deck->getTileType(i-1, j) == Tile::Floor || deck->getTileType(i, j-1) == Tile::Floor || deck->getTileType(i-1, j-1) == Tile::Floor) {
+  if (isFloorOrStair(deck, i-1, j) || isFloorOrStair(deck, i, j-1) || isFloorOrStair(deck, i-1, j-1)) {
     Rect upLeft       (tilePos.left, tilePos.top, tilePos.width*0.5f, tilePos.height*0.5f);
     Rect texUpLeft    (texX,         texY,        texPos.width*0.5f,  texPos.height*0.5f);
     renderer.drawTexRect(upLeft, texTile, texUpLeft);
   }
-  if (deck->getTileType(i+1, j) == Tile::Floor || deck->getTileType(i, j-1) == Tile::Floor || deck->getTileType(i+1, j-1) == Tile::Floor) {
+  if (isFloorOrStair(deck, i+1, j) || isFloorOrStair(deck, i, j-1) || isFloorOrStair(deck, i+1, j-1)) {
     Rect upRight      (tilePos.left + tilePos.width*0.5f, tilePos.top, tilePos.width*0.5f, tilePos.height*0.5f);
     Rect texUpRight   (texX + texPos.width*0.5f,          texY,        texPos.width*0.5f,  texPos.height*0.5f);
     renderer.drawTexRect(upRight, texTile, texUpRight);
   }
-  if (deck->getTileType(i, j+1) == Tile::Floor || deck->getTileType(i+1, j) == Tile::Floor || deck->getTileType(i+1, j+1) == Tile::Floor) {
+  if (isFloorOrStair(deck, i, j+1) || isFloorOrStair(deck, i+1, j) || isFloorOrStair(deck, i+1, j+1)) {
     Rect downRight    (tilePos.left + tilePos.width*0.5f, tilePos.top+tilePos.height*0.5f, tilePos.width*0.5f, tilePos.height*0.5f);
     Rect texDownRight (texX + texPos.width*0.5f,          texY+texPos.height*0.5f,         texPos.width*0.5f,  texPos.height*0.5f);
     renderer.drawTexRect(downRight, texTile, texDownRight);
   }
-  if (deck->getTileType(i, j+1) == Tile::Floor || deck->getTileType(i-1, j) == Tile::Floor || deck->getTileType(i-1, j+1) == Tile::Floor) {
+  if (isFloorOrStair(deck, i, j+1) || isFloorOrStair(deck, i-1, j) || isFloorOrStair(deck, i-1, j+1)) {
     Rect downLeft     (tilePos.left, tilePos.top + tilePos.height*0.5f, tilePos.width*0.5f, tilePos.height*0.5f);
     Rect texDownLeft  (texX,         texY + texPos.height*0.5f,         texPos.width*0.5f,  texPos.height*0.5f);
     renderer.drawTexRect(downLeft, texTile, texDownLeft);
@@ -337,6 +356,8 @@ void ShipView::onLMUp()
     }
   } else if (action_ == Select) {
     selectedComp_ = hoveredComp_;
+  } else if (action_ == BuildStairs) {
+    activeDeck_->setStair(hoveredLeft_, hoveredTop_);
   }
   drawing_ = false;
   Tile* lastEntrance = ship_->getEntrance();
@@ -464,29 +485,48 @@ void ShipView::eraseArea()
   if (action_ == BuildFloor) {
     value = Tile::Floor;
   }
-  for (int i=drawingStartX_; i!= hoveredLeft_ + stepHor; i += stepHor) {
-    for (int j=drawingStartY_; j != hoveredTop_ + stepVer; j += stepVer) {
-      if (value == Tile::Floor && activeDeck_->getTileType(i, j) != Tile::Empty) {
-        continue;
-      }
-      if (value == Tile::Empty && activeDeck_->getTileType(i, j) == Tile::Wall) {
-        activeDeck_->eraseDoorsAround(i, j);
-      }
-      if (value == Tile::Empty) {
-        Compartment* comp = activeDeck_->getCompartment(i,j);
-        if (comp) {
-          if (comp == selectedComp_) {
-            selectedComp_ = NULL;
-          }
-          if (comp == hoveredComp_) {
-            hoveredComp_ = NULL;
-          }
-          activeDeck_->removeCompartment(comp);
-          buildInfo_->updateValues();
-          assert (!activeDeck_->getCompartment(i,j));
+  int drawWidth = abs(hoveredLeft_ - drawingStartX_);
+  int drawHeight = abs(hoveredTop_ - drawingStartY_);
+  bool removeArea = true;
+  if (drawWidth == 0 && drawHeight == 0) {
+    //Removing single tile
+    if (value == Tile::Empty && activeDeck_->getTileType(hoveredLeft_, hoveredTop_) == Tile::Stair) {
+      //Removing single stair
+      activeDeck_->setTileType(hoveredLeft_, hoveredTop_, Tile::Floor);
+      removeArea = false;
+    }
+  }
+  if (removeArea) {
+    for (int i=drawingStartX_; i != hoveredLeft_ + stepHor; i += stepHor) {
+      for (int j=drawingStartY_; j != hoveredTop_ + stepVer; j += stepVer) {
+        if (value == Tile::Floor && activeDeck_->getTileType(i, j) != Tile::Empty) {
+          continue;
         }
+        if (value == Tile::Empty && activeDeck_->getTileType(i, j) == Tile::Wall) {
+          activeDeck_->eraseDoorsAround(i, j);
+        }
+        if (value == Tile::Empty) {
+          Compartment* comp = activeDeck_->getCompartment(i,j);
+          if (comp) {
+            if (comp == selectedComp_) {
+              selectedComp_ = NULL;
+            }
+            if (comp == hoveredComp_) {
+              hoveredComp_ = NULL;
+            }
+            if (comp->getConnections().size() > 0) {
+              addLogMessage("Connections removed");
+            }
+            activeDeck_->removeCompartment(comp);
+            buildInfo_->updateValues();
+            assert (!activeDeck_->getCompartment(i,j));
+            if (drawWidth == 0 && drawHeight == 0) {
+              continue;
+            }
+          }
+        }
+        activeDeck_->setTileType(i, j, value);
       }
-      activeDeck_->setTileType(i, j, value);
     }
   }
   if (ship_->getEntrance() && ship_->getEntrance()->getType() != Tile::Door) {
@@ -510,8 +550,8 @@ void ShipView::setHoveredDimensions(int width, int height)
 void ShipView::deckUp()
 {
   ++activeDeckIdx_;
-  if (activeDeckIdx_ > 2) {
-    activeDeckIdx_ = 2;
+  if (activeDeckIdx_ > ship_->getNumDecks()-1) {
+    activeDeckIdx_ = ship_->getNumDecks()-1;
   }
   activeDeck_ = ship_->getDeck(activeDeckIdx_);
 }
@@ -614,6 +654,28 @@ void ShipView::removeConnection()
 void ShipView::addLogMessage( CString message )
 {
   buildInfo_->addLogMessage(message);
+}
+
+void ShipView::saveShip()
+{
+  ship_->save("ship.sav");
+}
+
+void ShipView::loadShip()
+{
+  bool res = ship_->load("ship.sav");
+  if (!res) {
+    addLogMessage("Load failed");
+    delete ship_;
+    ship_ = new Ship(layoutWidth_, layoutHeight_);
+    return;
+  }
+  addLogMessage("Successfully loaded");
+  activeDeckIdx_ = 0;
+  activeDeck_ = ship_->getDeck(activeDeckIdx_);
+  hoveredComp_ = NULL;
+  selectedComp_ = NULL;
+  buildInfo_->updateValues();
 }
 
 //DeckView::DeckView(int width, int height):width_(width), height_(height)

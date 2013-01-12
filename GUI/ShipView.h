@@ -8,7 +8,7 @@ class BuildInfo;
 class ShipView: public Widget, public has_slots<>
 {
 public:
-  enum Action {BuildWalls, BuildFloor, BuildDoor, Erase, Select, ChooseEntrance, CreateConnection, RemoveConnection};
+  enum Action {BuildWalls, BuildFloor, BuildDoor, BuildStairs, Erase, Select, ChooseEntrance, CreateConnection, RemoveConnection};
   enum OverviewType {Construction, Accessibility};
   ShipView(Rect size);
   ~ShipView();
@@ -34,6 +34,8 @@ public:
   Ship* getShip() {return ship_;}
   void constructionOverview();
   void accessibilityOverview();
+  void saveShip();
+  void loadShip();
 private:
   void drawCompartments();
   void plantWalls();
@@ -44,6 +46,7 @@ private:
   void createConnection();
   void removeConnection();
   void addLogMessage(CString message);
+  bool isFloorOrStair(Deck* deck, int x, int y);
   Ship* ship_;
   int layoutWidth_;
   int layoutHeight_;

@@ -72,3 +72,43 @@ int parseInt(CString str)
   }
   return res;
 }
+
+void writeStringToFile(FILE* file, CString str)
+{
+  char buffer[1024];
+  buffer[0] = str.getSize();
+  for (int i=0; i<str.getSize(); ++i) {
+    assert (i<1023);
+    buffer[i+1] = str[i];
+  }
+  fwrite(buffer, 1, str.getSize()+1, file);
+}
+
+void writeToFile(void* buffer, size_t size, int count, FILE* file)
+{
+  size_t res = fwrite(buffer, size, count, file);
+  assert (res == count);
+}
+
+bool readFromFile(void* buffer, size_t size, int count, FILE* file)
+{
+  size_t res = fread(buffer, size, count, file);
+  return (res == count);
+}
+
+CString readStringFromFile(FILE* file)
+{
+  char size;
+  if(!readFromFile(&size, 1, 1, file)) {
+    return "";
+  }
+  char buffer[256];
+  if (size > 255) {
+    return "";
+  }
+  if (!readFromFile(buffer, 1, size, file)) {
+    return "";
+  }
+  buffer[size] = 0;
+  return CString(buffer);
+}

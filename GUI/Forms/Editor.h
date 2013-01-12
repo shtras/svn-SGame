@@ -13,6 +13,8 @@ private:
   void accessibilityClick();
   void powerclick();
   void oxygenClick();
+  void saveClick();
+  void loadClick();
 
   Button* constructionOverlayButton_;
   Button* accessibilityOverlayButton_;

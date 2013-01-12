@@ -17,6 +17,7 @@ private:
   void eraseClick();
   void floorClick();
   void doorClick();
+  void stairsClick();
   void selectClick();
   void entranceClick();
   void createConnectionClick();
@@ -32,6 +33,7 @@ private:
   Button* floorButton_;
   Button* doorButton_;
   Button* eraseButton_;
+  Button* stairsButton_;
   Button* selectButton_;
   Button* entranceButton_;
   Button* connectionButton_;

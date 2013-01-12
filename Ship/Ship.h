@@ -20,9 +20,13 @@ public:
   void setEntrance(Tile* tile) {entrance_ = tile;}
   Tile* getEntrance() {return entrance_;}
   void recalculateTiles();
+  int getNumDecks() {return numDecks_;}
+  void normalize();
+  void shiftContents(int dx, int dy);
+  void save(CString fileName);
+  bool load(CString fileName);
 private:
   void recalculateTilesRec(int deckIdx, int x, int y, bool accessible, bool connected);
-  bool recalculateTile(Tile* tile, bool& accessible);
   bool isEntranceValid();
   bool outAccessible(Tile* tile);
   vector<Deck*> decks_;
@@ -34,6 +38,11 @@ private:
   Tile* entrance_;
   int width_;
   int height_;
+  int numDecks_;
+  int left_;
+  int top_;
+  int actualWidth_;
+  int actualHeight_;
 };
 
 class Tile
@@ -41,7 +50,7 @@ class Tile
 public:
   Tile(int x, int y, int deck);
   ~Tile();
-  enum TileType {Empty, Wall, Floor, Door};
+  enum TileType {Empty, Wall, Floor, Door, Stair};
   TileType getType() {return type_;}
   void setType(TileType type) {type_ = type;}
   void setEntrance(bool value) {entrance_ = value;}
@@ -79,11 +88,13 @@ public:
 
   int getWallCode(int i, int j);
   void setDoor(int x, int y);
+  void setStair(int x, int y);
   bool hasDoorsAround(int x, int y);
   void eraseDoorsAround(int x, int y);
   Compartment* getCompartment(int x, int y);
   int hasWall(int x, int y);
   list<Compartment*>& getCompartments() {return compartments_;}
+  void shiftContents(int dx, int dy);
 private:
   Deck();
 
@@ -119,6 +130,15 @@ public:
   int getPowerRequired() {return powerRequired_;}
   int getPowerProduced() {return powerProduced_;}
   int getCrewCapacity() {return crewCapacity_;}
+  void setWidth(int value) {width_ = value;}
+  void setHeight(int value) {height_ = value;}
+  void setRotation(int value) {rotation_ = value;}
+  void setMinCrew(int value) {minCrew_ = value;}
+  void setMaxCrew(int value) {maxCrew_ = value;}
+  void setPowerRequired(int value) {powerRequired_ = value;}
+  void setPowerProduced(int value) {powerProduced_ = value;}
+  void setCrewCapacity(int value) {crewCapacity_ = value;}
+  void setCategory(Category cat) {category_ = cat;}
   CString getName() {return name_;}
   static CString categoryName(Category cat);
   void connectTo(Compartment* comp);
@@ -128,6 +148,8 @@ public:
   set <CString>& getRequiredConnections() {return requiredConnections_;}
   bool isConnectedTo(CString compName);
   bool requiredConnection(CString compName);
+  void setName(CString name) {name_ = name;}
+  void setRequiredConnections(set<CString> connections) {requiredConnections_ = connections;}
 private:
   Category category_;
   int left_;

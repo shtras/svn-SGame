@@ -50,6 +50,16 @@ void BuildTools::init(ShipView* shipView)
   doorButton_->setToolTip("Build door");
   toolButtonRect.left += toolButtonRect.width;
 
+  stairsButton_ = new Button(toolButtonRect, false);
+  TextureParams regular31 = {265, 152, 54, 37, 10, 6, 10, 6};
+  TextureParams hovered31 = {320, 152, 54, 37, 10, 6, 10, 6};
+  TextureParams pressed31 = {375, 152, 54, 37, 10, 6, 10, 6};
+  stairsButton_->init(regular31, hovered31, pressed31);
+  stairsButton_->sigClick.connect(this, &BuildTools::stairsClick);
+  addWidget(stairsButton_);
+  stairsButton_->setToolTip("Build stairs");
+  toolButtonRect.left += toolButtonRect.width;
+
   eraseButton_ = new Button(toolButtonRect, false);
   TextureParams regular1 = {100, 38, 54, 37, 10, 6, 10, 6};
   TextureParams hovered1 = {155, 38, 54, 37, 10, 6, 10, 6};
@@ -58,7 +68,8 @@ void BuildTools::init(ShipView* shipView)
   eraseButton_->sigClick.connect(this, &BuildTools::eraseClick);
   addWidget(eraseButton_);
   eraseButton_->setToolTip("Demolish");
-  toolButtonRect.left += toolButtonRect.width;
+  toolButtonRect.left = 0.02f;
+  toolButtonRect.top += toolButtonRect.height;
 
   selectButton_ = new Button(toolButtonRect, false);
   TextureParams regular4 = {100, 183, 54, 37, 10, 6, 10, 6};
@@ -68,8 +79,7 @@ void BuildTools::init(ShipView* shipView)
   selectButton_->sigClick.connect(this, &BuildTools::selectClick);
   addWidget(selectButton_);
   selectButton_->setToolTip("Select");
-  toolButtonRect.left = 0.02f;
-  toolButtonRect.top += toolButtonRect.height;
+  toolButtonRect.left += toolButtonRect.width;
 
   entranceButton_ = new Button(toolButtonRect, false);
   TextureParams regular5 = {265, 38, 54, 37, 10, 6, 10, 6};
@@ -247,6 +257,7 @@ void BuildTools::buildClick()
   entranceButton_->setHighlighted(false);
   connectionButton_->setHighlighted(false);
   eraseConnectionButton_->setHighlighted(false);
+  stairsButton_->setHighlighted(false);
 }
 
 void BuildTools::eraseClick()
@@ -260,6 +271,7 @@ void BuildTools::eraseClick()
   entranceButton_->setHighlighted(false);
   connectionButton_->setHighlighted(false);
   eraseConnectionButton_->setHighlighted(false);
+  stairsButton_->setHighlighted(false);
 }
 
 void BuildTools::floorClick()
@@ -273,6 +285,7 @@ void BuildTools::floorClick()
   entranceButton_->setHighlighted(false);
   connectionButton_->setHighlighted(false);
   eraseConnectionButton_->setHighlighted(false);
+  stairsButton_->setHighlighted(false);
 }
 
 void BuildTools::doorClick()
@@ -286,6 +299,7 @@ void BuildTools::doorClick()
   entranceButton_->setHighlighted(false);
   connectionButton_->setHighlighted(false);
   eraseConnectionButton_->setHighlighted(false);
+  stairsButton_->setHighlighted(false);
 }
 
 void BuildTools::selectClick()
@@ -299,6 +313,7 @@ void BuildTools::selectClick()
   entranceButton_->setHighlighted(false);
   connectionButton_->setHighlighted(false);
   eraseConnectionButton_->setHighlighted(false);
+  stairsButton_->setHighlighted(false);
 }
 
 void BuildTools::entranceClick()
@@ -312,6 +327,7 @@ void BuildTools::entranceClick()
   entranceButton_->setHighlighted(true);
   connectionButton_->setHighlighted(false);
   eraseConnectionButton_->setHighlighted(false);
+  stairsButton_->setHighlighted(false);
 }
 
 void BuildTools::createConnectionClick()
@@ -325,6 +341,7 @@ void BuildTools::createConnectionClick()
   entranceButton_->setHighlighted(false);
   connectionButton_->setHighlighted(true);
   eraseConnectionButton_->setHighlighted(false);
+  stairsButton_->setHighlighted(false);
 }
 
 void BuildTools::eraseConnectionClick()
@@ -338,6 +355,21 @@ void BuildTools::eraseConnectionClick()
   entranceButton_->setHighlighted(false);
   connectionButton_->setHighlighted(false);
   eraseConnectionButton_->setHighlighted(true);
+  stairsButton_->setHighlighted(false);
+}
+
+void BuildTools::stairsClick()
+{
+  shipView_->setAction(ShipView::BuildStairs);
+  buildButton_->setHighlighted(false);
+  floorButton_->setHighlighted(false);
+  doorButton_->setHighlighted(false);
+  eraseButton_->setHighlighted(false);
+  selectButton_->setHighlighted(false);
+  entranceButton_->setHighlighted(false);
+  connectionButton_->setHighlighted(false);
+  eraseConnectionButton_->setHighlighted(false);
+  stairsButton_->setHighlighted(true);
 }
 
 void BuildTools::onMouseWheelScroll( int direction )

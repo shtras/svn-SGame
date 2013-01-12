@@ -11,17 +11,28 @@ ShipEditor::ShipEditor( Rect size ):Widget(size)
   Window* topPanel = new Window(Rect(0.0, 0.0, 1.0, 0.05));
   addWidget(topPanel);
 
-  Button* menuButton = new Button(Rect(0.9, 0.1, 0.098, 0.8));
-  menuButton->setCaption("Quit");
-  menuButton->setColor(Vector4(255, 0, 0, 255));
-  menuButton->setTextSize(1.8f);
-  topPanel->addWidget(menuButton);
-  menuButton->sigClick.connect(&SGame::getInstance(), &SGame::toggleMenu);
-
   double buttonWidth = 0.1;
   double buttonLeft = 0.5 - buttonWidth*2.0;
   double buttonTop = 0.1;
   double buttonHeight = 1.0 - buttonTop*2.0;
+
+  Button* menuButton = new Button(Rect(0.9, buttonTop, 0.098, buttonHeight));
+  menuButton->setCaption("Quit");
+  menuButton->setColor(Vector4(255, 0, 0, 255));
+  topPanel->addWidget(menuButton);
+  menuButton->sigClick.connect(&SGame::getInstance(), &SGame::toggleMenu);
+
+  Button* saveButton = new Button(Rect(0.002, buttonTop, 0.1, buttonHeight));
+  saveButton->setCaption("Save");
+  saveButton->setColor(Vector4(255,0,0,255));
+  saveButton->sigClick.connect(this, &ShipEditor::saveClick);
+  topPanel->addWidget(saveButton);
+
+  Button* loadButton = new Button(Rect(0.102, buttonTop, 0.1, buttonHeight));
+  loadButton->setCaption("Load");
+  loadButton->setColor(Vector4(255,0,0,255));
+  loadButton->sigClick.connect(this, &ShipEditor::loadClick);
+  topPanel->addWidget(loadButton);
 
   constructionOverlayButton_ = new Button(Rect(buttonLeft, buttonTop, buttonWidth, buttonHeight));
   constructionOverlayButton_->setCaption("Construction");
@@ -102,5 +113,15 @@ void ShipEditor::oxygenClick()
   accessibilityOverlayButton_->setHighlighted(false);
   powerOverlayButton_->setHighlighted(false);
   oxygenOverlayButton_->setHighlighted(true);
+}
+
+void ShipEditor::saveClick()
+{
+  view_->saveShip();
+}
+
+void ShipEditor::loadClick()
+{
+  view_->loadShip();
 }
 
