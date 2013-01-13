@@ -341,6 +341,17 @@ void CString::replace(char c, char to)
   }
 }
 
+int CString::hashCode()
+{
+  int h = 0;
+  if (len_ > 0) {
+    for (int i = 0; i < len_; i++) {
+      h = 65599 * h + cont_[i];
+    }
+  }
+  return h ^ (h>>16);
+}
+
 CString operator+ (const char* s1, const CString& s2)
 {
   return CString(s1) + s2;

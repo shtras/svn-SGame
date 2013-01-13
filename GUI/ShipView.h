@@ -34,8 +34,8 @@ public:
   Ship* getShip() {return ship_;}
   void constructionOverview();
   void accessibilityOverview();
-  void saveShip();
-  void loadShip();
+  void saveShip(CString fileName);
+  void loadShip(CString fileName);
 private:
   void drawCompartments();
   void plantWalls();

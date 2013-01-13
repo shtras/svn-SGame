@@ -212,6 +212,9 @@ void SGame::handleEvent( SDL_Event& event )
   case SDL_MOUSEMOTION:
     Renderer::getInstance().handleGUIEvent(event);
     break;
+  case SDL_KEYDOWN:
+    Renderer::getInstance().handleKeyboardEvent(event);
+    break;
   case SDL_VIDEORESIZE:
     Renderer::getInstance().resize(event.resize.w, event.resize.h);
     break;

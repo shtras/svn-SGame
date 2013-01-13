@@ -46,10 +46,12 @@ public:
   GLuint getBGTex() {return bgTex_;}
   void initWidgetDimensions(TexturedWidget* widget);
   void handleGUIEvent(SDL_Event& event);
+  void handleKeyboardEvent(SDL_Event& event);
   void setDraggedWidget(Widget* w);
   Widget* getDraggedWidget() {return draggedWidget_;}
   void setFloatingWidget(Widget* w);
   Widget* getFloatingWidget() {return floatingWidget_;}
+  void setKeyboardListener(Widget* w);
   bool renderingDragged() {return renderingDragged_;}
   float getOffsetX() {return startMouseX_ - mouseX_;}
   float getOffsetY() {return startMouseY_ - mouseY_;}
@@ -92,7 +94,6 @@ private:
   int guiTexHeight_;
   int tilesTexHeight_;
   int tilesTexWidth_;
-  map<char, int> fontMap_;
 
   list<TextToRender> linesToRender_;
   GlobalWindow* globalGUIWindow_;
@@ -113,4 +114,6 @@ private:
   Widget* renderTooltipFor_;
   TexturedWidget* toolTip_;
   Widget* floatingWidget_;
+  Widget* keyboardListner_;
+  map<char, float> fontMapX_;
 };

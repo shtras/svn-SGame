@@ -23,6 +23,7 @@ private:
   Section* root_;
   CString pushedLine_;
   bool linePushed_;
+  int hash_;
 };
 
 struct Property

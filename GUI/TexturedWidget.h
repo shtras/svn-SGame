@@ -74,6 +74,9 @@ public:
   void drop(Widget* w);
   void mouseMove();
   void mouseWheelScroll(int direction);
+  void keyDown(SDL_keysym details);
+  void keyboardFocusGain();
+  void keyboardFocusLose();
   //User events
   virtual void onLMDown() {}
   virtual void onRMDown() {}
@@ -88,6 +91,9 @@ public:
   virtual void onMouseMove() {}
   virtual void onMouseWheelScroll(int direction) {}
   virtual void onResize() {}
+  virtual void onKeyDown(SDL_keysym details) {}
+  virtual void onKeyboardFocusGain() {}
+  virtual void onKeyboardFocusLose() {}
   //Child care
   void addWidget(Widget* widget);
   void removeWidget(Widget* widget);
@@ -113,12 +119,13 @@ protected:
   TexturedWidget* pressedTexture_;
   TexturedWidget* activeTexture_;
   Align align_;
+  bool visible_;
+  bool listensKeyboard_;
 private:
   Widget();
   bool hovered_;
   bool pressed_;
   bool dragged_;
   bool highlighted_;
-  bool visible_;
   CString toolTip_;
 };

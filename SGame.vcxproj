@@ -105,8 +105,10 @@
     <ClCompile Include="GUI\Forms\BuildInfo.cpp" />
     <ClCompile Include="GUI\Forms\BuildTools.cpp" />
     <ClCompile Include="GUI\Forms\Editor.cpp" />
+    <ClCompile Include="GUI\Forms\FileOpenDialog.cpp" />
     <ClCompile Include="GUI\GlobalWindow.cpp" />
     <ClCompile Include="GUI\GUIManager.cpp" />
+    <ClCompile Include="GUI\Input.cpp" />
     <ClCompile Include="GUI\ProgressBar.cpp" />
     <ClCompile Include="GUI\ShipView.cpp" />
     <ClCompile Include="GUI\Text.cpp" />
@@ -135,8 +137,10 @@
     <ClInclude Include="GUI\Forms\BuildInfo.h" />
     <ClInclude Include="GUI\Forms\BuildTools.h" />
     <ClInclude Include="GUI\Forms\Editor.h" />
+    <ClInclude Include="GUI\Forms\FileOpenDialog.h" />
     <ClInclude Include="GUI\GlobalWindow.h" />
     <ClInclude Include="GUI\GUIManager.h" />
+    <ClInclude Include="GUI\Input.h" />
     <ClInclude Include="GUI\ProgressBar.h" />
     <ClInclude Include="GUI\ShipView.h" />
     <ClInclude Include="GUI\Text.h" />

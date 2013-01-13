@@ -42,6 +42,7 @@ public:
   CString substr(int begin, int end);
   vector<CString> tokenize(char c);
   void replace(char c, char to);
+  int hashCode();
 private:
   char* cont_;
   int len_;

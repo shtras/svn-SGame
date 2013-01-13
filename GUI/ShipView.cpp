@@ -656,146 +656,24 @@ void ShipView::addLogMessage( CString message )
   buildInfo_->addLogMessage(message);
 }
 
-void ShipView::saveShip()
+void ShipView::saveShip(CString fileName)
 {
-  ship_->save("ship.sav");
+  ship_->save("saves/" + fileName);
 }
 
-void ShipView::loadShip()
+void ShipView::loadShip(CString fileName)
 {
-  bool res = ship_->load("ship.sav");
+  bool res = ship_->load("saves/" + fileName);
   if (!res) {
-    addLogMessage("Load failed");
+    addLogMessage("Load failed. Refer to error.log for details");
     delete ship_;
     ship_ = new Ship(layoutWidth_, layoutHeight_);
-    return;
+  } else {
+    addLogMessage("Successfully loaded");
   }
-  addLogMessage("Successfully loaded");
   activeDeckIdx_ = 0;
   activeDeck_ = ship_->getDeck(activeDeckIdx_);
   hoveredComp_ = NULL;
   selectedComp_ = NULL;
   buildInfo_->updateValues();
 }
-
-//DeckView::DeckView(int width, int height):width_(width), height_(height)
-//{
-//  wallLayout_ = new TileType[height_ * width_];
-//  for (int i=0; i<height_ * width_; ++i) {
-//    wallLayout_[i] = Empty;
-//  }
-//}
-//
-//DeckView::~DeckView()
-//{
-//  delete[] wallLayout_;
-//  for (auto itr = compartments_.begin(); itr != compartments_.end(); ++itr) {
-//    delete *itr;
-//  }
-//}
-//
-//Compartment* DeckView::getCompartment(int x, int y)
-//{
-//  for (auto itr = compartments_.begin(); itr != compartments_.end(); ++itr) {
-//    Compartment* comp = *itr;
-//    if (x >= comp->getX() && x < comp->getX() + comp->getWidth() && y >= comp->getY() && y < comp->getY() + comp->getHeight()) {
-//      return comp;
-//    }
-//  }
-//  return NULL;
-//}
-//
-//int DeckView::getWallCode( int i, int j )
-//{
-//  int wallCode = 0;
-//  wallCode |= hasWall(i, j+1);
-//  wallCode |= (hasWall(i+1, j) << 1);
-//  wallCode |= (hasWall(i, j-1) << 2);
-//  wallCode |= (hasWall(i-1, j) << 3);
-//  assert (wallCode >= 0 && wallCode < 16);
-//  return wallCode;
-//}
-//
-//void DeckView::setDoor( int x, int y )
-//{
-//  TileType type = getWall(x, y);
-//  if (type != Wall) {
-//    return;
-//  }
-//  int wallCode = getWallCode(x, y);
-//  if (wallCode != 10 && wallCode != 5) {
-//    //Not a horizontal or vertical straight wall
-//    return;
-//  }
-//  setWall(x, y, Door);
-//}
-//
-//DeckView::TileType DeckView::getWall( int x, int y )
-//{
-//  if (x < 0 || x >= width_ || y < 0 || y >= height_) {
-//    return Empty;
-//  }
-//  return wallLayout_[y*width_ + x];
-//}
-//
-//int DeckView::hasWall( int x, int y )
-//{
-//  if (x < 0 || x >= width_ || y < 0 || y >= height_) {
-//    return 0;
-//  }
-//  return (wallLayout_[y*width_ + x]==Wall || wallLayout_[y*width_ + x]==Door)?1:0;
-//}
-//
-//void DeckView::setWall( int x, int y, TileType value )
-//{
-//  if (x < 0 || x >= width_ || y < 0 || y >= height_) {
-//    assert(0);
-//  }
-//  if (value == Wall || value == Floor || value == Door) {
-//    if (hasDoorsAround(x, y) && value != Floor) {
-//      //Can't create doors or walls around a door
-//      return;
-//    }
-//    if (getWall(x, y) == Door) {
-//      //Can only erase door, not replace
-//      return;
-//    }
-//  }
-//  if ((value == Wall || value == Door) && getCompartment(x,y)) {
-//    //Can't build over compartment
-//    return;
-//  }
-//  wallLayout_[y*width_ + x] = value;
-//}
-//
-//bool DeckView::hasDoorsAround( int x, int y )
-//{
-//  return getWall(x-1,y) == Door || getWall(x+1, y) == Door || getWall(x, y-1) == Door || getWall(x, y+1) == Door;
-//}
-//
-//void DeckView::eraseDoorsAround( int x, int y )
-//{
-//  if (getWall(x-1,y) == Door) {
-//    setWall(x-1, y, Empty);
-//  }
-//  if (getWall(x+1,y) == Door) {
-//    setWall(x+1, y, Empty);
-//  }
-//  if (getWall(x,y-1) == Door) {
-//    setWall(x, y-1, Empty);
-//  }
-//  if (getWall(x,y+1) == Door) {
-//    setWall(x, y+1, Empty);
-//  }
-//}
-//
-//void DeckView::addCompartment( Compartment* comp )
-//{
-//  compartments_.push_back(comp);
-//}
-//
-//void DeckView::removeCompartment( Compartment* comp )
-//{
-//  compartments_.remove(comp);
-//}
-

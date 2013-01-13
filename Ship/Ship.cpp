@@ -230,21 +230,37 @@ bool Ship::load(CString fileName)
   top_ = 0;
   FILE* file = fopen(fileName, "rb");
   char buffer[1024];
-  readFromFile(buffer, 1, 4, file);
+  readFromFile(buffer, 1, 5, file);
   if (buffer[0] != 'S' || buffer[1] != 'G' || buffer[2] != 'S' || buffer[3] != 'F') {
     Logger::getInstance().log(ERROR_LOG_NAME, "Save file corrupted");
     fclose(file);
     return false;
   }
-  readFromFile(buffer, 1, 4, file);
-  int width = buffer[1];
-  int height = buffer[2];
+
+  int fileHash;
+  readFromFile(&fileHash, sizeof(int), 1, file);
+  if (fileHash != ItemsDB::getInstance().getFileHash()) {
+    Logger::getInstance().log(ERROR_LOG_NAME, "rooms.txt is not compatible with this version of save file");
+    fclose(file);
+    return false;
+  }
+
+  readFromFile(buffer, 1, 5, file);
+  int width = buffer[0];
+  int height = buffer[1];
+  int offsetX = buffer[2];
+  int offsetY = buffer[3];
   if (width > width_ || height > height_) {
     Logger::getInstance().log(ERROR_LOG_NAME, "Save file corrupted");
     fclose(file);
     return false;
   }
-  numDecks_ = buffer[3];
+  numDecks_ = buffer[4];
+  if (numDecks_ < 1 || numDecks_ > 20) {
+    Logger::getInstance().log(ERROR_LOG_NAME, "Save file corrupted");
+    fclose(file);
+    return false;
+  }
   int* deckOffsets = new int[numDecks_];
   readFromFile(deckOffsets, sizeof(int), numDecks_, file);
   map<int, Compartment*> compIDs;
@@ -258,9 +274,9 @@ bool Ship::load(CString fileName)
     while (ftell(file) < compartmentsOffset) {
       //reading tiles
       readFromFile(buffer, 1, 3, file);
-      int x = buffer[0];
-      int y = buffer[1];
-      assert (x >=0 && x < width && y >= 0 && y < height);
+      int x = buffer[0] + offsetX;
+      int y = buffer[1] + offsetY;
+      assert (x >=0 && x <= width_ && y >= 0 && y <= height_);
       bool entrance = (buffer[2] & 0x80)==0?false:true;
       Tile::TileType type = (Tile::TileType)(buffer[2] & 0x7F);
       Tile* tile = deck->getTile(x, y);
@@ -289,8 +305,8 @@ bool Ship::load(CString fileName)
         fclose(file);
         return false;
       }
-      comp->setX(buffer[1]);
-      comp->setY(buffer[2]);
+      comp->setX(buffer[1] + offsetX);
+      comp->setY(buffer[2] + offsetY);
       comp->setWidth(buffer[3]);
       comp->setHeight(buffer[4]);
       comp->setRotation(buffer[5]);
@@ -358,7 +374,7 @@ bool Ship::load(CString fileName)
 
 void Ship::save( CString fileName )
 {
-  normalize();
+  //normalize();
   FILE* file = fopen(fileName, "wb");
   assert(file);
   char* magic = "SGSF";
@@ -366,13 +382,18 @@ void Ship::save( CString fileName )
 
   char buffer[1024];
   buffer[0] = 1; //version
-  fwrite(buffer, 1, 1, file);
+  writeToFile(buffer, 1, 1, file);
   int res = 0;
+
+  int fileHash = ItemsDB::getInstance().getFileHash();
+  writeToFile(&fileHash, sizeof(int), 1, file);
 
   buffer[0] = actualWidth_;
   buffer[1] = actualHeight_;
-  buffer[2] = numDecks_;
-  writeToFile(buffer, 1, 3, file); // write width, height, numdecks
+  buffer[2] = left_;
+  buffer[3] = top_;
+  buffer[4] = numDecks_;
+  writeToFile(buffer, 1, 5, file); // write width, height, numdecks
   int deckOffsets = ftell(file);
   writeToFile(buffer, 4, numDecks_, file); //reserve space for decks offsets
   
@@ -395,14 +416,14 @@ void Ship::save( CString fileName )
     assert (res == 0);
     Deck* deck = decks_[i];
     writeToFile(buffer, sizeof(int), 1, file); //reserve space for components offset
-    for (int x=0; x<actualWidth_; ++x) {
-      for (int y=0; y<actualHeight_; ++y) {
+    for (int x=0; x<width_; ++x) {
+      for (int y=0; y<height_; ++y) {
         Tile* tile = deck->getTile(x, y);
         if (tile->getType() == Tile::Empty) {
           continue;
         }
-        buffer[0] = tile->getX();
-        buffer[1] = tile->getY();
+        buffer[0] = tile->getX() - left_;
+        buffer[1] = tile->getY() - top_;
         buffer[2] = (tile->isEntrance())?0x80:0;
         buffer[2] |= tile->getType();
         writeToFile(buffer, 1, 3, file);
@@ -423,8 +444,8 @@ void Ship::save( CString fileName )
       assert (compIDs_.count(comp) == 1);
       int cnt=0;
       buffer[cnt++] = compIDs_[comp];
-      buffer[cnt++] = comp->getX();
-      buffer[cnt++] = comp->getY();
+      buffer[cnt++] = comp->getX() - left_;
+      buffer[cnt++] = comp->getY() - top_;
       buffer[cnt++] = comp->getWidth();
       buffer[cnt++] = comp->getHeight();
       buffer[cnt++] = comp->getRotation();

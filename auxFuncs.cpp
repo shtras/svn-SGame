@@ -79,7 +79,7 @@ void writeStringToFile(FILE* file, CString str)
   buffer[0] = str.getSize();
   for (int i=0; i<str.getSize(); ++i) {
     assert (i<1023);
-    buffer[i+1] = str[i];
+    buffer[i+1] = str[i] - 'a';
   }
   fwrite(buffer, 1, str.getSize()+1, file);
 }
@@ -110,5 +110,8 @@ CString readStringFromFile(FILE* file)
     return "";
   }
   buffer[size] = 0;
+  for (int i=0; i<size; ++i) {
+    buffer[i] += 'a';
+  }
   return CString(buffer);
 }

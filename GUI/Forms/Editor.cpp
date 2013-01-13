@@ -3,7 +3,6 @@
 #include "Window.h"
 #include "Renderer.h"
 #include "BuildTools.h"
-#include "BuildInfo.h"
 #include "SGame.h"
 
 ShipEditor::ShipEditor( Rect size ):Widget(size)
@@ -70,10 +69,15 @@ ShipEditor::ShipEditor( Rect size ):Widget(size)
   tools->init(view_);
   addWidget(tools);
 
-  BuildInfo* info = new BuildInfo(Rect(0.8, 0.05, 0.2, 0.95));
-  info->init(view_);
-  addWidget(info);
-  view_->setBuildInfo(info);
+  info_ = new BuildInfo(Rect(0.8, 0.05, 0.2, 0.95));
+  info_->init(view_);
+  addWidget(info_);
+  view_->setBuildInfo(info_);
+
+  openDialog_ = new FileOpenDialog(Rect(0.3, 0.2, 0.4, 0.6));
+  addWidget(openDialog_);
+  openDialog_->Finished.connect(this, &ShipEditor::onDialogClose);
+  openDialog_->setExtension("sgs");
 }
 
 ShipEditor::~ShipEditor()
@@ -117,11 +121,35 @@ void ShipEditor::oxygenClick()
 
 void ShipEditor::saveClick()
 {
-  view_->saveShip();
+  saving_ = true;
+  view_->setVisible(false);
+  openDialog_->show();
 }
 
 void ShipEditor::loadClick()
 {
-  view_->loadShip();
+  saving_ = false;
+  view_->setVisible(false);
+  openDialog_->show();
+}
+
+void ShipEditor::onDialogClose()
+{
+  view_->setVisible(true);
+  if (!openDialog_->getResult()) {
+    return;
+  }
+  CString fileName = openDialog_->getFileName();
+  if (saving_) {
+    view_->saveShip(fileName);
+  } else {
+    ifstream testFile("saves/" + fileName);
+    if (!testFile) {
+      info_->addLogMessage("File not found");
+      return;
+    }
+    testFile.close();
+    view_->loadShip(fileName);
+  }
 }
 

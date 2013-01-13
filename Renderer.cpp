@@ -8,25 +8,40 @@
 
 Renderer::Renderer():font_(0),currVertIdx_(0),color_(Vector4(255,255,255,255)),activeTex_(-1),width_(1600), height_(900), textSize_(1.0f), guiTexHeight_(-1), guiTexWidth_(-1),
   globalGUIWindow_(NULL), draggedWidget_(NULL), offsetX_(0), offsetY_(0), xAtStartDrag_(0), yAtStartDrag_(0), startMouseX_(0), startMouseY_(0),
-  renderingDragged_(false),lastColor_(Vector4(255,255,255,255)),flushes_(0),vertices_(0),tilesTexWidth_(0),tilesTexHeight_(0), floatingWidget_(NULL)
+  renderingDragged_(false),lastColor_(Vector4(255,255,255,255)),flushes_(0),vertices_(0),tilesTexWidth_(0),tilesTexHeight_(0), floatingWidget_(NULL),
+  keyboardListner_(NULL)
 {
-  fontMap_['!'] = 0;
-  fontMap_['@'] = 1;
-  fontMap_['#'] = 2;
-  fontMap_['$'] = 3;
-  fontMap_['%'] = 4;
-  fontMap_['^'] = 5;
-  fontMap_['&'] = 6;
-  fontMap_['*'] = 7;
-  fontMap_['('] = 8;
-  fontMap_[')'] = 9;
-  fontMap_['-'] = 10;
-  fontMap_['+'] = 11;
-  fontMap_['='] = 12;
-  fontMap_[':'] = 13;
-  fontMap_['"'] = 14;
-  fontMap_['\''] = 15;
   globalGUIWindow_ = new GlobalWindow(Rect(0,0,1,1));
+  for (char c = 'a'; c <= 'z'; ++c) {
+    fontMapX_[c] = (c - 'a') / 104.0f;
+  }
+  for (char c = 'A'; c <= 'Z'; ++c) {
+    fontMapX_[c] = (c - 'A' + 26) / 104.0f;
+  }
+  for (char c = '0'; c <= '9'; ++c) {
+    fontMapX_[c] = (c - '0' + 26*2) / 104.0f;
+  }
+  int i = 61;
+  fontMapX_['!'] = (++i)/104.0f;
+  fontMapX_['@'] = (++i)/104.0f;
+  fontMapX_['#'] = (++i)/104.0f;
+  fontMapX_['$'] = (++i)/104.0f;
+  fontMapX_['%'] = (++i)/104.0f;
+  fontMapX_['^'] = (++i)/104.0f;
+  fontMapX_['&'] = (++i)/104.0f;
+  fontMapX_['*'] = (++i)/104.0f;
+  fontMapX_['('] = (++i)/104.0f;
+  fontMapX_[')'] = (++i)/104.0f;
+  fontMapX_['-'] = (++i)/104.0f;
+  fontMapX_['+'] = (++i)/104.0f;
+  fontMapX_['='] = (++i)/104.0f;
+  fontMapX_[':'] = (++i)/104.0f;
+  fontMapX_['"'] = (++i)/104.0f;
+  fontMapX_['\''] = (++i)/104.0f;
+  fontMapX_['.'] = (++i)/104.0f;
+  fontMapX_[','] = (++i)/104.0f;
+  fontMapX_['/'] = (++i)/104.0f;
+  fontMapX_['|'] = (++i)/104.0f;
 }
 
 Renderer::~Renderer()
@@ -46,6 +61,7 @@ bool Renderer::init()
   if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
     return false;
   }
+  
   Logger::getInstance().log(INFO_LOG_NAME, "SDL successfully initialized");
   SDL_putenv("SDL_VIDEO_WINDOW_POS=20,40");
 
@@ -55,6 +71,7 @@ bool Renderer::init()
   if (!surf) {
     return false;
   }
+
   Logger::getInstance().log(INFO_LOG_NAME, "Video mode set");
 
   const char* verstr = (const char*)glGetString( GL_VERSION );
@@ -219,37 +236,13 @@ void Renderer::renderTextLine(TextToRender& ttr)
   color_ = ttr.color;
   for (int i=0; i<ttr.text.getSize(); ++i) {
     char c = ttr.text[i];
+    if (fontMapX_.count(c) == 0) {
+      continue;
+    }
     float x = ttr.fx + width*i;
     float y = ttr.fy;
-    float tx;
-    float ty = 0.95f;
-    float tw = 1/26.0f;
-    if (c >= 'a' && c <= 'z') {
-      tx = (c-'a') / 26.0f;
-      ty = 0.0f;
-    } else if (c >= 'A' && c <= 'Z') {
-      tx = (c-'A') / 26.0f;
-      ty = 0.25f;
-    } else if (c >= '0' && c <= '9')  {
-      tx = (c-'0') / 26.0f;
-      ty = 0.5f;
-    } else if (c == '.' || c == ',' || c == '/') {
-      if (c == '.') {
-        tx = 0;
-      } else if (c == ',') {
-        tx = 1/26.0f;
-      } else {
-        tx = 2/26.0f;
-      }
-      ty = 0.75f;
-    } else if (fontMap_.count(c) != 0) {
-      tx = (fontMap_[c] + 10) / 26.0f;
-      ty = 0.5f;
-    } else {
-      tx = 0;
-      ty = 0;
-      tw = 0;
-    }
+    float tx = fontMapX_[c];
+    float ty = 0.0f;
     //char: 9x15
     Rect pos;
     pos.left = x;
@@ -258,9 +251,9 @@ void Renderer::renderTextLine(TextToRender& ttr)
     pos.height = height;
     Rect texPos;
     texPos.left = tx;
-    texPos.width = tw;
+    texPos.width = 1/104.0f;
     texPos.top = ty;
-    texPos.height = 0.25f;
+    texPos.height = 1.0f;
     drawTexRect(pos, font_, texPos);
   }
 }
@@ -334,6 +327,21 @@ void Renderer::handleGUIEvent( SDL_Event& event )
     mouseY_ = fy;
   }
   globalGUIWindow_->handleEvent(event, fx, fy);
+}
+
+void Renderer::handleKeyboardEvent( SDL_Event& event )
+{
+  if (!keyboardListner_) {
+    return;
+  }
+  switch (event.type)
+  {
+  case SDL_KEYDOWN:
+    keyboardListner_->keyDown(event.key.keysym);
+    break;
+  default:
+    break;
+  }
 }
 
 void Renderer::setDraggedWidget( Widget* w )
@@ -420,4 +428,15 @@ void Renderer::resize(int width, int height)
   //size.left *= dx;
   //globalGUIWindow_->resize(size);
   //glViewport(0, 0, width_, height_);
+}
+
+void Renderer::setKeyboardListener( Widget* w )
+{
+  if (keyboardListner_) {
+    keyboardListner_->onKeyboardFocusLose();
+  }
+  if (w) {
+    w->onKeyboardFocusGain();
+  }
+  keyboardListner_ = w;
 }

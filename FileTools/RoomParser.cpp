@@ -2,7 +2,7 @@
 #include "RoomParser.h"
 #include "ItemsDB.h"
 
-RoomParser::RoomParser():linePushed_(false)
+RoomParser::RoomParser():linePushed_(false),hash_(0)
 {
 }
 
@@ -12,6 +12,7 @@ RoomParser::~RoomParser()
 
 bool RoomParser::parse(CString fileName)
 {
+  hash_ = 0;
   file.open(fileName, fstream::in);
   if (file.fail()) {
     return false;
@@ -29,7 +30,7 @@ bool RoomParser::parse(CString fileName)
     Logger::getInstance().log(ERROR_LOG_NAME, "Failed to process " + fileName);
     return false;
   }
-
+  ItemsDB::getInstance().setFileHash(hash_);
   return true;
 }
 
@@ -104,6 +105,7 @@ CString RoomParser::getNextLine()
     res = line;
     break;
   }
+  hash_ = hash_ ^ ((65599 * res.hashCode()) >> 16);
   return res;
 }
 

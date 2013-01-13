@@ -4,7 +4,7 @@
 
 Widget::Widget(Rect size):
   size_(size), regularTexture_(NULL), hoveredTexture_(NULL), pressedTexture_(NULL), activeTexture_(NULL), hovered_(false), pressed_(false), clickable_(false),
-  draggable_(false), dragged_(false),highlighted_(false),scrollTransparrent_(false),visible_(true),align_(NoAlign)
+  draggable_(false), dragged_(false),highlighted_(false),scrollTransparrent_(false),visible_(true),align_(NoAlign),listensKeyboard_(false)
 {
 
 }
@@ -101,6 +101,7 @@ void Widget::rmDown()
 void Widget::lmUp()
 {
   activeTexture_ = hoveredTexture_?hoveredTexture_:regularTexture_;
+  Renderer::getInstance().setKeyboardListener(NULL);
   if (pressed_ && clickable_) {
     click();
   }
@@ -124,7 +125,11 @@ void Widget::rmUp()
 void Widget::click()
 {
   assert (clickable_);
-  cout << "Click!" << endl;
+  if (listensKeyboard_) {
+    Renderer::getInstance().setKeyboardListener(this);
+  } else {
+    Renderer::getInstance().setKeyboardListener(NULL);
+  }
   onClick();
 }
 
@@ -174,6 +179,12 @@ void Widget::mouseMove()
 void Widget::mouseWheelScroll(int direction)
 {
   onMouseWheelScroll(direction);
+}
+
+void Widget::keyDown( SDL_keysym details )
+{
+  assert(listensKeyboard_);
+  onKeyDown(details);
 }
 
 void Widget::addWidget( Widget* widget )
@@ -294,6 +305,16 @@ void Widget::setHighlighted( bool value )
     activeTexture_ = regularTexture_;
   }
   highlighted_ = value;
+}
+
+void Widget::keyboardFocusGain()
+{
+  onKeyboardFocusGain();
+}
+
+void Widget::keyboardFocusLose()
+{
+  onKeyboardFocusLose();
 }
 
 TexturedWidget::TexturedWidget(Rect size):dimensionsInitialized_(false), size_(size)

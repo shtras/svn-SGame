@@ -10,8 +10,7 @@ public:
   void setCaption(CString caption) {caption_ = caption;}
   void setTextSize(float size) {textSize_ = size;}
   void setColor(Vector4 color) {color_ = color;}
-private:
-  
+protected:  
   CString caption_;
   float textSize_;
   Vector4 color_;

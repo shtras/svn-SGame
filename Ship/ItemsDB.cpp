@@ -8,7 +8,7 @@ ItemsDB& ItemsDB::getInstance()
   return instance;
 }
 
-ItemsDB::ItemsDB()
+ItemsDB::ItemsDB():hash_(0)
 {
 
 }
