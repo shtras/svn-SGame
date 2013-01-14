@@ -26,6 +26,7 @@ ShipView::ShipView(Rect size):Widget(size),layoutWidth_(50), layoutHeight_(50), 
 ShipView::~ShipView()
 {
   delete hoveredCompInfo_;
+  delete ship_;
 }
 
 void ShipView::render()
@@ -173,6 +174,39 @@ void ShipView::render()
     }
   }
   drawCompartments();
+
+  {
+    srand(1024);
+    for (int i=0; i<layoutWidth_; ++i) {
+      float tileX = i*tileWidth_ + offsetX_*zoom_ + size_.left;
+      if (tileX < size_.left || tileX+tileWidth_ > size_.left + size_.width) {
+        for (int j=0; j<layoutHeight_; ++j) {
+          int rnd = rand();
+        }
+        continue;
+      }
+      for (int j=0; j<layoutHeight_; ++j) {
+        float tileY = j*tileHeight_ + offsetY_*zoom_ + size_.top;
+        if (tileY < size_.top || tileY+tileHeight_ > size_.top + size_.height) {
+          int rnd = rand();
+          continue;
+        }
+        Tile* tile = activeDeck_->getTile(i, j);
+        //if (lastMouseX_ >= tileX && lastMouseX_ <= tileX + tileWidth_*hoverWidth_ && lastMouseY_ >= tileY && lastMouseY_ <= tileY + tileHeight_*hoverHeight_) {
+        //  renderer.setColor(Vector4(100,255,50,200));
+        //}
+        Rect tilePos(tileX, tileY, tileWidth_, tileHeight_);
+        int rnd = rand();
+        if (tile->getType() == Tile::Floor) {
+          if (rnd % 13 < 2) {
+            int rnd1 = (rand() % 6) + 1;
+            Rect texPos(64*rnd1/(float)renderer.getHeadsTexSize().x, 0.0f, 64/(float)renderer.getHeadsTexSize().x, 64/(float)renderer.getHeadsTexSize().y);
+            renderer.drawTexRect(tilePos, renderer.getHeadsTex(), texPos);
+          }
+        }
+      }
+    }
+  }
   //glScissor(0, 0, 1600, 900);
 }
 
@@ -659,6 +693,7 @@ void ShipView::addLogMessage( CString message )
 void ShipView::saveShip(CString fileName)
 {
   ship_->save("saves/" + fileName);
+  addLogMessage("Successfully saved");
 }
 
 void ShipView::loadShip(CString fileName)

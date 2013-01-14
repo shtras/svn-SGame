@@ -82,7 +82,6 @@ ShipEditor::ShipEditor( Rect size ):Widget(size)
 
 ShipEditor::~ShipEditor()
 {
-
 }
 
 void ShipEditor::constructionClick()

@@ -53,6 +53,9 @@ const char* Version = "0.0.5.";
 //Added entrance validation
 //Added connections and additional info on hover windows
 //***Shifted to 0.0.5 at build #905
+//Implemented stairs
+//Implemented save/load
+//Added Input widget
 
 SGame::SGame():state_(Menu),stateRunnig_(false)
 {
@@ -100,7 +103,7 @@ bool SGame::run()
       Logger::getInstance().log(INFO_LOG_NAME, "Switching to editor");
       initEditor();
       mainLoop();
-      finishMenu();
+      finishEditor();
       break;
     default:
       Logger::getInstance().log(ERROR_LOG_NAME, "Encountered unknown state. Terminating.");
@@ -153,6 +156,7 @@ bool SGame::mainLoop()
 
     Renderer::getInstance().renderEnd();
     checkReleaseError("OpenGL error during main loop. Something bad happened :(");
+    Sleep(0);
   }
   return true;
 }

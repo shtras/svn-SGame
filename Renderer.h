@@ -44,6 +44,8 @@ public:
   GLuint getGUITex() {return gui_;}
   GLuint getTilesTex() {return tiles_;}
   GLuint getBGTex() {return bgTex_;}
+  GLuint getHeadsTex() {return headsTex_;}
+  DCoord getHeadsTexSize() {return headsTexSize_;}
   void initWidgetDimensions(TexturedWidget* widget);
   void handleGUIEvent(SDL_Event& event);
   void handleKeyboardEvent(SDL_Event& event);
@@ -82,6 +84,8 @@ private:
   GLuint gui_;
   GLuint tiles_;
   GLuint bgTex_;
+  GLuint headsTex_;
+  DCoord headsTexSize_;
   Vector4 color_;
   Vector4 lastColor_;
   Vertex verts_[MAX_VERTS];

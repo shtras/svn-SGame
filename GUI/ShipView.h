@@ -82,27 +82,3 @@ private:
   OverviewType overviewType_;
   Compartment* selectedComp_;
 };
-//
-//class DeckView
-//{
-//public:
-//  enum TileType {Empty = -1, Floor = 0, Wall = 1, Door = 2};
-//  DeckView(int width, int height);
-//  ~DeckView();
-//  int getWallCode(int i, int j);
-//  void setDoor(int x, int y);
-//  bool hasDoorsAround(int x, int y);
-//  void eraseDoorsAround(int x, int y);
-//  Compartment* getCompartment(int x, int y);
-//  TileType getWall(int x, int y);
-//  int hasWall(int x, int y);
-//  void setWall(int x, int y, TileType value);
-//  void addCompartment(Compartment* comp);
-//  void removeCompartment(Compartment* comp);
-//  list<Compartment*>& getCompartments() {return compartments_;}
-//private:
-//  TileType* wallLayout_;
-//  list<Compartment*> compartments_;
-//  int width_;
-//  int height_;
-//};

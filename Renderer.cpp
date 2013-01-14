@@ -111,6 +111,7 @@ bool Renderer::init()
   loadTexture("res/gui.png", gui_, guiTexWidth_, guiTexHeight_);
   loadTexture("res/walls.png", tiles_, tilesTexWidth_, tilesTexHeight_);
   loadTexture("res/bg.png", bgTex_);
+  loadTexture("res/heads.png", headsTex_, headsTexSize_.x, headsTexSize_.y);
   Logger::getInstance().log(INFO_LOG_NAME, "Finished loading textures.");
 
   toolTip_ = new TexturedWidget(Rect(0,0,0,0));

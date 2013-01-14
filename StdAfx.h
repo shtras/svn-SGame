@@ -50,3 +50,21 @@ struct Rect
   float width;
   float height;
 };
+
+struct FCoord
+{
+  FCoord():x(0.0f),y(0.0f){}
+  FCoord(float x, float y):x(x),y(y){}
+  FCoord(double x, double y):x((float)x),y((float)y){}
+  FCoord(int x, int y):x((float)x),y((float)y){}
+  float x;
+  float y;
+};
+
+struct DCoord
+{
+  DCoord():x(0),y(0){}
+  DCoord(int x, int y): x(x),y(y){}
+  int x;
+  int y;
+};
