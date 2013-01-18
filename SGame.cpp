@@ -6,6 +6,7 @@
 #include "RoomParser.h"
 #include "ItemsDB.h"
 #include "Editor.h"
+#include "FileOpenDialog.h"
 
 const char* Version = "0.0.5.";
 //TODO for next major version:
@@ -117,13 +118,13 @@ bool SGame::run()
 
 bool SGame::mainLoop()
 {
-   //typedef BOOL (APIENTRY *PFNWGLSWAPINTERVALFARPROC)( int );
-   //PFNWGLSWAPINTERVALFARPROC wglSwapIntervalEXT = 0;
-   //wglSwapIntervalEXT = (PFNWGLSWAPINTERVALFARPROC)wglGetProcAddress( "wglSwapIntervalEXT" );
- 
-   //if( wglSwapIntervalEXT ) {
-   //  wglSwapIntervalEXT(0);
-   //} 
+  //typedef BOOL (APIENTRY *PFNWGLSWAPINTERVALFARPROC)( int );
+  //PFNWGLSWAPINTERVALFARPROC wglSwapIntervalEXT = 0;
+  //wglSwapIntervalEXT = (PFNWGLSWAPINTERVALFARPROC)wglGetProcAddress( "wglSwapIntervalEXT" );
+
+  //if( wglSwapIntervalEXT ) {
+  //  wglSwapIntervalEXT(0);
+  //} 
   int fpsTimeBase = SDL_GetTicks();
   int currTime = fpsTimeBase;
   int lastTime = currTime;
@@ -156,7 +157,7 @@ bool SGame::mainLoop()
 
     Renderer::getInstance().renderEnd();
     checkReleaseError("OpenGL error during main loop. Something bad happened :(");
-    Sleep(0);
+    //Sleep(0);
   }
   return true;
 }
@@ -262,21 +263,23 @@ int __stdcall WinMain( __in HINSTANCE hInstance, __in_opt HINSTANCE hPrevInstanc
 int main(int argc, char** argv)
 #endif
 {
-  Logger::getInstance().log(INFO_LOG_NAME, "Application started. Hello, World!");
-  Logger::getInstance().log(INFO_LOG_NAME, CString("Application version: ") + Version + CString(BUILD_NUM) + " " + CString(BUILD_STR));
 #if defined(WIN32) && defined(DEBUG)
   AllocConsole();
   FILE* stream = NULL;
   errno_t err = freopen_s(&stream, "CON", "w", stdout);
 #endif
-  SGame& game = SGame::getInstance();
-  bool res = game.init();
-  if (res) {
-    Logger::getInstance().log(INFO_LOG_NAME, "Initialization successfully completed");
-    game.run();
-  } else {
-    Logger::getInstance().log(ERROR_LOG_NAME, "Something went horribly wrong. Look above for details.");
-  }
+  Logger::getInstance().log(INFO_LOG_NAME, "Application started. Hello, World!");
+  Logger::getInstance().log(INFO_LOG_NAME, CString("Application version: ") + Version + CString(BUILD_NUM) + " " + CString(BUILD_STR));
+  //FileOpenDialog* a = new FileOpenDialog(Rect(0,0,1,1));
+  //delete a;
+   SGame& game = SGame::getInstance();
+   bool res = game.init();
+   if (res) {
+     Logger::getInstance().log(INFO_LOG_NAME, "Initialization successfully completed");
+     game.run();
+   } else {
+     Logger::getInstance().log(ERROR_LOG_NAME, "Something went horribly wrong. Look above for details.");
+   }
 
 #if defined(WIN32) && defined(DEBUG)
   FreeConsole();

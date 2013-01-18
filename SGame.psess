@@ -71,6 +71,12 @@
     <Report>
       <Path>SGame121222.vsp</Path>
     </Report>
+    <Report>
+      <Path>SGame130118.vsp</Path>
+    </Report>
+    <Report>
+      <Path>SGame130118(1).vsp</Path>
+    </Report>
   </Reports>
   <Launches>
     <ProjBinary>

@@ -28,7 +28,7 @@ void TextArea::pushLine( CString line )
 {
   float lineSize = Renderer::getInstance().getCharWidth() * line.getSize();
   while (lineSize > size_.width*0.9f) {
-    int portion = line.getSize() * size_.width*0.9f / lineSize;
+    int portion = (int)(line.getSize() * size_.width*0.9f / lineSize);
     CString firstPart = line.left(portion);
     pushLine(firstPart);
     line = line.substr(portion, line.getSize()-1);

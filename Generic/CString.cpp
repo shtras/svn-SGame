@@ -18,6 +18,14 @@ CString::CString(const CString& other)//:str_(other)
   len_ = other.len_;
 }
 
+CString::CString( CString&& other )
+{
+  cont_ = NULL;
+  len_ = 0;
+  swap(cont_, other.cont_);
+  swap(len_, other.len_);
+}
+
 CString::CString(const char* str)//:str_(str)
 {
   len_ = strlen(str);
@@ -212,12 +220,10 @@ CString CString::operator+ (const CString& other) const
   return this->append(other);
 }
 
-CString& CString::operator= (CString& other)
+CString& CString::operator= (CString other)
 {
-  delete[] cont_;
-  cont_ = new char[other.len_+1];
-  strcpy(cont_, other.cont_);
-  len_ = other.len_;
+  swap(cont_, other.cont_);
+  swap(len_, other.len_);
   return *this;
 }
 

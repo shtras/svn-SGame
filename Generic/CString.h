@@ -8,6 +8,7 @@ class CString
 public:
   CString();
   CString(const CString& other);
+  CString(CString&& other);
   CString(const char* str);
   CString(char c);
   CString(int val);
@@ -27,7 +28,7 @@ public:
   bool contains(char c) const;
   operator const char*() const;
   CString operator+ (const CString& other) const;
-  CString& operator= (CString& other);
+  CString& operator= (CString other);
   CString& operator= (const char* str);
   bool operator== (const CString& other) const;
   bool operator== (const char* other) const;

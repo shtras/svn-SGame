@@ -31,6 +31,7 @@ bool RoomParser::parse(CString fileName)
     return false;
   }
   ItemsDB::getInstance().setFileHash(hash_);
+  delete root_;
   return true;
 }
 

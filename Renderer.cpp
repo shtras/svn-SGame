@@ -46,7 +46,8 @@ Renderer::Renderer():font_(0),currVertIdx_(0),color_(Vector4(255,255,255,255)),a
 
 Renderer::~Renderer()
 {
-
+  delete globalGUIWindow_;
+  delete toolTip_;
 }
 
 Renderer& Renderer::getInstance()

@@ -15,7 +15,14 @@ ItemsDB::ItemsDB():hash_(0)
 
 ItemsDB::~ItemsDB()
 {
-
+  for (auto itr = itemsMap_.begin(); itr != itemsMap_.end(); ++itr) {
+    delete (*itr).second;
+  }
+  for (auto itr = roomsMap_.begin(); itr != roomsMap_.end(); ++itr) {
+    for (auto itr1 = (*itr).second.begin(); itr1 != (*itr).second.end(); ++itr1) {
+      delete *itr1;
+    }
+  }
 }
 
 bool ItemsDB::isValidCategory( int category )

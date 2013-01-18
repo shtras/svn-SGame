@@ -33,6 +33,8 @@ using namespace std;
 #include "SDL_image.h"
 #include <GL/gl.h>
 
+#include "MemManager.h"
+
 #include "sigslot.h"
 using namespace sigslot;
 

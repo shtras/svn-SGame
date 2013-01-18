@@ -559,8 +559,9 @@ namespace sigslot {
 
         if((*it)->getdest() == pslot)
         {
+          _connection_base0<mt_policy>* tmp = *it;
           m_connected_slots.erase(it);
-          //			delete *it;
+          delete tmp;
         }
 
         it = itNext;
@@ -689,8 +690,9 @@ namespace sigslot {
 
         if((*it)->getdest() == pslot)
         {
+          _connection_base1<arg1_type, mt_policy> * tmp = *it;
           m_connected_slots.erase(it);
-          //			delete *it;
+          delete tmp;
         }
 
         it = itNext;
