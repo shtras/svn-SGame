@@ -36,7 +36,7 @@
   </PostinstrumentEvent>
   <Binaries>
     <ProjBinary>
-      <Path>Release\SGame.exe</Path>
+      <Path>Debug\SGame.exe</Path>
       <ArgumentTimestamp>01/01/0001 00:00:00</ArgumentTimestamp>
       <Instrument>true</Instrument>
       <Sample>true</Sample>
@@ -48,7 +48,7 @@
       <LaunchProject>true</LaunchProject>
       <OverrideProjectSettings>false</OverrideProjectSettings>
       <LaunchMethod>Executable</LaunchMethod>
-      <ExecutablePath>Release\SGame.exe</ExecutablePath>
+      <ExecutablePath>Debug\SGame.exe</ExecutablePath>
       <StartupDirectory>.\</StartupDirectory>
       <Arguments>
       </Arguments>
@@ -67,17 +67,6 @@
       <ProjName>SGame</ProjName>
     </ProjBinary>
   </Binaries>
-  <Reports>
-    <Report>
-      <Path>SGame121222.vsp</Path>
-    </Report>
-    <Report>
-      <Path>SGame130118.vsp</Path>
-    </Report>
-    <Report>
-      <Path>SGame130118(1).vsp</Path>
-    </Report>
-  </Reports>
   <Launches>
     <ProjBinary>
       <Path>:PB:{BD2B6371-0532-4395-94AB-4694864ED52E}|SGame.vcxproj</Path>
