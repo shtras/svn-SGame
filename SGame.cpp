@@ -5,7 +5,7 @@
 #include "VersionInfo.h"
 #include "RoomParser.h"
 #include "ItemsDB.h"
-#include "Editor.h"
+#include "ShipEditor.h"
 #include "FileOpenDialog.h"
 
 const char* Version = "0.0.5.";
@@ -106,6 +106,12 @@ bool SGame::run()
       mainLoop();
       finishEditor();
       break;
+    case Game:
+      Logger::getInstance().log(INFO_LOG_NAME, "Switching to game");
+      initGame();
+      mainLoop();
+      finishGame();
+      break;
     default:
       Logger::getInstance().log(ERROR_LOG_NAME, "Encountered unknown state. Terminating.");
       state_ = Quit;
@@ -181,6 +187,7 @@ bool SGame::initMenu()
   newGameButton->setColor(Vector4(0, 0, 255, 255));
   newGameButton->setTextSize(3);
   menuWindow->addWidget(newGameButton);
+  newGameButton->sigClick.connect(this, &SGame::toggleGame);
 
   Button* quitButton = new Button(Rect(0.1, 0.4, 0.8, 0.1));
   quitButton->setCaption("Quit");
@@ -200,6 +207,27 @@ bool SGame::initEditor()
 }
 
 bool SGame::finishMenu()
+{
+  Renderer::getInstance().clearWindows();
+  return true;
+}
+
+bool SGame::initGame()
+{
+  Text* t = new Text(Rect(0.2, 0.2, 0.6, 0.1));
+  t->setCaption("Under construction...");
+  Renderer::getInstance().addWidget(t);
+
+  Button* quitButton = new Button(Rect(0.45, 0.5, 0.1, 0.05));
+  quitButton->setCaption("Back");
+  quitButton->sigClick.connect(this, &SGame::toggleMenu);
+  quitButton->setColor(Vector4(255,0,0,255));
+  Renderer::getInstance().addWidget(quitButton);
+  stateRunnig_ = true;
+  return true;
+}
+
+bool SGame::finishGame()
 {
   Renderer::getInstance().clearWindows();
   return true;
@@ -248,6 +276,12 @@ void SGame::toggleEditor()
 void SGame::toggleMenu()
 {
   state_ = Menu;
+  stateRunnig_ = false;
+}
+
+void SGame::toggleGame()
+{
+  state_ = Game;
   stateRunnig_ = false;
 }
 

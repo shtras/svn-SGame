@@ -108,7 +108,7 @@
     <ClCompile Include="GUI\CompHoverInfo.cpp" />
     <ClCompile Include="GUI\Forms\BuildInfo.cpp" />
     <ClCompile Include="GUI\Forms\BuildTools.cpp" />
-    <ClCompile Include="GUI\Forms\Editor.cpp" />
+    <ClCompile Include="GUI\Forms\ShipEditor.cpp" />
     <ClCompile Include="GUI\Forms\FileOpenDialog.cpp" />
     <ClCompile Include="GUI\GlobalWindow.cpp" />
     <ClCompile Include="GUI\GUIManager.cpp" />
@@ -125,6 +125,8 @@
     <ClCompile Include="MemManager.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="SGame.cpp" />
+    <ClCompile Include="ShipViewEditor.cpp" />
+    <ClCompile Include="ShipViewGame.cpp" />
     <ClCompile Include="Ship\ItemsDB.cpp" />
     <ClCompile Include="Ship\Ship.cpp" />
     <ClCompile Include="StdAfx.cpp">
@@ -141,7 +143,7 @@
     <ClInclude Include="GUI\CompHoverInfo.h" />
     <ClInclude Include="GUI\Forms\BuildInfo.h" />
     <ClInclude Include="GUI\Forms\BuildTools.h" />
-    <ClInclude Include="GUI\Forms\Editor.h" />
+    <ClInclude Include="GUI\Forms\ShipEditor.h" />
     <ClInclude Include="GUI\Forms\FileOpenDialog.h" />
     <ClInclude Include="GUI\GlobalWindow.h" />
     <ClInclude Include="GUI\GUIManager.h" />
@@ -158,6 +160,8 @@
     <ClInclude Include="MemManager.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="SGame.h" />
+    <ClInclude Include="ShipViewEditor.h" />
+    <ClInclude Include="ShipViewGame.h" />
     <ClInclude Include="Ship\ItemsDB.h" />
     <ClInclude Include="Ship\Ship.h" />
     <ClInclude Include="sigslot.h" />

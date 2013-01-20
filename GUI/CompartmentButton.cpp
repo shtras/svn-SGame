@@ -3,7 +3,7 @@
 #include "Renderer.h"
 #include "Text.h"
 
-CompartmentButton::CompartmentButton(Rect size, Compartment* comp, ShipView* shipView):Button(size, false),comp_(comp),shipView_(shipView),hoverWindow_(NULL)
+CompartmentButton::CompartmentButton(Rect size, Compartment* comp, ShipViewEditor* shipView):Button(size, false),comp_(comp),shipView_(shipView),hoverWindow_(NULL)
 {
   assert(comp);
   TextureParams params1 = {100, 152, 31, 31, 4, 4, 4, 4};
@@ -49,6 +49,20 @@ CompartmentButton::CompartmentButton(Rect size, Compartment* comp, ShipView* shi
   if (comp->getCrewCapacity() > 0) {
     t = new Text(Rect(0.01, top, 0.98, height));
     t->setCaption("Crew capacity: " + CString(comp->getCrewCapacity()));
+    t->setAlign(Widget::LeftAlign);
+    hoverWindow_->addWidget(t);
+    top += height + 0.01;
+  }
+
+  if (comp->getMaxConnections() > 0) {
+    t = new Text(Rect(0.01, top, 0.98, height));
+    t->setCaption("Max connections: " + CString(comp->getMaxConnections()));
+    t->setAlign(Widget::LeftAlign);
+    hoverWindow_->addWidget(t);
+    top += height + 0.01;
+
+    t = new Text(Rect(0.01, top, 0.98, height));
+    t->setCaption("Max same type connections: " + CString(comp->getMaxSameConnections()));
     t->setAlign(Widget::LeftAlign);
     hoverWindow_->addWidget(t);
     top += height + 0.01;

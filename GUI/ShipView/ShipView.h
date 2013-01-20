@@ -8,44 +8,26 @@ class BuildInfo;
 class ShipView: public Widget, public has_slots<>
 {
 public:
-  enum Action {BuildWalls, BuildFloor, BuildDoor, BuildStairs, Erase, Select, ChooseEntrance, CreateConnection, RemoveConnection};
   enum OverviewType {Construction, Accessibility};
   ShipView(Rect size);
   ~ShipView();
   void render();
   void onRMDown();
   void onRMUp();
-  void onHoverExit();
-  void onMouseMove();
   void onMouseWheelScroll(int direction);
-  void onLMDown();
-  void onLMUp();
-  void onDrop(Widget* w);
-  void setAction(Action action);
-  void setHoveredDimensions(int width, int height);
+  int getActiveDeck() {return activeDeckIdx_;}
+  int getGhostDeck() {return ghostDeckIdx_;}
+  Ship* getShip() {return ship_;}
+  void constructionOverview();
+  void accessibilityOverview();
   void deckUp();
   void deckDown();
   void ghostDeckUp();
   void ghostDeckDown();
-  int getActiveDeck() {return activeDeckIdx_;}
-  int getGhostDeck() {return ghostDeckIdx_;}
-  void setBuildInfo(BuildInfo* info);
-  void setDraggedComp(Compartment* comp) {draggedComp_ = comp;}
-  Ship* getShip() {return ship_;}
-  void constructionOverview();
-  void accessibilityOverview();
-  void saveShip(CString fileName);
-  void loadShip(CString fileName);
-private:
+protected:
   void drawCompartments();
-  void plantWalls();
-  void eraseArea();
-  void setEntrance();
   void renderFloorSection(Deck* deck, int i, int j, Rect& tilePos, Rect& texPos);
   void structureChanged();
-  void createConnection();
-  void removeConnection();
-  void addLogMessage(CString message);
   bool isFloorOrStair(Deck* deck, int x, int y);
   Ship* ship_;
   int layoutWidth_;
@@ -71,14 +53,11 @@ private:
   bool drawing_;
   int drawingStartX_;
   int drawingStartY_;
-  Action action_;
   int tilesTexWidth_;
   int tilesTexHeight_;
   Compartment* hoveredComp_;
-  BuildInfo* buildInfo_;
+  bool editor_;
   CompHoverInfo* hoveredCompInfo_;
-  int draggedCompartmentRoataion_;
-  Compartment* draggedComp_;
   OverviewType overviewType_;
   Compartment* selectedComp_;
 };

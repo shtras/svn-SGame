@@ -1,16 +1,16 @@
 #pragma once
 #include "Window.h"
-#include "ShipView.h"
 #include "Button.h"
 #include "CompartmentButton.h"
 #include "ProgressBar.h"
+#include "ShipViewEditor.h"
 
 class BuildTools: public Window
 {
 public:
   BuildTools(Rect size);
   ~BuildTools();
-  void init(ShipView* shipView);
+  void init(ShipViewEditor* shipView);
   void onMouseWheelScroll(int direction);
 private:
   void buildClick();
@@ -28,7 +28,7 @@ private:
   void ghostUpClick();
   void ghostDownClick();
   void updateGhostText();
-  ShipView* shipView_;
+  ShipViewEditor* shipView_;
   Button* buildButton_;
   Button* floorButton_;
   Button* doorButton_;

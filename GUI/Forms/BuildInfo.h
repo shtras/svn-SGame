@@ -15,6 +15,10 @@ public:
 private:
   FramedText* crewText_;
   FramedText* powerText_;
+  FramedText* structureStatusText_;
+  FramedText* accessibilityStatusText_;
+  FramedText* connectionsStatusText_;
+  FramedText* generalStatusText_;
   TextArea* ta_;
   ShipView* shipView_;
 };

@@ -4,7 +4,7 @@
 #include "ItemsDB.h"
 
 Ship::Ship(int width, int height):minCrew_(0),maxCrew_(0),powerRequired_(0),powerProduced_(0),crewCapacity_(0),entrance_(NULL),width_(width), height_(height),numDecks_(3),
-  left_(0), top_(0), actualWidth_(0), actualHeight_(0)
+  left_(0), top_(0), actualWidth_(0), actualHeight_(0),connectionStatus_(true),accessibleStatus_(false),structureStatus_(false)
 {
   for (int i=0; i<numDecks_; ++i) {
     Deck* deck = new Deck(this, width, height, i);
@@ -93,6 +93,8 @@ void Ship::recalculateTiles()
   actualWidth_ -= left_;
   actualHeight_ -= top_;
   assert(actualWidth_ >= 0 && actualHeight_ >= 0);
+  structureStatus_ = false;
+  accessibleStatus_ = false;
   if (!entrance_) {
     return;
   }
@@ -102,6 +104,30 @@ void Ship::recalculateTiles()
     return;
   }
   recalculateTilesRec(entrance_->getDeckIdx(), entrance_->getX(), entrance_->getY(), true, true);
+
+  structureStatus_ = true;
+  accessibleStatus_ = true;
+  for (int i=0; i<(int)decks_.size(); ++i) {
+    Deck* deck = decks_[i];
+    for (int x=0; x<width_; ++x) {
+      for (int y=0; y<height_; ++y) {
+        Tile* tile = deck->getTile(x, y);
+        Compartment* comp = deck->getCompartment(x, y);
+        if (!comp && tile->getType() == Tile::Empty) {
+          continue;
+        }
+        if (!tile->isConnected()) {
+          structureStatus_ = false;
+        }
+        if (comp && !tile->isAccessible()) {
+          accessibleStatus_ = false;
+        }
+        if (!accessibleStatus_ && !structureStatus_) {
+          return;
+        }
+      }
+    }
+  }
 }
 
 void Ship::recalculateTilesRec( int deckIdx, int x, int y, bool accessible, bool connected )
@@ -239,11 +265,13 @@ bool Ship::load(CString fileName)
 
   int fileHash;
   readFromFile(&fileHash, sizeof(int), 1, file);
+#ifndef DEBUG
   if (fileHash != ItemsDB::getInstance().getFileHash()) {
     Logger::getInstance().log(ERROR_LOG_NAME, "rooms.txt is not compatible with this version of save file");
     fclose(file);
     return false;
   }
+#endif
 
   readFromFile(buffer, 1, 5, file);
   int width = buffer[0];
@@ -299,7 +327,7 @@ bool Ship::load(CString fileName)
       Compartment* comp = new Compartment();
       CString name = readStringFromFile(file);
       comp->setName(name);
-      if (!readFromFile(buffer, 1, 13, file)) {
+      if (!readFromFile(buffer, 1, 15, file)) {
         delete[] deckOffsets;
         Logger::getInstance().log(ERROR_LOG_NAME, "Save file corrupted");
         fclose(file);
@@ -307,20 +335,22 @@ bool Ship::load(CString fileName)
       }
       comp->setX(buffer[1] + offsetX);
       comp->setY(buffer[2] + offsetY);
-      comp->setWidth(buffer[3]);
-      comp->setHeight(buffer[4]);
-      comp->setRotation(buffer[5]);
-      comp->setMinCrew(buffer[6]);
-      comp->setMaxCrew(buffer[7]);
-      comp->setPowerProduced(buffer[8]);
-      comp->setPowerRequired(buffer[9]);
-      comp->setCrewCapacity(buffer[10]);
-      comp->setCategory((Compartment::Category)buffer[11]);
+      comp->width_ = buffer[3];
+      comp->height_ = buffer[4];
+      comp->rotation_ = buffer[5];
+      comp->minCrew_ = buffer[6];
+      comp->maxCrew_ = buffer[7];
+      comp->powerProduced_ = buffer[8];
+      comp->powerRequired_ = buffer[9];
+      comp->crewCapacity_ = buffer[10];
+      comp->category_ = (Compartment::Category)buffer[11];
+      comp->maxConnections_ = buffer[12];
+      comp->maxSameConnections_ = buffer[13];
       int id = buffer[0];
       assert (compIDs.count(id) == 0);
       compIDs[id] = comp;
       list<int> connections;
-      for (int connection = 0; connection<buffer[12]; ++connection) {
+      for (int connection = 0; connection<buffer[14]; ++connection) {
         char c;
         readFromFile(&c, 1, 1, file);
         connections.push_back(c);
@@ -369,6 +399,7 @@ bool Ship::load(CString fileName)
   }
 
   recalculateTiles();
+  checkConnections();
   return true;
 }
 
@@ -455,6 +486,8 @@ void Ship::save( CString fileName )
       buffer[cnt++] = comp->getPowerRequired();
       buffer[cnt++] = comp->getCrewCapacity();
       buffer[cnt++] = comp->getCategory();
+      buffer[cnt++] = comp->getMaxConnections();
+      buffer[cnt++] = comp->getMaxSameConnections();
       buffer[cnt++] = comp->getConnections().size();
       writeToFile(buffer, 1, cnt, file);
       cnt=0;
@@ -488,6 +521,18 @@ void Ship::save( CString fileName )
   fclose(file);
 }
 
+void Ship::checkConnections()
+{
+  connectionStatus_ = true;
+  for (int i=0; i<(int)decks_.size(); ++i) {
+    Deck* deck = decks_[i];
+    connectionStatus_ &= deck->checkConnections();
+    if (!connectionStatus_) {
+      break;
+    }
+  }
+}
+
 Deck::Deck(Ship* ship, int width, int height,int idx):
   ship_(ship), width_(width), height_(height), idx_(idx)
 {
@@ -513,6 +558,7 @@ void Deck::addCompartment(Compartment* comp)
 {
   compartments_.push_back(comp);
   ship_->updateParameters(comp->getMinCrew(), comp->getMaxCrew(), comp->getPowerRequired(), comp->getPowerProduced(), comp->getCrewCapacity());
+  ship_->checkConnections();
 }
 
 void Deck::removeCompartment( Compartment* comp )
@@ -524,6 +570,7 @@ void Deck::removeCompartment( Compartment* comp )
     other->disconnectFrom(comp);
   }
   delete comp;
+  ship_->checkConnections();
 }
 
 Tile* Deck::getTile(int x, int y)
@@ -695,13 +742,26 @@ void Deck::shiftContents( int dx, int dy )
   }
 }
 
+bool Deck::checkConnections()
+{
+  for (auto itr = compartments_.begin(); itr != compartments_.end(); ++itr) {
+    Compartment* comp = *itr;
+    for (auto itr1 = comp->getRequiredConnections().begin(); itr1 != comp->getRequiredConnections().end(); ++itr1) {
+      if (!comp->isConnectedTo(*itr1)) {
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
 Compartment::Compartment():rotation_(0)
 {
 }
 
 Compartment::Compartment(const Compartment& other):left_(other.left_), top_(other.top_), width_(other.width_), height_(other.height_), name_(other.name_),
   category_(other.category_),minCrew_(other.minCrew_),maxCrew_(other.maxCrew_),powerRequired_(other.powerRequired_),powerProduced_(other.powerProduced_),
-  crewCapacity_(other.crewCapacity_),/*Maybe this one is not needed -->*/rotation_(other.rotation_)
+  crewCapacity_(other.crewCapacity_),rotation_(other.rotation_),maxSameConnections_(other.maxSameConnections_),maxConnections_(other.maxConnections_)
 {
   for (auto itr = other.items_.begin(); itr != other.items_.end(); ++itr) {
     items_.push_back(new Item(**itr));
@@ -731,6 +791,8 @@ CString Compartment::categoryName(Category cat)
     return "Life support";
   case Living:
     return "Living";
+  case Weapons:
+    return "Weapons";
   case LastCategory:
     assert(0);
     Logger::getInstance().log(ERROR_LOG_NAME, "Attempted to get last category name");
@@ -774,6 +836,18 @@ bool Compartment::isConnectedTo( CString compName )
 bool Compartment::requiredConnection( CString compName )
 {
   return requiredConnections_.count(compName) != 0 && !isConnectedTo(compName);
+}
+
+int Compartment::numConnectionsTo( CString compName )
+{
+  int cnt = 0;
+  for (auto itr = connections_.begin(); itr != connections_.end(); ++itr) {
+    Compartment* comp = *itr;
+    if (comp->getName() == compName) {
+      ++cnt;
+    }
+  }
+  return cnt;
 }
 
 Item::Item()

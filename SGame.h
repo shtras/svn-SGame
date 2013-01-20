@@ -9,12 +9,15 @@ public:
   bool run();
   void toggleEditor();
   void toggleMenu();
+  void toggleGame();
 private:
   bool mainLoop();
   bool initMenu();
   bool finishMenu();
   bool initEditor();
   bool finishEditor();
+  bool initGame();
+  bool finishGame();
   void handleEvent(SDL_Event& event);
   void quit();
   void close();

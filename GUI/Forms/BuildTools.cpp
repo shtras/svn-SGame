@@ -15,7 +15,7 @@ BuildTools::~BuildTools()
 
 }
 
-void BuildTools::init(ShipView* shipView)
+void BuildTools::init(ShipViewEditor* shipView)
 {
   shipView_ = shipView;
   Rect toolButtonRect(0.02, 0.005, 0.15, 0.05);
@@ -248,7 +248,7 @@ void BuildTools::categoryClick(void* param)
 
 void BuildTools::buildClick()
 {
-  shipView_->setAction(ShipView::BuildWalls);
+  shipView_->setAction(ShipViewEditor::BuildWalls);
   buildButton_->setHighlighted(true);
   floorButton_->setHighlighted(false);
   doorButton_->setHighlighted(false);
@@ -262,7 +262,7 @@ void BuildTools::buildClick()
 
 void BuildTools::eraseClick()
 {
-  shipView_->setAction(ShipView::Erase);
+  shipView_->setAction(ShipViewEditor::Erase);
   buildButton_->setHighlighted(false);
   floorButton_->setHighlighted(false);
   doorButton_->setHighlighted(false);
@@ -276,7 +276,7 @@ void BuildTools::eraseClick()
 
 void BuildTools::floorClick()
 {
-  shipView_->setAction(ShipView::BuildFloor);
+  shipView_->setAction(ShipViewEditor::BuildFloor);
   buildButton_->setHighlighted(false);
   floorButton_->setHighlighted(true);
   doorButton_->setHighlighted(false);
@@ -290,7 +290,7 @@ void BuildTools::floorClick()
 
 void BuildTools::doorClick()
 {
-  shipView_->setAction(ShipView::BuildDoor);
+  shipView_->setAction(ShipViewEditor::BuildDoor);
   buildButton_->setHighlighted(false);
   floorButton_->setHighlighted(false);
   doorButton_->setHighlighted(true);
@@ -304,7 +304,7 @@ void BuildTools::doorClick()
 
 void BuildTools::selectClick()
 {
-  shipView_->setAction(ShipView::Select);
+  shipView_->setAction(ShipViewEditor::Select);
   buildButton_->setHighlighted(false);
   floorButton_->setHighlighted(false);
   doorButton_->setHighlighted(false);
@@ -318,7 +318,7 @@ void BuildTools::selectClick()
 
 void BuildTools::entranceClick()
 {
-  shipView_->setAction(ShipView::ChooseEntrance);
+  shipView_->setAction(ShipViewEditor::ChooseEntrance);
   buildButton_->setHighlighted(false);
   floorButton_->setHighlighted(false);
   doorButton_->setHighlighted(false);
@@ -332,7 +332,7 @@ void BuildTools::entranceClick()
 
 void BuildTools::createConnectionClick()
 {
-  shipView_->setAction(ShipView::CreateConnection);
+  shipView_->setAction(ShipViewEditor::CreateConnection);
   buildButton_->setHighlighted(false);
   floorButton_->setHighlighted(false);
   doorButton_->setHighlighted(false);
@@ -346,7 +346,7 @@ void BuildTools::createConnectionClick()
 
 void BuildTools::eraseConnectionClick()
 {
-  shipView_->setAction(ShipView::RemoveConnection);
+  shipView_->setAction(ShipViewEditor::RemoveConnection);
   buildButton_->setHighlighted(false);
   floorButton_->setHighlighted(false);
   doorButton_->setHighlighted(false);
@@ -360,7 +360,7 @@ void BuildTools::eraseConnectionClick()
 
 void BuildTools::stairsClick()
 {
-  shipView_->setAction(ShipView::BuildStairs);
+  shipView_->setAction(ShipViewEditor::BuildStairs);
   buildButton_->setHighlighted(false);
   floorButton_->setHighlighted(false);
   doorButton_->setHighlighted(false);

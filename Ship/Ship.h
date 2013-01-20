@@ -25,6 +25,10 @@ public:
   void shiftContents(int dx, int dy);
   void save(CString fileName);
   bool load(CString fileName);
+  bool connectionsOK() {return connectionStatus_;}
+  bool structureOK() {return structureStatus_;}
+  bool accessibilityOK() {return accessibleStatus_;}
+  void checkConnections();
 private:
   void recalculateTilesRec(int deckIdx, int x, int y, bool accessible, bool connected);
   bool isEntranceValid();
@@ -43,6 +47,9 @@ private:
   int top_;
   int actualWidth_;
   int actualHeight_;
+  bool connectionStatus_;
+  bool accessibleStatus_;
+  bool structureStatus_;
 };
 
 class Tile
@@ -95,6 +102,7 @@ public:
   int hasWall(int x, int y);
   list<Compartment*>& getCompartments() {return compartments_;}
   void shiftContents(int dx, int dy);
+  bool checkConnections();
 private:
   Deck();
 
@@ -109,9 +117,10 @@ private:
 class Compartment
 {
   friend class RoomParser;
-  friend class ShipView;
+  friend class ShipViewEditor;
+  friend bool Ship::load(CString fileName);
 public:
-  enum Category {Common = 0, Navigation, Power, LifeSupport, Living, LastCategory};
+  enum Category {Common = 0, Navigation, Power, LifeSupport, Living, Weapons, LastCategory};
   Compartment();
   Compartment(const Compartment& other);
   ~Compartment();
@@ -130,15 +139,6 @@ public:
   int getPowerRequired() {return powerRequired_;}
   int getPowerProduced() {return powerProduced_;}
   int getCrewCapacity() {return crewCapacity_;}
-  void setWidth(int value) {width_ = value;}
-  void setHeight(int value) {height_ = value;}
-  void setRotation(int value) {rotation_ = value;}
-  void setMinCrew(int value) {minCrew_ = value;}
-  void setMaxCrew(int value) {maxCrew_ = value;}
-  void setPowerRequired(int value) {powerRequired_ = value;}
-  void setPowerProduced(int value) {powerProduced_ = value;}
-  void setCrewCapacity(int value) {crewCapacity_ = value;}
-  void setCategory(Category cat) {category_ = cat;}
   CString getName() {return name_;}
   static CString categoryName(Category cat);
   void connectTo(Compartment* comp);
@@ -147,9 +147,12 @@ public:
   bool isConnectedTo(Compartment* comp);
   set <CString>& getRequiredConnections() {return requiredConnections_;}
   bool isConnectedTo(CString compName);
+  int numConnectionsTo(CString compName);
   bool requiredConnection(CString compName);
   void setName(CString name) {name_ = name;}
   void setRequiredConnections(set<CString> connections) {requiredConnections_ = connections;}
+  int getMaxConnections() {return maxConnections_;}
+  int getMaxSameConnections() {return maxSameConnections_;}
 private:
   Category category_;
   int left_;
@@ -166,6 +169,8 @@ private:
   int crewCapacity_;
   set<Compartment*> connections_;
   set<CString> requiredConnections_;
+  int maxConnections_;
+  int maxSameConnections_;
 };
 
 class Item

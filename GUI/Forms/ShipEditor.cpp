@@ -1,5 +1,5 @@
 #include "StdAfx.h"
-#include "Editor.h"
+#include "ShipEditor.h"
 #include "Window.h"
 #include "Renderer.h"
 #include "BuildTools.h"
@@ -62,7 +62,7 @@ ShipEditor::ShipEditor( Rect size ):Widget(size)
   oxygenOverlayButton_->sigClick.connect(this, &ShipEditor::oxygenClick);
   buttonLeft += buttonWidth;
 
-  view_ = new ShipView(Rect(0.2, 0.05, 0.6, 0.95));
+  view_ = new ShipViewEditor(Rect(0.2, 0.05, 0.6, 0.95));
   addWidget(view_);
 
   BuildTools* tools = new BuildTools(Rect(0.0, 0.05, 0.2, 0.95));

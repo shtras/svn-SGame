@@ -79,6 +79,8 @@ CompartmentInfo {
 		MinCrew=1
 		MaxCrew=2
 		PowerRequired=6
+		MaxConnections=4
+		MaxSameConnections=4
 		Item {
 			ID=9 ; Table
 			X=0
@@ -118,6 +120,8 @@ CompartmentInfo {
 		MinCrew=1
 		MaxCrew=1
 		PowerRequired=1
+		MaxConnections=2
+		MaxSameConnections=2
 		Item {
 			ID=1 ; Table
 			X=0
@@ -138,6 +142,7 @@ CompartmentInfo {
 		Height=2
 		Required=ControlRoom
 		PowerProduced=15
+		MaxConnections=1
 		Item {
 			ID=3
 			X=0
@@ -223,6 +228,9 @@ CompartmentInfo {
 		Name=Engine
 		Width=2
 		Height=1
+		Required=ControlRoom,Bridge
+		MaxConnections=2
+		PowerRequired=6
 		Item {
 			ID=10
 			X=0

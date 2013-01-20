@@ -1,13 +1,13 @@
 #pragma once
 #include "Button.h"
 #include "Ship.h"
-#include "ShipView.h"
 #include "Window.h"
+#include "ShipViewEditor.h"
 
 class CompartmentButton: public Button
 {
 public:
-  CompartmentButton(Rect size, Compartment* comp, ShipView* shipView);
+  CompartmentButton(Rect size, Compartment* comp, ShipViewEditor* shipView);
   ~CompartmentButton();
   void render();
   void onDrag();
@@ -17,6 +17,6 @@ public:
   Compartment* getCompartment() {return comp_;}
 private:
   Compartment* comp_;
-  ShipView* shipView_;
+  ShipViewEditor* shipView_;
   Window* hoverWindow_;
 };

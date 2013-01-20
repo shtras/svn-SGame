@@ -1,7 +1,7 @@
 #pragma  once
 #include "TexturedWidget.h"
 #include "Button.h"
-#include "ShipView.h"
+#include "ShipViewEditor.h"
 #include "FileOpenDialog.h"
 #include "BuildInfo.h"
 
@@ -23,7 +23,7 @@ private:
   Button* accessibilityOverlayButton_;
   Button* powerOverlayButton_;
   Button* oxygenOverlayButton_;
-  ShipView* view_;
+  ShipViewEditor* view_;
   BuildInfo* info_;
   FileOpenDialog* openDialog_;
   bool saving_;
