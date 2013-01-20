@@ -313,28 +313,32 @@ void Renderer::drawTexRect(Rect pos, GLuint texID, Rect texPos, int rotation/* =
   addVertex(pos.left + offsetX_,           1-(pos.top + pos.height) - offsetY_, texPos.left,                texPos.top + texPos.height);
   */
   
-  addVertex(pos.left + offsetX_,           1-(pos.top) - offsetY_,              tex1.x, tex1.y);
-  addVertex(pos.left+pos.width + offsetX_, 1-(pos.top) - offsetY_,              tex2.x, tex2.y);
-  addVertex(pos.left+pos.width + offsetX_, 1-(pos.top + pos.height) - offsetY_, tex4.x, tex4.y);
+  FCoord c1 (pos.left + offsetX_,           1-(pos.top) - offsetY_);
+  FCoord c2 (pos.left+pos.width + offsetX_, 1-(pos.top + pos.height) - offsetY_);
 
-  addVertex(pos.left + offsetX_,           1-(pos.top) - offsetY_,              tex1.x, tex1.y);
-  addVertex(pos.left+pos.width + offsetX_, 1-(pos.top + pos.height) - offsetY_, tex4.x, tex4.y);
-  addVertex(pos.left + offsetX_,           1-(pos.top + pos.height) - offsetY_, tex3.x, tex3.y);
+  addVertex(c1.x, c1.y, tex1.x, tex1.y);
+  addVertex(c2.x, c1.y, tex2.x, tex2.y);
+  addVertex(c2.x, c2.y, tex4.x, tex4.y);
+
+  addVertex(c1.x, c1.y, tex1.x, tex1.y);
+  addVertex(c2.x, c2.y, tex4.x, tex4.y);
+  addVertex(c1.x, c2.y, tex3.x, tex3.y);
   
 }
 
 void Renderer::addVertex( float x, float y, float u, float v )
 {
   ++vertices_;
-  verts_[currVertIdx_].x = x;
-  verts_[currVertIdx_].y = y;
-  verts_[currVertIdx_].z = 0;
-  verts_[currVertIdx_].u = u;
-  verts_[currVertIdx_].v = v;
-  verts_[currVertIdx_].r = (GLubyte)color_[0];
-  verts_[currVertIdx_].g = (GLubyte)color_[1];
-  verts_[currVertIdx_].b = (GLubyte)color_[2];
-  verts_[currVertIdx_].a = (GLubyte)color_[3];
+  Vertex& vert = verts_[currVertIdx_];
+  vert.x = x;
+  vert.y = y;
+  vert.z = 0;
+  vert.u = u;
+  vert.v = v;
+  vert.r = (GLubyte)color_[0];
+  vert.g = (GLubyte)color_[1];
+  vert.b = (GLubyte)color_[2];
+  vert.a = (GLubyte)color_[3];
   ++currVertIdx_;
   if (currVertIdx_ >= MAX_VERTS-3) {
     flushVerts();

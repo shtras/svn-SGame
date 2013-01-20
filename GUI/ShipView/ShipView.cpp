@@ -116,15 +116,11 @@ void ShipView::render()
           }
         }
       }
-      Compartment* comp = activeDeck_->getCompartment(i, j);
-      if (hoveredComp_ && comp == hoveredComp_) {
+      if (hoveredComp_ && hoveredComp_->isInside(i, j)) {
         renderer.setColor(Vector4(125, 200, 210, 255));
       }
-      if (selectedComp_ && comp == selectedComp_) {
+      if (selectedComp_ && selectedComp_->isInside(i, j)) {
         renderer.setColor(Vector4(125, 170, 190, 255));
-      }
-      if (selectedComp_ && comp && selectedComp_->isConnectedTo(comp)) {
-        renderer.setColor(Vector4(125, 125, 125, 255));
       }
       
       if (editor_ && drawing_ && i >= drawStartX && i <= drawEndX && j >= drawStartY && j <= drawEndY) {
@@ -223,10 +219,12 @@ void ShipView::drawCompartments()
   GLuint tilesTex = renderer.getTilesTex();
   for (auto itr = activeDeck_->getCompartments().begin(); itr != activeDeck_->getCompartments().end(); ++itr) {
     Compartment* comp = *itr;
+    renderer.setColor(Vector4(255,255,255,255));
+    if (selectedComp_ && selectedComp_->isConnectedTo(comp)) {
+      renderer.setColor(Vector4(125, 125, 125, 255));
+    }
     if (hoveredComp_ == comp) {
       renderer.setColor(Vector4(125, 200, 210, 255));
-    } else {
-      renderer.setColor(Vector4(255,255,255,255));
     }
     for (auto itemItr = comp->getItems().begin(); itemItr != comp->getItems().end(); ++itemItr) {
       Item* item = *itemItr;

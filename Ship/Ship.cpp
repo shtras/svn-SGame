@@ -272,6 +272,12 @@ bool Ship::load(CString fileName)
     return false;
   }
 
+  if (buffer[4] != SAVE_VERSION) {
+    Logger::getInstance().log(ERROR_LOG_NAME, "Old version of the save file");
+    fclose(file);
+    return false;
+  }
+
   int fileHash;
   readFromFile(&fileHash, sizeof(int), 1, file);
 #ifndef DEBUG
@@ -423,7 +429,7 @@ void Ship::save( CString fileName )
   fputs(magic, file);
 
   char buffer[1024];
-  buffer[0] = 1; //version
+  buffer[0] = SAVE_VERSION; //version
   writeToFile(buffer, 1, 1, file);
   int res = 0;
 
@@ -585,7 +591,7 @@ void Deck::addCompartment(Compartment* comp)
 
 void Deck::removeCompartment( Compartment* comp )
 {
-  compartments_.remove(comp);
+  compartments_.erase(find(compartments_.begin(), compartments_.end(), comp));
   ship_->updateParameters(-comp->getMinCrew(), -comp->getMaxCrew(), -comp->getPowerRequired(), -comp->getPowerProduced(), -comp->getCrewCapacity());
   for (auto itr = comp->getConnections().begin(); itr != comp->getConnections().end(); ++itr) {
     Compartment* other = *itr;
@@ -705,8 +711,8 @@ void Deck::eraseDoorsAround( int x, int y )
 
 Compartment* Deck::getCompartment( int x, int y )
 {
-  for (auto itr = compartments_.begin(); itr != compartments_.end(); ++itr) {
-    Compartment* comp = *itr;
+  for (Compartment* comp: compartments_) {
+    //Compartment* comp = *itr;
     if (x >= comp->getX() && x < comp->getX() + comp->getWidth() && y >= comp->getY() && y < comp->getY() + comp->getHeight()) {
       return comp;
     }
@@ -882,6 +888,11 @@ Item* Compartment::getItem( int x, int y )
     }
   }
   return NULL;
+}
+
+bool Compartment::isInside( int x, int y )
+{
+  return x >= left_ && y >= top_ && x < left_+width_ && y < top_+height_;
 }
 
 Item::Item()

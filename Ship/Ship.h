@@ -1,4 +1,5 @@
 #pragma once
+#define SAVE_VERSION 2
 
 class Deck;
 class Compartment;
@@ -101,7 +102,7 @@ public:
   void eraseDoorsAround(int x, int y);
   Compartment* getCompartment(int x, int y);
   int hasWall(int x, int y);
-  list<Compartment*>& getCompartments() {return compartments_;}
+  vector<Compartment*>& getCompartments() {return compartments_;}
   void shiftContents(int dx, int dy);
   bool checkConnections();
 private:
@@ -110,7 +111,7 @@ private:
   int width_;
   int height_;
   Tile** tileLayout_;
-  list<Compartment*> compartments_;
+  vector<Compartment*> compartments_;
   Ship* ship_;
   int idx_;
 };
@@ -156,6 +157,7 @@ public:
   int getMaxSameConnections() {return maxSameConnections_;}
   Item* getItem(int x, int y);
   bool requiresAccess() {return requiresAccess_;}
+  bool isInside(int x, int y);
 private:
   Category category_;
   int left_;
