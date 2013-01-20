@@ -49,6 +49,12 @@
     <Filter Include="Source Files\FileTools">
       <UniqueIdentifier>{c5926306-ea2e-44d1-b850-c237e52495fc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\GUI\ShipView">
+      <UniqueIdentifier>{e23fcd34-5e56-471d-beaf-b65fc7ae4f56}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GUI\ShipView">
+      <UniqueIdentifier>{1f9ae967-5bd6-4662-ba46-81b0fbb8e682}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SGame.cpp">
@@ -96,9 +102,6 @@
     <ClCompile Include="Ship\Ship.cpp">
       <Filter>Source Files\Ship</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\ShipView.cpp">
-      <Filter>Source Files\GUI</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\Forms\BuildTools.cpp">
       <Filter>Source Files\GUI\Forms</Filter>
     </ClCompile>
@@ -134,6 +137,9 @@
     </ClCompile>
     <ClCompile Include="MemManager.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\ShipView\ShipView.cpp">
+      <Filter>Source Files\GUI\ShipView</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -185,9 +191,6 @@
     <ClInclude Include="sigslot.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GUI\ShipView.h">
-      <Filter>Header Files\GUI</Filter>
-    </ClInclude>
     <ClInclude Include="GUI\Forms\BuildTools.h">
       <Filter>Header Files\GUI\Forms</Filter>
     </ClInclude>
@@ -226,6 +229,9 @@
     </ClInclude>
     <ClInclude Include="MemManager.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI\ShipView\ShipView.h">
+      <Filter>Header Files\GUI\ShipView</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

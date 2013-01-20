@@ -41,8 +41,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>C:\projects\Games_new\SGame\$(Configuration)\</OutDir>
-    <IntDir>C:\projects\Games_new\SGame\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -55,7 +55,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;DEBUG;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;Ship;FileTools;Generic;SDL;Math;GUI;GUI/Forms;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;Ship;FileTools;Generic;SDL;Math;GUI;GUI/Forms;GUI/ShipView;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>false</MultiProcessorCompilation>
       <SDLCheck>false</SDLCheck>
       <MinimalRebuild>true</MinimalRebuild>
@@ -80,7 +80,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;RELEASE;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;Ship;FileTools;Generic;SDL;Math;GUI;GUI/Forms;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;Ship;FileTools;Generic;SDL;Math;GUI;GUI/Forms;GUI/ShipView;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <MultiProcessorCompilation>false</MultiProcessorCompilation>
@@ -114,7 +114,7 @@
     <ClCompile Include="GUI\GUIManager.cpp" />
     <ClCompile Include="GUI\Input.cpp" />
     <ClCompile Include="GUI\ProgressBar.cpp" />
-    <ClCompile Include="GUI\ShipView.cpp" />
+    <ClCompile Include="GUI\ShipView\ShipView.cpp" />
     <ClCompile Include="GUI\Text.cpp" />
     <ClCompile Include="GUI\TextArea.cpp" />
     <ClCompile Include="GUI\TexturedWidget.cpp" />
@@ -147,7 +147,7 @@
     <ClInclude Include="GUI\GUIManager.h" />
     <ClInclude Include="GUI\Input.h" />
     <ClInclude Include="GUI\ProgressBar.h" />
-    <ClInclude Include="GUI\ShipView.h" />
+    <ClInclude Include="GUI\ShipView\ShipView.h" />
     <ClInclude Include="GUI\Text.h" />
     <ClInclude Include="GUI\TextArea.h" />
     <ClInclude Include="GUI\TexturedWidget.h" />
