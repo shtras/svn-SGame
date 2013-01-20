@@ -190,6 +190,7 @@ public:
   void setRotation(int value) {rotation_ = value;}
   void setX(int value) {x_ = value;}
   void setY(int value) {y_ = value;}
+  bool autorotate() {return autorotate_;}
 private:
   int id_;
   int x_;
@@ -200,4 +201,5 @@ private:
   float texY_;
   float texWidth_;
   float texHeight_;
+  bool autorotate_;
 };

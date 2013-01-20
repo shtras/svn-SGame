@@ -781,7 +781,7 @@ Item::Item()
 }
 
 Item::Item(const Item& other):x_(other.x_), y_(other.y_),name_(other.name_),texX_(other.texX_),texY_(other.texY_), texWidth_(other.texWidth_),texHeight_(other.texHeight_),
-  rotation_(other.rotation_),id_(other.id_)
+  rotation_(other.rotation_),id_(other.id_),autorotate_(other.autorotate_)
 {
 }
 

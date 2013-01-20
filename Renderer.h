@@ -36,7 +36,7 @@ public:
   void render();
   void renderEnd();
   void renderText(float x, float y, CString text);
-  void drawTexRect(Rect pos, GLuint texID, Rect texPos);
+  void drawTexRect(Rect pos, GLuint texID, Rect texPos, int rotation = 0);
   void setTextSize(float size) {textSize_ = size;}
   void setColor(Vector4 color);
   void setColor(Vector3 color);

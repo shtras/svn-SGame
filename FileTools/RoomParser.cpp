@@ -151,6 +151,7 @@ bool RoomParser::processItem( Section* sec )
   CString name = "";
   int texX = -1;
   int texY = -1;
+  bool autorotate = false;
   for (auto itr = sec->getProperties().begin(); itr != sec->getProperties().end(); ++itr) {
     const Property& prop = *itr;
     if (prop.propName == "id") {
@@ -161,6 +162,10 @@ bool RoomParser::processItem( Section* sec )
       texX = parseInt(prop.value);
     } else if (prop.propName == "y") {
       texY = parseInt(prop.value);
+    } else if (prop.propName == "autorotate") {
+      if (prop.value == "true") {
+        autorotate = true;
+      }
     } else {
       Logger::getInstance().log(ERROR_LOG_NAME, "Invalid property: " + prop.propName);
       return false;
@@ -181,6 +186,7 @@ bool RoomParser::processItem( Section* sec )
   item->setTexY(texY);
   item->setTexWidth(64);
   item->setTexHeight(64);
+  item->autorotate_ = autorotate;
   itemsMap_[id] = item;
   ItemsDB::getInstance().addItem(item);
   return true;

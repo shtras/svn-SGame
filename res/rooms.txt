@@ -16,24 +16,28 @@ CompartmentInfo {
 		Name=ReactorTL
 		X=256
 		Y=256
+		Autorotate=true
 	}
 	Item {
 		ID=4
 		Name=ReactorTR
 		X=256
 		Y=320
+		Autorotate=true
 	}
 	Item {
 		ID=5
 		Name=ReactorBR
 		X=256
 		Y=384
+		Autorotate=true
 	}
 	Item {
 		ID=6
 		Name=ReactorBL
 		X=256
 		Y=448
+		Autorotate=true
 	}
 	Item {
 		ID=7
@@ -58,12 +62,14 @@ CompartmentInfo {
 		Name=Engine1
 		X=0
 		Y=512
+		Autorotate=true
 	}
 	Item {
 		ID=11
 		Name=Engine2
 		X=0
 		Y=576
+		Autorotate=true
 	}
 	Compartment {
 		Category=1 ; Navigation

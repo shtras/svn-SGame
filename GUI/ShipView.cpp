@@ -230,6 +230,11 @@ void ShipView::drawCompartments()
       int x = item->getX() + comp->getX();
       int y = item->getY() + comp->getY();
       int rotation = item->getRotation();
+      int renderRotate = 0;
+      if (item->autorotate()) {
+        renderRotate = rotation;
+        rotation = 0;
+      }
       float tileX = x*tileWidth_ + offsetX_*zoom_ + size_.left;
       float tileY = y*tileHeight_ + offsetY_*zoom_ + size_.top;
       if (tileX < size_.left || tileX+tileWidth_ > size_.left + size_.width) {
@@ -240,7 +245,7 @@ void ShipView::drawCompartments()
       }
       Rect pos(tileX, tileY, tileWidth_, tileHeight_);
       Rect texPos(item->getTexX() + rotation * item->getTexWidth() + item->getTexWidth()*0.01f, item->getTexY() + item->getTexHeight()*0.01f, item->getTexWidth()*0.98f, item->getTexHeight()*0.98f);
-      renderer.drawTexRect(pos, tilesTex, texPos);
+      renderer.drawTexRect(pos, tilesTex, texPos, renderRotate);
     }
     renderer.resetColor();
   }

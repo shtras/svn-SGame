@@ -263,23 +263,21 @@ int __stdcall WinMain( __in HINSTANCE hInstance, __in_opt HINSTANCE hPrevInstanc
 int main(int argc, char** argv)
 #endif
 {
+  Logger::getInstance().log(INFO_LOG_NAME, "Application started. Hello, World!");
+  Logger::getInstance().log(INFO_LOG_NAME, CString("Application version: ") + Version + CString(BUILD_NUM) + " " + CString(BUILD_STR));
 #if defined(WIN32) && defined(DEBUG)
   AllocConsole();
   FILE* stream = NULL;
   errno_t err = freopen_s(&stream, "CON", "w", stdout);
 #endif
-  Logger::getInstance().log(INFO_LOG_NAME, "Application started. Hello, World!");
-  Logger::getInstance().log(INFO_LOG_NAME, CString("Application version: ") + Version + CString(BUILD_NUM) + " " + CString(BUILD_STR));
-  //FileOpenDialog* a = new FileOpenDialog(Rect(0,0,1,1));
-  //delete a;
-   SGame& game = SGame::getInstance();
-   bool res = game.init();
-   if (res) {
-     Logger::getInstance().log(INFO_LOG_NAME, "Initialization successfully completed");
-     game.run();
-   } else {
-     Logger::getInstance().log(ERROR_LOG_NAME, "Something went horribly wrong. Look above for details.");
-   }
+  SGame& game = SGame::getInstance();
+  bool res = game.init();
+  if (res) {
+    Logger::getInstance().log(INFO_LOG_NAME, "Initialization successfully completed");
+    game.run();
+  } else {
+    Logger::getInstance().log(ERROR_LOG_NAME, "Something went horribly wrong. Look above for details.");
+  }
 
 #if defined(WIN32) && defined(DEBUG)
   FreeConsole();

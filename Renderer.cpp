@@ -260,14 +260,50 @@ void Renderer::renderTextLine(TextToRender& ttr)
   }
 }
 
-void Renderer::drawTexRect(Rect pos, GLuint texID, Rect texPos)
+void Renderer::drawTexRect(Rect pos, GLuint texID, Rect texPos, int rotation/* = 0*/)
 {
+  
   if (texID != activeTex_) {
     flushVerts();
     glBindTexture(GL_TEXTURE_2D, texID);
     activeTex_ = texID;
   }
+  FCoord tex1(texPos.left,                texPos.top);
+  FCoord tex2(texPos.left + texPos.width, texPos.top);
+  FCoord tex3(texPos.left,                texPos.top + texPos.height);
+  FCoord tex4(texPos.left + texPos.width, texPos.top + texPos.height);
+  switch (rotation)
+  {
+  case 0:
+    break;
+  case 1:
+    tex1.y = texPos.top + texPos.height;
+    tex2.x = texPos.left;
+    tex3.x = texPos.left + texPos.width;
+    tex4.y = texPos.top;
+    break;
+  case 2:
+    swap(tex1, tex4);
+    swap(tex2, tex3);
+    break;
+  case 3:
+    swap(tex1, tex2);
+    swap(tex2, tex4);
+    swap(tex3, tex4);
+    break;
+  default:
+    assert(0);
+  }
+  /*
+  addVertex(pos.left + offsetX_,           1-(pos.top) - offsetY_,              texX1, texY2);
+  addVertex(pos.left+pos.width + offsetX_, 1-(pos.top) - offsetY_,              texX1, texY1);
+  addVertex(pos.left+pos.width + offsetX_, 1-(pos.top + pos.height) - offsetY_, texX2, texY1);
 
+  addVertex(pos.left + offsetX_,           1-(pos.top) - offsetY_,              texX1, texY2);
+  addVertex(pos.left+pos.width + offsetX_, 1-(pos.top + pos.height) - offsetY_, texX2, texY1);
+  addVertex(pos.left + offsetX_,           1-(pos.top + pos.height) - offsetY_, texX2, texY2);
+  */
+  /*
   addVertex(pos.left + offsetX_,           1-(pos.top) - offsetY_,              texPos.left,                texPos.top);
   addVertex(pos.left+pos.width + offsetX_, 1-(pos.top) - offsetY_,              texPos.left + texPos.width, texPos.top);
   addVertex(pos.left+pos.width + offsetX_, 1-(pos.top + pos.height) - offsetY_, texPos.left + texPos.width, texPos.top + texPos.height);
@@ -275,6 +311,16 @@ void Renderer::drawTexRect(Rect pos, GLuint texID, Rect texPos)
   addVertex(pos.left + offsetX_,           1-(pos.top) - offsetY_,              texPos.left,                texPos.top);
   addVertex(pos.left+pos.width + offsetX_, 1-(pos.top + pos.height) - offsetY_, texPos.left + texPos.width, texPos.top + texPos.height);
   addVertex(pos.left + offsetX_,           1-(pos.top + pos.height) - offsetY_, texPos.left,                texPos.top + texPos.height);
+  */
+  
+  addVertex(pos.left + offsetX_,           1-(pos.top) - offsetY_,              tex1.x, tex1.y);
+  addVertex(pos.left+pos.width + offsetX_, 1-(pos.top) - offsetY_,              tex2.x, tex2.y);
+  addVertex(pos.left+pos.width + offsetX_, 1-(pos.top + pos.height) - offsetY_, tex4.x, tex4.y);
+
+  addVertex(pos.left + offsetX_,           1-(pos.top) - offsetY_,              tex1.x, tex1.y);
+  addVertex(pos.left+pos.width + offsetX_, 1-(pos.top + pos.height) - offsetY_, tex4.x, tex4.y);
+  addVertex(pos.left + offsetX_,           1-(pos.top + pos.height) - offsetY_, tex3.x, tex3.y);
+  
 }
 
 void Renderer::addVertex( float x, float y, float u, float v )
