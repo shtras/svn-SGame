@@ -5,7 +5,7 @@ CompHoverInfo::CompHoverInfo( Rect size ):Window(size)
 {
   float top = 0.01f;
   name_ = new Text(Rect(0.01f,top,0.98f,0.1f));
-  name_->setAlign(Widget::LeftAlign);
+  //name_->setAlign(Widget::LeftAlign);
   addWidget(name_);
   top += 0.1f;
 

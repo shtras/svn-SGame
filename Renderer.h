@@ -69,6 +69,7 @@ public:
   int getTilesTexHeight() {return tilesTexHeight_;}
   void setWidgetForTooltip(Widget* w) {renderTooltipFor_ = w;}
   void resize(int width, int height);
+  void setFloatingWidgetWidthLimit(float value) {floatingWidgetWidthLimit_ = value;}
 private:
   Renderer();
   ~Renderer();
@@ -120,4 +121,5 @@ private:
   Widget* floatingWidget_;
   Widget* keyboardListner_;
   map<char, float> fontMapX_;
+  float floatingWidgetWidthLimit_;
 };

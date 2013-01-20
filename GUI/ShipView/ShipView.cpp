@@ -33,6 +33,7 @@ void ShipView::render()
 {
   if (fabs(zoom_ - desiredZoom_) > 0.0001f) {
     zoom_ += zoomStep_;
+    onMouseMove();
   }
   Renderer& renderer = Renderer::getInstance();
   renderer.setColor(Vector4(255,255,255,100));

@@ -9,7 +9,7 @@
 Renderer::Renderer():font_(0),currVertIdx_(0),color_(Vector4(255,255,255,255)),activeTex_(-1),width_(1600), height_(900), textSize_(1.0f), guiTexHeight_(-1), guiTexWidth_(-1),
   globalGUIWindow_(NULL), draggedWidget_(NULL), offsetX_(0), offsetY_(0), xAtStartDrag_(0), yAtStartDrag_(0), startMouseX_(0), startMouseY_(0),
   renderingDragged_(false),lastColor_(Vector4(255,255,255,255)),flushes_(0),vertices_(0),tilesTexWidth_(0),tilesTexHeight_(0), floatingWidget_(NULL),
-  keyboardListner_(NULL)
+  keyboardListner_(NULL),floatingWidgetWidthLimit_(1.0f)
 {
   globalGUIWindow_ = new GlobalWindow(Rect(0,0,1,1));
   for (char c = 'a'; c <= 'z'; ++c) {
@@ -154,6 +154,12 @@ void Renderer::render()
       color_[3] = 200;
       offsetX_ = mouseX_;
       offsetY_ = mouseY_;
+      if (offsetX_ + floatingWidget_->getSize().width > floatingWidgetWidthLimit_) {
+        offsetX_ = floatingWidgetWidthLimit_ - floatingWidget_->getSize().width;
+      }
+      if (offsetY_ + floatingWidget_->getSize().height > 1) {
+        offsetY_ = 1 - floatingWidget_->getSize().height;
+      }
       floatingWidget_->renderFrameRec();
       floatingWidget_->renderContRec();
     }
@@ -410,6 +416,9 @@ void Renderer::setDraggedWidget( Widget* w )
 
 void Renderer::setFloatingWidget( Widget* w )
 {
+  if (!w) {
+    floatingWidgetWidthLimit_ = 1.0f;
+  }
   floatingWidget_ = w;
 }
 

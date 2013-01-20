@@ -172,6 +172,7 @@ void ShipViewEditor::onMouseMove()
   hoveredComp_ = activeDeck_->getCompartment(hoveredLeft_, hoveredTop_);
   if (hoveredComp_ && !drawing_) {
     hoveredCompInfo_->setCompartment(hoveredComp_);
+    Renderer::getInstance().setFloatingWidgetWidthLimit(size_.left + size_.width);
     Renderer::getInstance().setFloatingWidget(hoveredCompInfo_);
   } else {
     Renderer::getInstance().setFloatingWidget(NULL);
@@ -333,6 +334,7 @@ void ShipViewEditor::createConnection()
   addLogMessage(hoveredComp_->getName() + " connected to " + selectedComp_->getName());
   selectedComp_ = NULL;
   ship_->checkConnections();
+  onMouseMove();
 }
 
 void ShipViewEditor::removeConnection()
@@ -349,6 +351,7 @@ void ShipViewEditor::removeConnection()
   addLogMessage("Connection removed");
   selectedComp_ = NULL;
   ship_->checkConnections();
+  onMouseMove();
 }
 
 void ShipViewEditor::saveShip(CString fileName)
