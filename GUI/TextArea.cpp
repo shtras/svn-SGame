@@ -2,7 +2,7 @@
 #include "TextArea.h"
 #include "Renderer.h"
 
-TextArea::TextArea(Rect size):Widget(size), pb_(NULL), maxSize_(150), first_(0), maxLinesDisplayed_(0)
+TextArea::TextArea(Rect size):Widget(size), pb_(NULL), maxSize_(150), first_(0), maxLinesDisplayed_(0), textSize_(1.0f)
 {
   TextureParams params = {1, 79, 65, 17, 7, 7, 7, 7};
   initRegular(params);
@@ -19,6 +19,7 @@ TextArea::~TextArea()
 void TextArea::onResize()
 {
   Renderer& renderer = Renderer::getInstance();
+  renderer.setTextSize(textSize_);
   float charHeight = renderer.getCharHeight();
   maxLinesDisplayed_ = (int)((size_.height - 0.02f) / charHeight);
   resizePB();
@@ -26,6 +27,7 @@ void TextArea::onResize()
 
 void TextArea::pushLine( CString line )
 {
+  Renderer::getInstance().setTextSize(textSize_);
   float lineSize = Renderer::getInstance().getCharWidth() * line.getSize();
   while (lineSize > size_.width*0.9f) {
     int portion = (int)(line.getSize() * size_.width*0.9f / lineSize);
@@ -59,6 +61,7 @@ void TextArea::onMouseWheelScroll( int direction )
 void TextArea::render()
 {
   Renderer& renderer = Renderer::getInstance();
+  renderer.setTextSize(textSize_);
   float charHeight = renderer.getCharHeight();
   float lastTop = 0.01f + size_.top;
   int cnt = -1;
@@ -87,4 +90,10 @@ void TextArea::clearLines()
   lines_.clear();
   pb_->setParams(0, 0, 0);
   first_ = 0;
+}
+
+void TextArea::setTextSize( float value )
+{
+  textSize_ = value;
+  onResize();
 }

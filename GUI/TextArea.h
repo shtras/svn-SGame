@@ -12,6 +12,7 @@ public:
   void onMouseWheelScroll(int direction);
   void render();
   void clearLines();
+  void setTextSize(float value);
 private:
   void resizePB();
   list<CString> lines_;
@@ -19,4 +20,5 @@ private:
   int first_;
   int maxLinesDisplayed_;
   ProgressBar* pb_;
+  float textSize_;
 };

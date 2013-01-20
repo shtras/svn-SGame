@@ -32,7 +32,7 @@ void CompHoverInfo::setCompartment( Compartment* comp )
       if (comp->isConnectedTo(requiredConnection)) {
         requiredConnection += " - OK";
       } else {
-        requiredConnection += " - NOT CONNECTED";
+        requiredConnection += " - Not connected";
       }
       requiredConnectionsTA_->pushLine(requiredConnection);
     }

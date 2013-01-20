@@ -231,6 +231,7 @@ CompartmentInfo {
 		Required=ControlRoom,Bridge
 		MaxConnections=2
 		PowerRequired=6
+		RequiresAccess=false
 		Item {
 			ID=10
 			X=0
@@ -242,6 +243,7 @@ CompartmentInfo {
 			X=1
 			Y=0
 			Rotation=0
+			RequiresVacuum=true
 		}
 	}
 }

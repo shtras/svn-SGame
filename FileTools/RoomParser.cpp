@@ -206,6 +206,7 @@ bool RoomParser::processCompartment( Section* sec )
   int crewCapacity = 0;
   int maxConnections = 0;
   int maxSameConections = 1;
+  bool requiresAccess = true;
   set<CString> requiredConnections;
   for (auto itr = sec->getProperties().begin(); itr != sec->getProperties().end(); ++itr) {
     const Property& prop = *itr;
@@ -227,6 +228,10 @@ bool RoomParser::processCompartment( Section* sec )
       maxConnections = parseInt(prop.value);
     } else if (prop.propName == "maxsameconnections") {
       maxSameConections = parseInt(prop.value);
+    } else if (prop.propName == "requiresaccess") {
+      if (prop.value == "false") {
+        requiresAccess = false;
+      }
     } else if (prop.propName == "required") {
       CString value = prop.value;
       vector<CString> values = value.tokenize(',');
@@ -259,6 +264,7 @@ bool RoomParser::processCompartment( Section* sec )
   comp->requiredConnections_ = requiredConnections;
   comp->maxConnections_ = maxConnections;
   comp->maxSameConnections_ = maxSameConections;
+  comp->requiresAccess_ = requiresAccess;
   for (auto itr = sec->getSubSections().begin(); itr != sec->getSubSections().end(); ++itr) {
     Section* subSec = *itr;
     assert(subSec);
@@ -271,6 +277,7 @@ bool RoomParser::processCompartment( Section* sec )
     int itemX = -1;
     int itemY = -1;
     int itemRot = -1;
+    bool requiresVacuum = false;
     for (auto propItr = subSec->getProperties().begin(); propItr != subSec->getProperties().end(); ++propItr) {
       const Property& prop = *propItr;
       if (prop.propName == "id") {
@@ -281,6 +288,10 @@ bool RoomParser::processCompartment( Section* sec )
         itemY = parseInt(prop.value);
       } else if (prop.propName == "rotation") {
         itemRot = parseInt(prop.value);
+      } else if (prop.propName == "requiresvacuum") {
+        if (prop.value == "true") {
+          requiresVacuum = true;
+        }
       } else {
         Logger::getInstance().log(ERROR_LOG_NAME, "Invalid property: " + prop.propName);
         delete comp;
@@ -302,6 +313,7 @@ bool RoomParser::processCompartment( Section* sec )
     newItem->x_ = itemX;
     newItem->y_ = itemY;
     newItem->rotation_ = itemRot;
+    newItem->requiresVacuum_ = requiresVacuum;
     comp->addItem(newItem);
   }
   if (roomsMap_.count(category) == 0) {

@@ -15,6 +15,7 @@ public:
 private:
   FramedText* crewText_;
   FramedText* powerText_;
+  FramedText* entranceText_;
   FramedText* structureStatusText_;
   FramedText* accessibilityStatusText_;
   FramedText* connectionsStatusText_;

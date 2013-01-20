@@ -33,6 +33,17 @@ BuildInfo::BuildInfo( Rect size ):Window(size),shipView_(NULL)
   top += height;
 
   labelText = new FramedText(Rect(left, top, width, height));
+  labelText->setCaption("Entrance");
+  labelText->setAlign(Widget::LeftAlign);
+  labelText->setColor(Vector4(50, 255, 10, 255));
+  addWidget(labelText);
+  entranceText_ = new FramedText(Rect(left+width, top, width1, height));
+  entranceText_->setCaption("Missing");
+  addWidget(entranceText_);
+  entranceText_->setAlign(Widget::LeftAlign);
+  top += height;
+
+  labelText = new FramedText(Rect(left, top, width, height));
   labelText->setCaption("Structure status");
   labelText->setAlign(Widget::LeftAlign);
   labelText->setColor(Vector4(50, 255, 10, 255));
@@ -78,6 +89,7 @@ BuildInfo::BuildInfo( Rect size ):Window(size),shipView_(NULL)
 
   ta_ = new TextArea(Rect(left, top, width + width1, 1.0f - top - 0.01f));
   addWidget(ta_);
+  ta_->setTextSize(0.9f);
 }
 
 BuildInfo::~BuildInfo()
@@ -107,12 +119,20 @@ void BuildInfo::updateValues()
   } else {
     powerText_->setColor(Vector4(255,255,255,255));
   }
+  if (ship->getEntrance()) {
+    entranceText_->setColor(Vector4(255,255,255,255));
+    entranceText_->setCaption("Exists");
+  } else {
+    entranceText_->setColor(Vector4(255,100,100,255));
+    entranceText_->setCaption("Missing");
+    status = false;
+  }
   if (ship->connectionsOK()) {
     connectionsStatusText_->setColor(Vector4(255,255,255,255));
     connectionsStatusText_->setCaption("OK");
   } else {
     connectionsStatusText_->setColor(Vector4(255,100,100,255));
-    connectionsStatusText_->setCaption("BAD");
+    connectionsStatusText_->setCaption("Not OK");
     status = false;
   }
   if (ship->accessibilityOK()) {
@@ -120,7 +140,7 @@ void BuildInfo::updateValues()
     accessibilityStatusText_->setCaption("OK");
   } else {
     accessibilityStatusText_->setColor(Vector4(255,100,100,255));
-    accessibilityStatusText_->setCaption("BAD");
+    accessibilityStatusText_->setCaption("Not OK");
     status = false;
   }
   if (ship->structureOK()) {
@@ -128,7 +148,7 @@ void BuildInfo::updateValues()
     structureStatusText_->setCaption("OK");
   } else {
     structureStatusText_->setColor(Vector4(255,100,100,255));
-    structureStatusText_->setCaption("BAD");
+    structureStatusText_->setCaption("Not OK");
     status = false;
   }
   if (status) {
@@ -136,7 +156,7 @@ void BuildInfo::updateValues()
     generalStatusText_->setCaption("OK");
   } else {
     generalStatusText_->setColor(Vector4(255,100,100,255));
-    generalStatusText_->setCaption("BAD");
+    generalStatusText_->setCaption("Not OK");
   }
 }
 

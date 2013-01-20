@@ -30,6 +30,7 @@ public:
   bool accessibilityOK() {return accessibleStatus_;}
   void checkConnections();
 private:
+  void resetValues();
   void recalculateTilesRec(int deckIdx, int x, int y, bool accessible, bool connected);
   bool isEntranceValid();
   bool outAccessible(Tile* tile);
@@ -153,6 +154,8 @@ public:
   void setRequiredConnections(set<CString> connections) {requiredConnections_ = connections;}
   int getMaxConnections() {return maxConnections_;}
   int getMaxSameConnections() {return maxSameConnections_;}
+  Item* getItem(int x, int y);
+  bool requiresAccess() {return requiresAccess_;}
 private:
   Category category_;
   int left_;
@@ -171,11 +174,13 @@ private:
   set<CString> requiredConnections_;
   int maxConnections_;
   int maxSameConnections_;
+  bool requiresAccess_;
 };
 
 class Item
 {
   friend class RoomParser;
+  friend bool Ship::load(CString fileName);
 public:
   Item();
   Item(const Item& other);
@@ -196,6 +201,7 @@ public:
   void setX(int value) {x_ = value;}
   void setY(int value) {y_ = value;}
   bool autorotate() {return autorotate_;}
+  bool requiresVacuum() {return requiresVacuum_;}
 private:
   int id_;
   int x_;
@@ -207,4 +213,5 @@ private:
   float texWidth_;
   float texHeight_;
   bool autorotate_;
+  bool requiresVacuum_;
 };

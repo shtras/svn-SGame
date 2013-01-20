@@ -232,6 +232,8 @@ void ShipView::drawCompartments()
       Item* item = *itemItr;
       int x = item->getX() + comp->getX();
       int y = item->getY() + comp->getY();
+      Tile* tile = activeDeck_->getTile(x, y);
+      assert(tile);
       int rotation = item->getRotation();
       int renderRotate = 0;
       if (item->autorotate()) {
@@ -246,11 +248,21 @@ void ShipView::drawCompartments()
       if (tileY < size_.top || tileY+tileHeight_ > size_.top + size_.height) {
         continue;
       }
+      if (overviewType_ == Accessibility) {
+        renderer.setColor(Vector4(255,255,255,255));
+        if (item->requiresVacuum()) {
+          if (tile->getType() != Tile::Empty) {
+            renderer.setColor(Vector4(255, 0, 0, 255));
+          }
+        } else if (tile->getType() == Tile::Empty || !tile->isConnected()) {
+          renderer.setColor(Vector4(255, 0, 0, 255));
+        }
+      }
       Rect pos(tileX, tileY, tileWidth_, tileHeight_);
       Rect texPos(item->getTexX() + rotation * item->getTexWidth() + item->getTexWidth()*0.01f, item->getTexY() + item->getTexHeight()*0.01f, item->getTexWidth()*0.98f, item->getTexHeight()*0.98f);
       renderer.drawTexRect(pos, tilesTex, texPos, renderRotate);
     }
-    renderer.resetColor();
+    renderer.setColor(Vector4(255,255,255,255));
   }
 }
 

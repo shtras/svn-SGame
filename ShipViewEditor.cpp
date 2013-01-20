@@ -308,6 +308,7 @@ void ShipViewEditor::createConnection()
   assert(selectedComp_ && hoveredComp_);
   if (hoveredComp_->isConnectedTo(selectedComp_)) {
     assert(selectedComp_->isConnectedTo(hoveredComp_));
+    addLogMessage("Already connected");
     selectedComp_ = NULL;
     return;
   }

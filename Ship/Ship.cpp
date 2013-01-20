@@ -113,14 +113,22 @@ void Ship::recalculateTiles()
       for (int y=0; y<height_; ++y) {
         Tile* tile = deck->getTile(x, y);
         Compartment* comp = deck->getCompartment(x, y);
+        Item* item = comp?comp->getItem(x - comp->getX(), y-comp->getY()):NULL;
         if (!comp && tile->getType() == Tile::Empty) {
           continue;
         }
         if (!tile->isConnected()) {
-          structureStatus_ = false;
+          if (!item || !item->requiresVacuum()) {
+            structureStatus_ = false;
+          }
         }
-        if (comp && !tile->isAccessible()) {
-          accessibleStatus_ = false;
+        if (comp && !tile->isAccessible() && comp->requiresAccess()) {
+          if (!item || !item->requiresVacuum()) {
+            accessibleStatus_ = false;
+          }
+        }
+        if (item && item->requiresVacuum() && tile->getType() != Tile::Empty) {
+          structureStatus_ = false;
         }
         if (!accessibleStatus_ && !structureStatus_) {
           return;
@@ -252,6 +260,7 @@ bool Ship::load(CString fileName)
     delete deck;
   }
   decks_.clear();
+  resetValues();
   left_ = 0;
   top_ = 0;
   FILE* file = fopen(fileName, "rb");
@@ -327,7 +336,7 @@ bool Ship::load(CString fileName)
       Compartment* comp = new Compartment();
       CString name = readStringFromFile(file);
       comp->setName(name);
-      if (!readFromFile(buffer, 1, 15, file)) {
+      if (!readFromFile(buffer, 1, 16, file)) {
         delete[] deckOffsets;
         Logger::getInstance().log(ERROR_LOG_NAME, "Save file corrupted");
         fclose(file);
@@ -346,11 +355,12 @@ bool Ship::load(CString fileName)
       comp->category_ = (Compartment::Category)buffer[11];
       comp->maxConnections_ = buffer[12];
       comp->maxSameConnections_ = buffer[13];
+      comp->requiresAccess_ = buffer[14]==1?true:false;
       int id = buffer[0];
       assert (compIDs.count(id) == 0);
       compIDs[id] = comp;
       list<int> connections;
-      for (int connection = 0; connection<buffer[14]; ++connection) {
+      for (int connection = 0; connection<buffer[15]; ++connection) {
         char c;
         readFromFile(&c, 1, 1, file);
         connections.push_back(c);
@@ -367,12 +377,13 @@ bool Ship::load(CString fileName)
       char numItems = 0;
       readFromFile(&numItems, 1, 1, file);
       for (int itemItr = 0; itemItr<numItems; ++itemItr) {
-        readFromFile(buffer, 1, 4, file);
+        readFromFile(buffer, 1, 5, file);
         Item* itemOriginal = ItemsDB::getInstance().getItemByID(buffer[0]);
         Item* item = new Item(*itemOriginal);
         item->setX(buffer[1]);
         item->setY(buffer[2]);
         item->setRotation(buffer[3]);
+        item->requiresVacuum_ = buffer[4]==1?true:false;
         comp->addItem(item);
       }
       deck->addCompartment(comp);
@@ -488,6 +499,7 @@ void Ship::save( CString fileName )
       buffer[cnt++] = comp->getCategory();
       buffer[cnt++] = comp->getMaxConnections();
       buffer[cnt++] = comp->getMaxSameConnections();
+      buffer[cnt++] = comp->requiresAccess()?1:0;
       buffer[cnt++] = comp->getConnections().size();
       writeToFile(buffer, 1, cnt, file);
       cnt=0;
@@ -514,6 +526,7 @@ void Ship::save( CString fileName )
         buffer[cnt++] = item->getX();
         buffer[cnt++] = item->getY();
         buffer[cnt++] = item->getRotation();
+        buffer[cnt++] = item->requiresVacuum()?1:0;
         writeToFile(buffer, 1, cnt, file);
       }
     }
@@ -531,6 +544,15 @@ void Ship::checkConnections()
       break;
     }
   }
+}
+
+void Ship::resetValues()
+{
+  minCrew_ = 0;
+  maxCrew_ = 0;
+  powerRequired_ = 0;
+  powerProduced_ = 0;
+  crewCapacity_ = 0;
 }
 
 Deck::Deck(Ship* ship, int width, int height,int idx):
@@ -761,7 +783,8 @@ Compartment::Compartment():rotation_(0)
 
 Compartment::Compartment(const Compartment& other):left_(other.left_), top_(other.top_), width_(other.width_), height_(other.height_), name_(other.name_),
   category_(other.category_),minCrew_(other.minCrew_),maxCrew_(other.maxCrew_),powerRequired_(other.powerRequired_),powerProduced_(other.powerProduced_),
-  crewCapacity_(other.crewCapacity_),rotation_(other.rotation_),maxSameConnections_(other.maxSameConnections_),maxConnections_(other.maxConnections_)
+  crewCapacity_(other.crewCapacity_),rotation_(other.rotation_),maxSameConnections_(other.maxSameConnections_),maxConnections_(other.maxConnections_),
+  requiresAccess_(other.requiresAccess_)
 {
   for (auto itr = other.items_.begin(); itr != other.items_.end(); ++itr) {
     items_.push_back(new Item(**itr));
@@ -850,12 +873,23 @@ int Compartment::numConnectionsTo( CString compName )
   return cnt;
 }
 
+Item* Compartment::getItem( int x, int y )
+{
+  for (auto itr = items_.begin(); itr != items_.end(); ++itr) {
+    Item* item = *itr;
+    if (item->getX() == x && item->getY() == y) {
+      return item;
+    }
+  }
+  return NULL;
+}
+
 Item::Item()
 {
 }
 
 Item::Item(const Item& other):x_(other.x_), y_(other.y_),name_(other.name_),texX_(other.texX_),texY_(other.texY_), texWidth_(other.texWidth_),texHeight_(other.texHeight_),
-  rotation_(other.rotation_),id_(other.id_),autorotate_(other.autorotate_)
+  rotation_(other.rotation_),id_(other.id_),autorotate_(other.autorotate_),requiresVacuum_(other.requiresVacuum_)
 {
 }
 
