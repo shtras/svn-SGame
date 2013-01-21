@@ -1,3 +1,4 @@
+;ID,Name,X,Y,Autorotate
 1,Table,0,256,FALSE
 2,Chair,0,320,FALSE
 3,ReactorTL,256,256,TRUE
@@ -9,3 +10,4 @@
 9,Controls,256,192,FALSE
 10,Engine1,0,512,TRUE
 11,Engine2,0,576,TRUE
+12,CargoFloor,384,0,TRUE

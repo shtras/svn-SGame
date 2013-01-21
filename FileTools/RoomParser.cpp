@@ -93,10 +93,29 @@ bool RoomParser::parseCSV()
         Logger::getInstance().log(ERROR_LOG_NAME, "Wrong file format: res/comps.csv");
         return false;
       }
+      CString xStr = items[i+1];
+      CString yStr = items[i+2];
+      int rot = parseInt(items[i+3]);
+      bool requiresVacuum = (items[i+4]=='t')?true:false;
+      if (xStr == "*") {
+        assert (yStr == "*");
+        assert (items.size() == 5);
+        for (int x=0; x<comp->width_; ++x) {
+          for (int y=0; y<comp->height_; ++y) {
+            Item* newItem = new Item(*origItem);
+            newItem->x_ = x;
+            newItem->y_ = y;
+            newItem->rotation_ = rot;
+            newItem->requiresVacuum_ = requiresVacuum;
+            comp->addItem(newItem);
+          }
+        }
+        break;
+      }
       Item* newItem = new Item(*origItem);
       newItem->x_ = parseInt(items[i+1]);
       newItem->y_ = parseInt(items[i+2]);
-      newItem->rotation_ = parseInt(items[i+3]);
+      newItem->rotation_ = rot;
       newItem->requiresVacuum_ = (items[i+4]=='t')?true:false;
       comp->addItem(newItem);
     }
