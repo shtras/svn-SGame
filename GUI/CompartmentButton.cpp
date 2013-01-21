@@ -18,7 +18,7 @@ CompartmentButton::CompartmentButton(Rect size, Compartment* comp, ShipViewEdito
   double height = 0.1;
   hoverWindow_ = new Window(Rect(0.0, 0.0, 0.2, 0.2));
   Text* t = new Text(Rect(0.01, top, 0.98, height));
-  t->setCaption(comp->getName());
+  t->setCaption(comp->getFullName());
   hoverWindow_->addWidget(t);
   top += height + 0.01;
 

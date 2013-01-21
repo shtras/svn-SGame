@@ -9,6 +9,7 @@ public:
   RoomParser();
   ~RoomParser();
   bool parse(CString fileName);
+  bool parseCSV();
 private:
   CString getNextLine();
   void pushBackLine(CString line);

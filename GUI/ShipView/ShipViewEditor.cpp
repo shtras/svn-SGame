@@ -331,7 +331,7 @@ void ShipViewEditor::createConnection()
   }
   selectedComp_->connectTo(hoveredComp_);
   hoveredComp_->connectTo(selectedComp_);
-  addLogMessage(hoveredComp_->getName() + " connected to " + selectedComp_->getName());
+  addLogMessage(hoveredComp_->getFullName() + " connected to " + selectedComp_->getFullName());
   selectedComp_ = NULL;
   ship_->checkConnections();
   onMouseMove();

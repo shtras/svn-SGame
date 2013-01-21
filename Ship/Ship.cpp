@@ -341,7 +341,9 @@ bool Ship::load(CString fileName)
     for (int i=0; i<numCompartments; ++i) {
       Compartment* comp = new Compartment();
       CString name = readStringFromFile(file);
+      CString suffix = readStringFromFile(file);
       comp->setName(name);
+      comp->suffix_ = suffix;
       if (!readFromFile(buffer, 1, 16, file)) {
         delete[] deckOffsets;
         Logger::getInstance().log(ERROR_LOG_NAME, "Save file corrupted");
@@ -489,6 +491,7 @@ void Ship::save( CString fileName )
     for (auto itr = deck->getCompartments().begin(); itr != deck->getCompartments().end(); ++itr) {
       Compartment* comp = *itr;
       writeStringToFile(file, comp->getName());
+      writeStringToFile(file, comp->getSuffix());
       assert (compIDs_.count(comp) == 1);
       int cnt=0;
       buffer[cnt++] = compIDs_[comp];
@@ -711,8 +714,8 @@ void Deck::eraseDoorsAround( int x, int y )
 
 Compartment* Deck::getCompartment( int x, int y )
 {
-  for (Compartment* comp: compartments_) {
-    //Compartment* comp = *itr;
+  for (auto itr = compartments_.begin(); itr != compartments_.end(); ++itr) {
+    Compartment* comp = *itr;
     if (x >= comp->getX() && x < comp->getX() + comp->getWidth() && y >= comp->getY() && y < comp->getY() + comp->getHeight()) {
       return comp;
     }
@@ -790,7 +793,7 @@ Compartment::Compartment():rotation_(0)
 Compartment::Compartment(const Compartment& other):left_(other.left_), top_(other.top_), width_(other.width_), height_(other.height_), name_(other.name_),
   category_(other.category_),minCrew_(other.minCrew_),maxCrew_(other.maxCrew_),powerRequired_(other.powerRequired_),powerProduced_(other.powerProduced_),
   crewCapacity_(other.crewCapacity_),rotation_(other.rotation_),maxSameConnections_(other.maxSameConnections_),maxConnections_(other.maxConnections_),
-  requiresAccess_(other.requiresAccess_)
+  requiresAccess_(other.requiresAccess_),suffix_(other.suffix_)
 {
   for (auto itr = other.items_.begin(); itr != other.items_.end(); ++itr) {
     items_.push_back(new Item(**itr));

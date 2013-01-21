@@ -10,8 +10,106 @@ RoomParser::~RoomParser()
 {
 }
 
+bool RoomParser::parseCSV()
+{
+  hash_ = 0;
+  file.open("res/items.csv", fstream::in);
+  if (file.fail()) {
+    Logger::getInstance().log(ERROR_LOG_NAME,"Failed to open res/items.csv");
+    file.close();
+    return false;
+  }
+  while(1) {
+    CString line = getNextLine();
+    if (line == "") {
+      break;
+    }
+    vector<CString> parts = line.tokenize(',');
+    if (parts.size() != 5) {
+      file.close();
+      return false;
+      Logger::getInstance().log(ERROR_LOG_NAME, "Wrong file format: res/items.csv");
+    }
+    Item* item = new Item();
+    item->id_ = parseInt(parts[0]);
+    item->name_ = parts[1];
+    item->setTexX(parseInt(parts[2]));
+    item->setTexY(parseInt(parts[3]));
+    item->setTexWidth(64);
+    item->setTexHeight(64);
+    item->autorotate_ = (parts[4] == "TRUE")?true:false;
+    ItemsDB::getInstance().addItem(item);
+  }
+  file.close();
+
+  file.open("res/comps.csv", fstream::in);
+  if (file.fail()) {
+    Logger::getInstance().log(ERROR_LOG_NAME,"Failed to open res/comps.csv");
+    file.close();
+    return false;
+  }
+  while(1) {
+    CString line = getNextLine();
+    if (line == "") {
+      break;
+    }
+    vector<CString> parts = line.tokenize(',');
+    if (parts.size() != 16) {
+      file.close();
+      Logger::getInstance().log(ERROR_LOG_NAME, "Wrong file format: res/comps.csv");
+      return false;
+    }
+    Compartment* comp = new Compartment();
+    comp->name_ = parts[1];
+    comp->suffix_ = parts[2];
+    comp->category_ = (Compartment::Category)parseInt(parts[3]);
+    comp->width_ = parseInt(parts[4]);
+    comp->height_ = parseInt(parts[5]);
+    comp->minCrew_ = parseInt(parts[6]);
+    comp->maxCrew_ = parseInt(parts[7]);
+    comp->crewCapacity_ = parseInt(parts[8]);
+    comp->powerRequired_ = parseInt(parts[9]);
+    comp->powerProduced_ = parseInt(parts[10]);
+    comp->maxConnections_ = parseInt(parts[11]);
+    comp->maxSameConnections_ = parseInt(parts[12]);
+    comp->requiresAccess_ = (parts[13] == "TRUE")?true:false;
+    vector<CString> required = parts[14].tokenize(':');
+    for (int i=0; i<(int)required.size(); ++i) {
+      comp->requiredConnections_.insert(required[i]);
+    }
+    vector<CString> items = parts[15].tokenize(':');
+    if (items.size() % 5 != 0) {
+      delete comp;
+      file.close();
+      Logger::getInstance().log(ERROR_LOG_NAME, "Wrong file format: res/comps.csv");
+      return false;
+    }
+    for(int i=0; i<(int)items.size(); i+=5) {
+      int id = parseInt(items[i]);
+      Item* origItem = ItemsDB::getInstance().getItemByID(id);
+      if (!origItem) {
+        delete comp;
+        file.close();
+        Logger::getInstance().log(ERROR_LOG_NAME, "Wrong file format: res/comps.csv");
+        return false;
+      }
+      Item* newItem = new Item(*origItem);
+      newItem->x_ = parseInt(items[i+1]);
+      newItem->y_ = parseInt(items[i+2]);
+      newItem->rotation_ = parseInt(items[i+3]);
+      newItem->requiresVacuum_ = (items[i+4]=='t')?true:false;
+      comp->addItem(newItem);
+    }
+    ItemsDB::getInstance().addCompartment(comp);
+  }
+  file.close();
+  ItemsDB::getInstance().setFileHash(hash_);
+  return true;
+}
+
 bool RoomParser::parse(CString fileName)
 {
+  return parseCSV();
   hash_ = 0;
   file.open(fileName, fstream::in);
   if (file.fail()) {

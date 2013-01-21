@@ -43,7 +43,7 @@ CompartmentInfo {
 		ID=7
 		Name=Bed
 		X=0
-		Y=383
+		Y=384
 	}
 	Item {
 		ID=8

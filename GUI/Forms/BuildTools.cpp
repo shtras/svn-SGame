@@ -188,7 +188,7 @@ void BuildTools::init(ShipViewEditor* shipView)
       }
       CompartmentButton* button = new CompartmentButton(Rect(0.02f, lastTop, width, height), comp, shipView_);
       addWidget(button);
-      button->setToolTip(comp->getName());
+      //button->setToolTip(comp->getFullName());
       compButtons_[i].push_back(button);
       lastTop += height + 0.02f;
       if (lastTop >= 0.95f || i != currentCategory_) {

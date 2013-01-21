@@ -22,7 +22,7 @@ CompHoverInfo::~CompHoverInfo()
 void CompHoverInfo::setCompartment( Compartment* comp )
 {
   requiredConnectionsTA_->clearLines();
-  name_->setCaption(comp->getName());
+  name_->setCaption(comp->getFullName());
   if (comp->getRequiredConnections().size() == 0) {
     requiredConnectionsTA_->setVisible(false);
   } else {

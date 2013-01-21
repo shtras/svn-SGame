@@ -23,3 +23,13 @@ void writeToFile(void* buffer, size_t size, int count, FILE* file);
 bool readFromFile(void* buffer, size_t size, int count, FILE* file);
 
 CString readStringFromFile(FILE* file);
+
+class FilePointer
+{
+public:
+  FilePointer(const char* fileName, std::ios_base::open_mode mode);
+  ~FilePointer();
+  fstream& operator->();
+private:
+  fstream file_;
+};

@@ -142,6 +142,8 @@ public:
   int getPowerProduced() {return powerProduced_;}
   int getCrewCapacity() {return crewCapacity_;}
   CString getName() {return name_;}
+  CString getSuffix() {return suffix_;}
+  CString getFullName() {return name_+" "+suffix_;}
   static CString categoryName(Category cat);
   void connectTo(Compartment* comp);
   void disconnectFrom(Compartment* comp);
@@ -166,6 +168,7 @@ private:
   int height_;
   int rotation_;
   CString name_;
+  CString suffix_;
   list<Item*> items_;
   int minCrew_;
   int maxCrew_;
