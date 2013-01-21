@@ -138,14 +138,14 @@
     <ClCompile Include="GUI\ShipView\ShipView.cpp">
       <Filter>Source Files\GUI\ShipView</Filter>
     </ClCompile>
-    <ClCompile Include="ShipViewEditor.cpp">
-      <Filter>Source Files\GUI\ShipView</Filter>
-    </ClCompile>
-    <ClCompile Include="ShipViewGame.cpp">
-      <Filter>Source Files\GUI\ShipView</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\Forms\ShipEditor.cpp">
       <Filter>Source Files\GUI\Forms</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\ShipView\ShipViewEditor.cpp">
+      <Filter>Source Files\GUI\ShipView</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\ShipView\ShipViewGame.cpp">
+      <Filter>Source Files\GUI\ShipView</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -236,14 +236,14 @@
     <ClInclude Include="GUI\ShipView\ShipView.h">
       <Filter>Header Files\GUI\ShipView</Filter>
     </ClInclude>
-    <ClInclude Include="ShipViewEditor.h">
-      <Filter>Header Files\GUI\ShipView</Filter>
-    </ClInclude>
-    <ClInclude Include="ShipViewGame.h">
-      <Filter>Header Files\GUI\ShipView</Filter>
-    </ClInclude>
     <ClInclude Include="GUI\Forms\ShipEditor.h">
       <Filter>Header Files\GUI\Forms</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI\ShipView\ShipViewEditor.h">
+      <Filter>Header Files\GUI\ShipView</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI\ShipView\ShipViewGame.h">
+      <Filter>Header Files\GUI\ShipView</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

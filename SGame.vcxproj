@@ -116,6 +116,8 @@
     <ClCompile Include="GUI\Input.cpp" />
     <ClCompile Include="GUI\ProgressBar.cpp" />
     <ClCompile Include="GUI\ShipView\ShipView.cpp" />
+    <ClCompile Include="GUI\ShipView\ShipViewEditor.cpp" />
+    <ClCompile Include="GUI\ShipView\ShipViewGame.cpp" />
     <ClCompile Include="GUI\Text.cpp" />
     <ClCompile Include="GUI\TextArea.cpp" />
     <ClCompile Include="GUI\TexturedWidget.cpp" />
@@ -126,8 +128,6 @@
     <ClCompile Include="MemManager.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="SGame.cpp" />
-    <ClCompile Include="ShipViewEditor.cpp" />
-    <ClCompile Include="ShipViewGame.cpp" />
     <ClCompile Include="Ship\ItemsDB.cpp" />
     <ClCompile Include="Ship\Ship.cpp" />
     <ClCompile Include="StdAfx.cpp">
@@ -151,6 +151,8 @@
     <ClInclude Include="GUI\Input.h" />
     <ClInclude Include="GUI\ProgressBar.h" />
     <ClInclude Include="GUI\ShipView\ShipView.h" />
+    <ClInclude Include="GUI\ShipView\ShipViewEditor.h" />
+    <ClInclude Include="GUI\ShipView\ShipViewGame.h" />
     <ClInclude Include="GUI\Text.h" />
     <ClInclude Include="GUI\TextArea.h" />
     <ClInclude Include="GUI\TexturedWidget.h" />
@@ -161,8 +163,6 @@
     <ClInclude Include="MemManager.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="SGame.h" />
-    <ClInclude Include="ShipViewEditor.h" />
-    <ClInclude Include="ShipViewGame.h" />
     <ClInclude Include="Ship\ItemsDB.h" />
     <ClInclude Include="Ship\Ship.h" />
     <ClInclude Include="sigslot.h" />
