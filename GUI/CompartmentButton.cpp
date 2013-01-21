@@ -119,5 +119,7 @@ void CompartmentButton::onHoverEnter()
 
 void CompartmentButton::onHoverExit()
 {
-  Renderer::getInstance().setFloatingWidget(NULL);
+  if (Renderer::getInstance().getFloatingWidget() == hoverWindow_) {
+    Renderer::getInstance().setFloatingWidget(NULL);
+  }
 }

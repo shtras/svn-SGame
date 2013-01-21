@@ -293,7 +293,7 @@ bool Ship::load(CString fileName)
   int height = buffer[1];
   int offsetX = buffer[2];
   int offsetY = buffer[3];
-  if (width > width_ || height > height_) {
+  if (width+offsetX > width_ || height+offsetY > height_) {
     Logger::getInstance().log(ERROR_LOG_NAME, "Save file corrupted");
     fclose(file);
     return false;

@@ -2,11 +2,13 @@
 #include "TexturedWidget.h"
 #include "Renderer.h"
 
+static int id = 0;
+
 Widget::Widget(Rect size):
   size_(size), regularTexture_(NULL), hoveredTexture_(NULL), pressedTexture_(NULL), activeTexture_(NULL), hovered_(false), pressed_(false), clickable_(false),
   draggable_(false), dragged_(false),highlighted_(false),scrollTransparrent_(false),visible_(true),align_(NoAlign),listensKeyboard_(false)
 {
-
+  id_ = ++id;
 }
 
 Widget::~Widget()
@@ -135,6 +137,7 @@ void Widget::click()
 
 void Widget::hoverEnter()
 {
+  cout << "hover enter " << id_ << endl;
   hovered_ = true;
   if (hoveredTexture_ && !highlighted_) {
     activeTexture_ = hoveredTexture_;
@@ -144,6 +147,7 @@ void Widget::hoverEnter()
 
 void Widget::hoverExit()
 {
+  cout << "hover exit " << id_ << endl;
   hovered_ = false;
   pressed_ = false;
   activeTexture_ = regularTexture_;

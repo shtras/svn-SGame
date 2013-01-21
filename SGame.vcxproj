@@ -109,8 +109,10 @@
     <ClCompile Include="GUI\CompHoverInfo.cpp" />
     <ClCompile Include="GUI\Forms\BuildInfo.cpp" />
     <ClCompile Include="GUI\Forms\BuildTools.cpp" />
+    <ClCompile Include="GUI\Forms\GameWindow.cpp" />
     <ClCompile Include="GUI\Forms\ShipEditor.cpp" />
     <ClCompile Include="GUI\Forms\FileOpenDialog.cpp" />
+    <ClCompile Include="GUI\Forms\TopPanel.cpp" />
     <ClCompile Include="GUI\GlobalWindow.cpp" />
     <ClCompile Include="GUI\GUIManager.cpp" />
     <ClCompile Include="GUI\Input.cpp" />
@@ -144,8 +146,10 @@
     <ClInclude Include="GUI\CompHoverInfo.h" />
     <ClInclude Include="GUI\Forms\BuildInfo.h" />
     <ClInclude Include="GUI\Forms\BuildTools.h" />
+    <ClInclude Include="GUI\Forms\GameWindow.h" />
     <ClInclude Include="GUI\Forms\ShipEditor.h" />
     <ClInclude Include="GUI\Forms\FileOpenDialog.h" />
+    <ClInclude Include="GUI\Forms\TopPanel.h" />
     <ClInclude Include="GUI\GlobalWindow.h" />
     <ClInclude Include="GUI\GUIManager.h" />
     <ClInclude Include="GUI\Input.h" />

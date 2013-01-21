@@ -7,6 +7,7 @@
 #include "ItemsDB.h"
 #include "ShipEditor.h"
 #include "FileOpenDialog.h"
+#include "GameWindow.h"
 
 const char* Version = "0.0.5.";
 //TODO for next major version:
@@ -214,6 +215,10 @@ bool SGame::finishMenu()
 
 bool SGame::initGame()
 {
+  stateRunnig_ = true;
+  GameWindow* gameWindow = new GameWindow(Rect(0,0,1,1));
+  Renderer::getInstance().addWidget(gameWindow);
+  return true;
   Text* t = new Text(Rect(0.2, 0.2, 0.6, 0.1));
   t->setCaption("Under construction...");
   Renderer::getInstance().addWidget(t);
@@ -223,7 +228,6 @@ bool SGame::initGame()
   quitButton->sigClick.connect(this, &SGame::toggleMenu);
   quitButton->setColor(Vector4(255,0,0,255));
   Renderer::getInstance().addWidget(quitButton);
-  stateRunnig_ = true;
   return true;
 }
 

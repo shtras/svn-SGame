@@ -15,6 +15,8 @@ public:
   void onRMDown();
   void onRMUp();
   void onMouseWheelScroll(int direction);
+  void onMouseMove();
+  void onHoverExit();
   int getActiveDeck() {return activeDeckIdx_;}
   int getGhostDeck() {return ghostDeckIdx_;}
   Ship* getShip() {return ship_;}

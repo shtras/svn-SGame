@@ -16,8 +16,6 @@ public:
   void setDraggedComp(Compartment* comp) {draggedComp_ = comp;}
   void setHoveredDimensions(int width, int height);
   void onMouseWheelScroll(int direction);
-  void onHoverExit();
-  void onMouseMove();
   void setBuildInfo(BuildInfo* info);
   void saveShip(CString fileName);
   void loadShip(CString fileName);

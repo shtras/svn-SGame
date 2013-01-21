@@ -147,6 +147,12 @@
     <ClCompile Include="GUI\ShipView\ShipViewGame.cpp">
       <Filter>Source Files\GUI\ShipView</Filter>
     </ClCompile>
+    <ClCompile Include="GUI\Forms\GameWindow.cpp">
+      <Filter>Source Files\GUI\Forms</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Forms\TopPanel.cpp">
+      <Filter>Source Files\GUI\Forms</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SGame.h">
@@ -244,6 +250,12 @@
     </ClInclude>
     <ClInclude Include="GUI\ShipView\ShipViewGame.h">
       <Filter>Header Files\GUI\ShipView</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI\Forms\TopPanel.h">
+      <Filter>Header Files\GUI\Forms</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI\Forms\GameWindow.h">
+      <Filter>Header Files\GUI\Forms</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

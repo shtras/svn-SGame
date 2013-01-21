@@ -128,4 +128,5 @@ private:
   bool dragged_;
   bool highlighted_;
   CString toolTip_;
+  int id_;
 };

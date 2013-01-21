@@ -1,14 +1,17 @@
 #include "StdAfx.h"
 #include "ShipViewEditor.h"
 #include "Renderer.h"
-#include "Ship\Ship.h"
-#include "GUI\CompartmentButton.h"
-#include "GUI\ShipView\ShipView.h"
+#include "Ship.h"
+#include "CompartmentButton.h"
+#include "ShipView.h"
 
 
 ShipViewEditor::ShipViewEditor( Rect size ):ShipView(size),buildInfo_(NULL),action_(BuildWalls),draggedCompartmentRoataion_(0),draggedComp_(NULL)
 {
   editor_ = true;
+  ship_ = new Ship(layoutWidth_, layoutHeight_);
+  activeDeck_ = ship_->getDeck(0);
+  activeDeckIdx_ = 0;
 }
 
 ShipViewEditor::~ShipViewEditor()
@@ -140,43 +143,6 @@ void ShipViewEditor::onDrop(Widget* w)
   buildInfo_->updateValues();
   draggedCompartmentRoataion_ = 0;
   structureChanged();
-}
-
-
-void ShipViewEditor::onHoverExit()
-{
-  scrolling_ = false;
-  drawing_ = false;
-  hoveredLeft_ = -1;
-  hoveredTop_ = -1;
-  drawingStartX_ = -1;
-  drawingStartY_ = -1;
-  Renderer::getInstance().setFloatingWidget(NULL);
-}
-
-void ShipViewEditor::onMouseMove()
-{
-  float mouseX = Renderer::getInstance().getMouseX();
-  float mouseY = Renderer::getInstance().getMouseY();
-  if(scrolling_) {
-    offsetX_ += (mouseX - lastMouseX_)/zoom_;
-    offsetY_ += (mouseY - lastMouseY_)/zoom_;
-  }
-  lastMouseX_ = mouseX;
-  lastMouseY_ = mouseY;
-
-  //    float tileX = i*tileWidth_ + offsetX_*zoom_ + size_.left;
-
-  hoveredLeft_ = (int)(((lastMouseX_-size_.left) - offsetX_*zoom_)/tileWidth_);
-  hoveredTop_ = (int)(((lastMouseY_ - size_.top) - offsetY_*zoom_)/tileHeight_);
-  hoveredComp_ = activeDeck_->getCompartment(hoveredLeft_, hoveredTop_);
-  if (hoveredComp_ && !drawing_) {
-    hoveredCompInfo_->setCompartment(hoveredComp_);
-    Renderer::getInstance().setFloatingWidgetWidthLimit(size_.left + size_.width);
-    Renderer::getInstance().setFloatingWidget(hoveredCompInfo_);
-  } else {
-    Renderer::getInstance().setFloatingWidget(NULL);
-  }
 }
 
 void ShipViewEditor::setBuildInfo( BuildInfo* info )
