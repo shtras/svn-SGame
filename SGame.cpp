@@ -9,7 +9,7 @@
 #include "FileOpenDialog.h"
 #include "GameWindow.h"
 
-const char* Version = "0.0.5.";
+const char* Version = "0.0.6.";
 //TODO for next major version:
 //1. Complete editor
 //TODO for next minor version:
@@ -58,6 +58,7 @@ const char* Version = "0.0.5.";
 //Implemented stairs
 //Implemented save/load
 //Added Input widget
+//***Shifted to 0.0.6 at build #1510
 
 SGame::SGame():state_(Menu),stateRunnig_(false),world_(NULL),paused_(true)
 {

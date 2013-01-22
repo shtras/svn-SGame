@@ -42,6 +42,9 @@ void ShipViewGame::render()
     DCoord persCoord = pers->getPosition().coord;
     float tileX = persCoord.x*tileWidth_ + dx;
     float tileY = persCoord.y*tileHeight_ + dy;
+    if (tileX < size_.left || tileY < size_.top || tileX + tileWidth_ > size_.left + size_.width || tileY + tileHeight_ > size_.top + size_.height) {
+      continue;
+    }
     Rect texSize(256.0f/headsTexSize.x, 0.0f, 64.0f/headsTexSize.x, 64.0f/headsTexSize.y);
     int rotation = 0;
     float pathStepProgress = pers->getPathSteProgress();
