@@ -16,5 +16,11 @@ GameWindow::GameWindow( Rect size ):Widget(size)
 
 GameWindow::~GameWindow()
 {
+}
 
+bool GameWindow::init( GameWorld* world )
+{
+  world_ = world;
+  shipView_->setShip(world_->getPlayerShip());
+  return true;
 }

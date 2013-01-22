@@ -5,10 +5,6 @@
 
 ShipViewGame::ShipViewGame( Rect size ):ShipView(size)
 {
-  ship_ = new Ship(20, 20);
-  ship_->load("saves/test2.sgs");
-  ship_->normalize();
-  activeDeck_ = ship_->getDeck(0);
   activeDeckIdx_ = 0;
   zoom_ = 1.0f;
   desiredZoom_ = zoom_;
@@ -19,4 +15,12 @@ ShipViewGame::ShipViewGame( Rect size ):ShipView(size)
 ShipViewGame::~ShipViewGame()
 {
 
+}
+
+void ShipViewGame::setShip( Ship* ship )
+{
+  ship_ = ship;
+  ship_->normalize();
+  activeDeckIdx_ = 0;
+  activeDeck_ = ship_->getDeck(activeDeckIdx_);
 }

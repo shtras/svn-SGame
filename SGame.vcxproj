@@ -103,6 +103,7 @@
   <ItemGroup>
     <ClCompile Include="auxFuncs.cpp" />
     <ClCompile Include="FileTools\RoomParser.cpp" />
+    <ClCompile Include="GameWorld.cpp" />
     <ClCompile Include="Generic\CString.cpp" />
     <ClCompile Include="GUI\Button.cpp" />
     <ClCompile Include="GUI\CompartmentButton.cpp" />
@@ -131,6 +132,7 @@
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="SGame.cpp" />
     <ClCompile Include="Ship\ItemsDB.cpp" />
+    <ClCompile Include="Ship\Person.cpp" />
     <ClCompile Include="Ship\Ship.cpp" />
     <ClCompile Include="StdAfx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -140,6 +142,7 @@
   <ItemGroup>
     <ClInclude Include="auxFuncs.h" />
     <ClInclude Include="FileTools\RoomParser.h" />
+    <ClInclude Include="GameWorld.h" />
     <ClInclude Include="Generic\CString.h" />
     <ClInclude Include="GUI\Button.h" />
     <ClInclude Include="GUI\CompartmentButton.h" />
@@ -168,6 +171,7 @@
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="SGame.h" />
     <ClInclude Include="Ship\ItemsDB.h" />
+    <ClInclude Include="Ship\Person.h" />
     <ClInclude Include="Ship\Ship.h" />
     <ClInclude Include="sigslot.h" />
     <ClInclude Include="StdAfx.h" />

@@ -25,10 +25,11 @@ public:
   void normalize();
   void shiftContents(int dx, int dy);
   void save(CString fileName);
-  bool load(CString fileName);
+  bool load(CString fileName, bool adjustSize=false);
   bool connectionsOK() {return connectionStatus_;}
   bool structureOK() {return structureStatus_;}
   bool accessibilityOK() {return accessibleStatus_;}
+  bool generalStatusOK();
   void checkConnections();
 private:
   void resetValues();
@@ -120,7 +121,7 @@ class Compartment
 {
   friend class RoomParser;
   friend class ShipViewEditor;
-  friend bool Ship::load(CString fileName);
+  friend bool Ship::load(CString fileName, bool adjustSize);
 public:
   enum Category {Common = 0, Navigation, Power, LifeSupport, Living, Weapons, LastCategory};
   Compartment();
@@ -185,7 +186,7 @@ private:
 class Item
 {
   friend class RoomParser;
-  friend bool Ship::load(CString fileName);
+  friend bool Ship::load(CString fileName, bool adjustSize);
 public:
   Item();
   Item(const Item& other);

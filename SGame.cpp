@@ -59,7 +59,7 @@ const char* Version = "0.0.5.";
 //Implemented save/load
 //Added Input widget
 
-SGame::SGame():state_(Menu),stateRunnig_(false)
+SGame::SGame():state_(Menu),stateRunnig_(false),world_(NULL)
 {
 
 }
@@ -136,6 +136,7 @@ bool SGame::mainLoop()
   int currTime = fpsTimeBase;
   int lastTime = currTime;
   int accumulator = 0;
+  int dt = 50;
   int frames = 0;
   float fps = 0;
   CString version = Version + CString(BUILD_NUM) + " " + CString(BUILD_STR);
@@ -147,6 +148,12 @@ bool SGame::mainLoop()
     currTime = SDL_GetTicks();
     int delta = currTime - lastTime;
     accumulator += delta;
+    while (accumulator >= dt) {
+      accumulator -= dt;
+      if (state_ == Game && world_) {
+        world_->step();
+      }
+    }
     lastTime = currTime;
     ++frames;
     if (currTime - fpsTimeBase > 100) {
@@ -216,23 +223,34 @@ bool SGame::finishMenu()
 bool SGame::initGame()
 {
   stateRunnig_ = true;
+  assert(!world_);
+  world_ = new GameWorld();
+  bool res = world_->init();
+  if (!res) {
+    state_ = Quit;
+    stateRunnig_ = false;
+    Logger::getInstance().log(ERROR_LOG_NAME, "Could not init game world");
+    return false;
+  }
+
   GameWindow* gameWindow = new GameWindow(Rect(0,0,1,1));
   Renderer::getInstance().addWidget(gameWindow);
-  return true;
-  Text* t = new Text(Rect(0.2, 0.2, 0.6, 0.1));
-  t->setCaption("Under construction...");
-  Renderer::getInstance().addWidget(t);
+  res = gameWindow->init(world_);
+  
+  if (!res) {
+    state_ = Quit;
+    stateRunnig_ = false;
+    Logger::getInstance().log(ERROR_LOG_NAME, "Could not init game window");
+    return false;
+  }
 
-  Button* quitButton = new Button(Rect(0.45, 0.5, 0.1, 0.05));
-  quitButton->setCaption("Back");
-  quitButton->sigClick.connect(this, &SGame::toggleMenu);
-  quitButton->setColor(Vector4(255,0,0,255));
-  Renderer::getInstance().addWidget(quitButton);
   return true;
 }
 
 bool SGame::finishGame()
 {
+  delete world_;
+  world_ = NULL;
   Renderer::getInstance().clearWindows();
   return true;
 }

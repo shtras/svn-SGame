@@ -1,4 +1,5 @@
 #pragma once
+#include "GameWorld.h"
 
 class SGame: public has_slots<>
 {
@@ -25,4 +26,5 @@ private:
   ~SGame();
   GameState state_;
   bool stateRunnig_;
+  GameWorld* world_;
 };

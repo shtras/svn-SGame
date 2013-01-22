@@ -253,7 +253,7 @@ void Ship::shiftContents( int dx, int dy )
   recalculateTiles();
 }
 
-bool Ship::load(CString fileName)
+bool Ship::load(CString fileName, bool adjustSize/*=false*/)
 {
   for (auto itr = decks_.begin(); itr != decks_.end(); ++itr) {
     Deck* deck = *itr;
@@ -293,12 +293,21 @@ bool Ship::load(CString fileName)
   int height = buffer[1];
   int offsetX = buffer[2];
   int offsetY = buffer[3];
-  if (width+offsetX > width_ || height+offsetY > height_) {
+  numDecks_ = buffer[4];
+  if (adjustSize) {
+    width_ = width;
+    height_ = height;
+    offsetX = 0;
+    offsetY = 0;
+    for (int i=0; i<numDecks_; ++i) {
+      Deck* deck = new Deck(this, width, height, i);
+      decks_.push_back(deck);
+    }
+  } else if (width+offsetX > width_ || height+offsetY > height_) {
     Logger::getInstance().log(ERROR_LOG_NAME, "Save file corrupted");
     fclose(file);
     return false;
   }
-  numDecks_ = buffer[4];
   if (numDecks_ < 1 || numDecks_ > 20) {
     Logger::getInstance().log(ERROR_LOG_NAME, "Save file corrupted");
     fclose(file);
@@ -309,8 +318,13 @@ bool Ship::load(CString fileName)
   map<int, Compartment*> compIDs;
   map<Compartment*, list<int> > compConnections;
   for (int i=0; i<numDecks_; ++i) {
-    Deck* deck = new Deck(this, width_, height_, i);
-    decks_.push_back(deck);
+    Deck* deck = NULL;
+    if (adjustSize) {
+      deck = decks_[i];
+    } else {
+      deck = new Deck(this, width_, height_, i);
+      decks_.push_back(deck);
+    }
     fseek(file, deckOffsets[i], SEEK_SET);
     int compartmentsOffset = 0;
     readFromFile(&compartmentsOffset, sizeof(int), 1, file);
@@ -323,6 +337,7 @@ bool Ship::load(CString fileName)
       bool entrance = (buffer[2] & 0x80)==0?false:true;
       Tile::TileType type = (Tile::TileType)(buffer[2] & 0x7F);
       Tile* tile = deck->getTile(x, y);
+      assert (x == tile->getX() && y == tile->getY());
       tile->setType(type);
       tile->setEntrance(entrance);
       if (entrance) {
@@ -564,12 +579,23 @@ void Ship::resetValues()
   crewCapacity_ = 0;
 }
 
+bool Ship::generalStatusOK()
+{
+  bool res = true;
+  res &= accessibleStatus_;
+  res &= connectionStatus_;
+  res &= structureStatus_;
+  res &= powerRequired_ <= powerProduced_;
+  res &= crewCapacity_ >= minCrew_;
+  return res;
+}
+
 Deck::Deck(Ship* ship, int width, int height,int idx):
   ship_(ship), width_(width), height_(height), idx_(idx)
 {
   tileLayout_ = new Tile*[width_ * height_];
   for (int i=0; i<width_*height_; ++i) {
-    tileLayout_[i] = new Tile(i%width_, i/height_, idx_);
+    tileLayout_[i] = new Tile(i%width_, i/width_, idx_);
   }
 }
 
