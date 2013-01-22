@@ -27,4 +27,5 @@ private:
   GameState state_;
   bool stateRunnig_;
   GameWorld* world_;
+  bool paused_;
 };

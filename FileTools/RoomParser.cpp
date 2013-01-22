@@ -25,7 +25,7 @@ bool RoomParser::parseCSV()
       break;
     }
     vector<CString> parts = line.tokenize(',');
-    if (parts.size() != 5) {
+    if (parts.size() != 6) {
       file.close();
       return false;
       Logger::getInstance().log(ERROR_LOG_NAME, "Wrong file format: res/items.csv");
@@ -38,6 +38,7 @@ bool RoomParser::parseCSV()
     item->setTexWidth(64);
     item->setTexHeight(64);
     item->autorotate_ = (parts[4] == "TRUE")?true:false;
+    item->type_ = (Item::Type)parseInt(parts[5]);
     ItemsDB::getInstance().addItem(item);
   }
   file.close();

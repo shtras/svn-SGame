@@ -18,6 +18,9 @@ Ship::~Ship()
     Deck* deck = *itr;
     delete deck;
   }
+  for (Person* pers: crew_) {
+    delete pers;
+  }
 }
 
 Deck* Ship::getDeck( int i )
@@ -400,13 +403,14 @@ bool Ship::load(CString fileName, bool adjustSize/*=false*/)
       char numItems = 0;
       readFromFile(&numItems, 1, 1, file);
       for (int itemItr = 0; itemItr<numItems; ++itemItr) {
-        readFromFile(buffer, 1, 5, file);
+        readFromFile(buffer, 1, 6, file);
         Item* itemOriginal = ItemsDB::getInstance().getItemByID(buffer[0]);
         Item* item = new Item(*itemOriginal);
         item->setX(buffer[1]);
         item->setY(buffer[2]);
         item->setRotation(buffer[3]);
         item->requiresVacuum_ = buffer[4]==1?true:false;
+        item->occupied_ = buffer[5];
         comp->addItem(item);
       }
       deck->addCompartment(comp);
@@ -551,6 +555,7 @@ void Ship::save( CString fileName )
         buffer[cnt++] = item->getY();
         buffer[cnt++] = item->getRotation();
         buffer[cnt++] = item->requiresVacuum()?1:0;
+        buffer[cnt++] = item->occupied_;
         writeToFile(buffer, 1, cnt, file);
       }
     }
@@ -590,19 +595,135 @@ bool Ship::generalStatusOK()
   return res;
 }
 
+void Ship::addCrewMember( Person* person )
+{
+  crew_.push_back(person);
+}
+
+void Ship::step()
+{
+  for (Person* pers: crew_) {
+    pers->step();
+  }
+}
+
+list<Direction> Ship::findPath( Position from, Position to )
+{
+  path_.clear();
+
+  Tile* tileFrom = decks_[from.deckIdx]->getTile(from.coord.x, from.coord.y);
+  Tile* tileTo = decks_[to.deckIdx]->getTile(to.coord.x, to.coord.y);
+  if (!tileFrom->isAccessible() || !tileTo->isAccessible()) {
+    return path_;
+  }
+  resetPathFindValues();
+  findPathRec(tileFrom, 0);
+  fillPath(tileFrom, tileTo);
+  return path_;
+}
+
+void Ship::fillPath( Tile* from, Tile* to )
+{
+  int x = to->getX();
+  int y = to->getY();
+  int deckIdx = to->getDeckIdx();
+  Deck* deck = decks_[deckIdx];
+  int value = deck->getPathFindValue(x, y);
+  assert (value < INT_MAX);
+  while (to != from) {
+    x = to->getX();
+    y = to->getY();
+    Direction dir = Right;
+    bool step = false;
+    if (deck->getPathFindValue(x-1, y) < value) {
+      value = deck->getPathFindValue(x-1, y);
+      to = deck->getTile(x-1, y);
+      step = true;
+    }
+    if (deck->getPathFindValue(x, y-1) < value) {
+      value = deck->getPathFindValue(x, y-1);
+      to = deck->getTile(x, y-1);
+      dir = Down;
+      step = true;
+    }
+    if (deck->getPathFindValue(x+1, y) < value) {
+      value = deck->getPathFindValue(x+1, y);
+      to = deck->getTile(x+1, y);
+      dir = Left;
+      step = true;
+    }
+    if (deck->getPathFindValue(x, y+1) < value) {
+      value = deck->getPathFindValue(x, y+1);
+      to = deck->getTile(x, y+1);
+      dir = Up;
+      step = true;
+    }
+    assert(step);
+    path_.push_front(dir);
+  }
+}
+
+void Ship::resetPathFindValues()
+{
+  for (int i=0; i<numDecks_; ++i) {
+    decks_[i]->resetPathFindValues();
+  }
+}
+
+void Ship::findPathRec( Tile* tile, int value )
+{
+  if (!tile) {
+    return;
+  }
+  if (tile->getType() != Tile::Floor && tile->getType() != Tile::Door) {
+    return;
+  }
+  int x = tile->getX();
+  int y = tile->getY();
+  Deck* deck = decks_[tile->getDeckIdx()];
+  int tileValue = deck->getPathFindValue(x, y);
+  if (tileValue > value) {
+    deck->setPathFindValue(x, y, value);
+  } else {
+    return;
+  }
+  findPathRec(deck->getTile(x-1,y), value+1);
+  findPathRec(deck->getTile(x,y-1), value+1);
+  findPathRec(deck->getTile(x+1,y), value+1);
+  findPathRec(deck->getTile(x,y+1), value+1);
+  if (tile->getDeckIdx() > 0 && tile->getType() == Tile::Stair) {
+    Tile* next = decks_[tile->getDeckIdx()-1]->getTile(x,y);
+    assert(next);
+    if (next->getType() == Tile::Stair) {
+      findPathRec(next, value+1);
+    }
+  }
+  if (tile->getDeckIdx() < numDecks_-2 && tile->getType() == Tile::Stair) {
+    Tile* next = decks_[tile->getDeckIdx()+1]->getTile(x,y);
+    assert(next);
+    if (next->getType() == Tile::Stair) {
+      findPathRec(next, value+1);
+    }
+  }
+}
+
 Deck::Deck(Ship* ship, int width, int height,int idx):
   ship_(ship), width_(width), height_(height), idx_(idx)
 {
+  pathFindValues_ = new int[width_*height_];
   tileLayout_ = new Tile*[width_ * height_];
   for (int i=0; i<width_*height_; ++i) {
+    pathFindValues_[i] = INT_MAX;
     tileLayout_[i] = new Tile(i%width_, i/width_, idx_);
   }
 }
 
 Deck::~Deck()
 {
+  delete[] pathFindValues_;
   for (auto itr = compartments_.begin(); itr != compartments_.end(); ++itr) {
     Compartment* comp = *itr;
+    ship_->compartments_.erase(find(ship_->compartments_.begin(), ship_->compartments_.end(), comp));
     delete comp;
   }
   for (int i=0; i<width_*height_; ++i) {
@@ -613,13 +734,16 @@ Deck::~Deck()
 
 void Deck::addCompartment(Compartment* comp)
 {
+  comp->setDeckIdx(idx_);
   compartments_.push_back(comp);
+  ship_->compartments_.push_back(comp);
   ship_->updateParameters(comp->getMinCrew(), comp->getMaxCrew(), comp->getPowerRequired(), comp->getPowerProduced(), comp->getCrewCapacity());
   ship_->checkConnections();
 }
 
 void Deck::removeCompartment( Compartment* comp )
 {
+  ship_->compartments_.erase(find(ship_->compartments_.begin(), ship_->compartments_.end(), comp));
   compartments_.erase(find(compartments_.begin(), compartments_.end(), comp));
   ship_->updateParameters(-comp->getMinCrew(), -comp->getMaxCrew(), -comp->getPowerRequired(), -comp->getPowerProduced(), -comp->getCrewCapacity());
   for (auto itr = comp->getConnections().begin(); itr != comp->getConnections().end(); ++itr) {
@@ -812,14 +936,35 @@ bool Deck::checkConnections()
   return true;
 }
 
-Compartment::Compartment():rotation_(0)
+void Deck::resetPathFindValues()
+{
+  for (int i=0; i<width_*height_; ++i) {
+    pathFindValues_[i] = INT_MAX;
+  }
+}
+
+int Deck::getPathFindValue( int x, int y )
+{
+  if (x < 0 || x >= width_ || y < 0 || y >= height_) {
+    return INT_MAX;
+  }
+  return pathFindValues_[y*width_ + x];
+}
+
+void Deck::setPathFindValue( int x, int y, int value )
+{
+  assert (x > 0 && y > 0 && x < width_ && y < height_);
+  pathFindValues_[y*width_ + x] = value;
+}
+
+Compartment::Compartment():rotation_(0),deckIdx_(-1)
 {
 }
 
 Compartment::Compartment(const Compartment& other):left_(other.left_), top_(other.top_), width_(other.width_), height_(other.height_), name_(other.name_),
   category_(other.category_),minCrew_(other.minCrew_),maxCrew_(other.maxCrew_),powerRequired_(other.powerRequired_),powerProduced_(other.powerProduced_),
   crewCapacity_(other.crewCapacity_),rotation_(other.rotation_),maxSameConnections_(other.maxSameConnections_),maxConnections_(other.maxConnections_),
-  requiresAccess_(other.requiresAccess_),suffix_(other.suffix_)
+  requiresAccess_(other.requiresAccess_),suffix_(other.suffix_),deckIdx_(-1)
 {
   for (auto itr = other.items_.begin(); itr != other.items_.end(); ++itr) {
     items_.push_back(new Item(**itr));
@@ -924,12 +1069,12 @@ bool Compartment::isInside( int x, int y )
   return x >= left_ && y >= top_ && x < left_+width_ && y < top_+height_;
 }
 
-Item::Item()
+Item::Item():occupied_(0)
 {
 }
 
 Item::Item(const Item& other):x_(other.x_), y_(other.y_),name_(other.name_),texX_(other.texX_),texY_(other.texY_), texWidth_(other.texWidth_),texHeight_(other.texHeight_),
-  rotation_(other.rotation_),id_(other.id_),autorotate_(other.autorotate_),requiresVacuum_(other.requiresVacuum_)
+  rotation_(other.rotation_),id_(other.id_),autorotate_(other.autorotate_),requiresVacuum_(other.requiresVacuum_),occupied_(0),type_(other.type_)
 {
 }
 
@@ -957,6 +1102,39 @@ void Item::setTexHeight(int height)
   texHeight_ = height / (float)Renderer::getInstance().getTilesTexHeight();
 }
 
+bool Item::isGeneralOccupied()
+{
+  return (occupied_ & 0x8) != 0;
+}
+
+bool Item::isWatchOccupied( int watch )
+{
+  return (occupied_ & (1 << (watch-1))) != 0;
+}
+
+void Item::occupyGeneral()
+{
+  occupied_ = 0x8;
+}
+
+void Item::occupyWatch( int watch )
+{
+  occupied_ |= (1 << (watch-1));
+}
+
+void Item::vacateGeneral()
+{
+  occupied_ = 0;
+}
+
+void Item::vacateWatch( int watch )
+{
+  if (!isWatchOccupied(watch)) {
+    return;
+  }
+  occupied_ ^= (1 << (watch-1));
+}
+
 Tile::Tile(int x, int y, int deck):type_(Empty), x_(x), y_(y), accessible_(false), connected_(false), checked_(false), deckIdx_(deck), entrance_(false)
 {
 }
@@ -964,3 +1142,4 @@ Tile::Tile(int x, int y, int deck):type_(Empty), x_(x), y_(y), accessible_(false
 Tile::~Tile()
 {
 }
+

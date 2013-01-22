@@ -59,7 +59,7 @@ const char* Version = "0.0.5.";
 //Implemented save/load
 //Added Input widget
 
-SGame::SGame():state_(Menu),stateRunnig_(false),world_(NULL)
+SGame::SGame():state_(Menu),stateRunnig_(false),world_(NULL),paused_(true)
 {
 
 }
@@ -147,11 +147,13 @@ bool SGame::mainLoop()
     }
     currTime = SDL_GetTicks();
     int delta = currTime - lastTime;
-    accumulator += delta;
-    while (accumulator >= dt) {
-      accumulator -= dt;
-      if (state_ == Game && world_) {
-        world_->step();
+    if (!paused_) {
+      accumulator += delta;
+      while (accumulator >= dt) {
+        accumulator -= dt;
+        if (state_ == Game && world_) {
+          world_->step();
+        }
       }
     }
     lastTime = currTime;
@@ -222,6 +224,7 @@ bool SGame::finishMenu()
 
 bool SGame::initGame()
 {
+  paused_ = true;
   stateRunnig_ = true;
   assert(!world_);
   world_ = new GameWorld();
@@ -269,6 +272,9 @@ void SGame::handleEvent( SDL_Event& event )
     break;
   case SDL_KEYDOWN:
     Renderer::getInstance().handleKeyboardEvent(event);
+    if (event.key.keysym.sym == SDLK_SPACE) {
+      paused_ = !paused_;
+    }
     break;
   case SDL_VIDEORESIZE:
     Renderer::getInstance().resize(event.resize.w, event.resize.h);

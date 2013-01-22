@@ -7,5 +7,6 @@ public:
   ShipViewGame(Rect size);
   ~ShipViewGame();
   void setShip(Ship* ship);
+  void render();
 private:
 };

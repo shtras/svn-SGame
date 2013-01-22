@@ -70,3 +70,11 @@ struct DCoord
   int x;
   int y;
 };
+
+struct Position
+{
+  DCoord coord;
+  int deckIdx;
+};
+
+enum Direction {Left, Up, Right, Down, UpStairs, DownStairs};

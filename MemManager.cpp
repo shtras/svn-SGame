@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "MemManager.h"
 
-int debugDelta = 2244;
+int debugDelta = 71604;
 
 #ifdef USE_MEMORY_MANAGER
 MemManager manager;

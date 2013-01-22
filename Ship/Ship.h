@@ -1,5 +1,6 @@
 #pragma once
 #define SAVE_VERSION 2
+#include "Person.h"
 
 class Deck;
 class Compartment;
@@ -9,8 +10,10 @@ class Tile;
 class Ship
 {
 public:
+  friend class Deck;
   Ship(int width, int height);
   ~Ship();
+  list<Direction> findPath(Position from, Position to);
   Deck* getDeck(int i);
   void updateParameters(int dMinCrew, int dMaxCrew, int dPowerProduced, int dPowerRequired, int dCrewCapacity);
   int getMinCrew() {return minCrew_;}
@@ -31,7 +34,14 @@ public:
   bool accessibilityOK() {return accessibleStatus_;}
   bool generalStatusOK();
   void checkConnections();
+  void addCrewMember(Person* person);
+  const list<Person*>& getCrew() const {return crew_;}
+  void step();
+  const list<Compartment*>& getCompartments() const {return compartments_;}
 private:
+  void findPathRec(Tile* tile, int value);
+  void fillPath(Tile* from, Tile* to);
+  void resetPathFindValues();
   void resetValues();
   void recalculateTilesRec(int deckIdx, int x, int y, bool accessible, bool connected);
   bool isEntranceValid();
@@ -53,6 +63,9 @@ private:
   bool connectionStatus_;
   bool accessibleStatus_;
   bool structureStatus_;
+  list<Person*> crew_;
+  list<Compartment*> compartments_;
+  list<Direction> path_;
 };
 
 class Tile
@@ -106,12 +119,17 @@ public:
   vector<Compartment*>& getCompartments() {return compartments_;}
   void shiftContents(int dx, int dy);
   bool checkConnections();
+  void resetPathFindValues();
+  int getPathFindValue(int x, int y);
+  void setPathFindValue(int x, int y, int value);
+
 private:
   Deck();
 
   int width_;
   int height_;
   Tile** tileLayout_;
+  int* pathFindValues_;
   vector<Compartment*> compartments_;
   Ship* ship_;
   int idx_;
@@ -161,6 +179,8 @@ public:
   Item* getItem(int x, int y);
   bool requiresAccess() {return requiresAccess_;}
   bool isInside(int x, int y);
+  int getDeckIdx() {return deckIdx_;}
+  void setDeckIdx(int deckIdx) {deckIdx_ = deckIdx;}
 private:
   Category category_;
   int left_;
@@ -168,6 +188,7 @@ private:
   int width_;
   int height_;
   int rotation_;
+  int deckIdx_;
   CString name_;
   CString suffix_;
   list<Item*> items_;
@@ -187,7 +208,9 @@ class Item
 {
   friend class RoomParser;
   friend bool Ship::load(CString fileName, bool adjustSize);
+  friend void Ship::save(CString fileName);
 public:
+  enum Type {General, Sleep, Work, Relax, Eat};
   Item();
   Item(const Item& other);
   ~Item();
@@ -208,6 +231,13 @@ public:
   void setY(int value) {y_ = value;}
   bool autorotate() {return autorotate_;}
   bool requiresVacuum() {return requiresVacuum_;}
+  bool isGeneralOccupied();
+  bool isWatchOccupied(int watch);
+  void occupyGeneral();
+  void occupyWatch(int watch);
+  void vacateGeneral();
+  void vacateWatch(int watch);
+  Type getType() {return type_;}
 private:
   int id_;
   int x_;
@@ -220,4 +250,6 @@ private:
   float texHeight_;
   bool autorotate_;
   bool requiresVacuum_;
+  int occupied_; //4 bits (general, 3rd watch, 2nd watch, 1st watch)
+  Type type_;
 };

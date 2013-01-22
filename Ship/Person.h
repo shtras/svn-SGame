@@ -1,5 +1,7 @@
 #pragma once
 
+class Ship;
+
 struct Stats
 {
   int Health;
@@ -35,14 +37,28 @@ public:
     MajorGeneral = 16, //Aluf
     LieutenantGeneral = 17, //Raal
     LastOfficer = 17,
-    Civilian = 18
+    Other = 18
   };
-  enum Type {SeniorOfficer, JuniorOfficer, Contractor, Soldier, Civillian};
+  enum Type {SeniorOfficer, JuniorOfficer, Contractor, Soldier, Civilian};
+  enum Action {Idle, Walking, Working, Sleeping, Eating, Relaxing};
   Person();
   ~Person();
+  bool init(Ship* ship, Position pos);
+  const Position& getPosition() const {return pos_;}
+  void step();
+  Direction getDirection() {return dir_;}
+  float getPathSteProgress() {return pathStepProgress_;}
 private:
+  void pathStep();
   CString name_;
   Rank rank_;
   Type type_;
+  list<Action> actions_;
   Stats stats_;
+  Position pos_;
+  Position quarter_;
+  list<Direction> path_;
+  float pathStepProgress_;
+  Ship* ship_;
+  Direction dir_;
 };
