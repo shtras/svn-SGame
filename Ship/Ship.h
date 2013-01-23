@@ -1,5 +1,5 @@
 #pragma once
-#define SAVE_VERSION 2
+#define SAVE_VERSION 3
 #include "Person.h"
 
 class Deck;

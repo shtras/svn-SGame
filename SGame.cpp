@@ -137,7 +137,7 @@ bool SGame::mainLoop()
   int currTime = fpsTimeBase;
   int lastTime = currTime;
   int accumulator = 0;
-  int dt = 50;
+  int dt = 10;
   int frames = 0;
   float fps = 0;
   CString version = Version + CString(BUILD_NUM) + " " + CString(BUILD_STR);

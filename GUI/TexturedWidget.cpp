@@ -137,7 +137,6 @@ void Widget::click()
 
 void Widget::hoverEnter()
 {
-  cout << "hover enter " << id_ << endl;
   hovered_ = true;
   if (hoveredTexture_ && !highlighted_) {
     activeTexture_ = hoveredTexture_;
@@ -147,7 +146,6 @@ void Widget::hoverEnter()
 
 void Widget::hoverExit()
 {
-  cout << "hover exit " << id_ << endl;
   hovered_ = false;
   pressed_ = false;
   activeTexture_ = regularTexture_;

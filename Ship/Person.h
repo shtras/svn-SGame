@@ -48,6 +48,7 @@ public:
   void step();
   Direction getDirection() {return dir_;}
   float getPathSteProgress() {return pathStepProgress_;}
+  float getHeadTexX() {return headTexX_;}
 private:
   void pathStep();
   CString name_;
@@ -61,4 +62,6 @@ private:
   float pathStepProgress_;
   Ship* ship_;
   Direction dir_;
+  float headTexX_;
+  float speed_;
 };

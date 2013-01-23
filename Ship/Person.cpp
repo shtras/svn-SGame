@@ -1,8 +1,9 @@
 #include "StdAfx.h"
 #include "Person.h"
 #include "Ship.h"
+#include "Renderer.h"
 
-Person::Person():rank_(Other), type_(Civilian), ship_(NULL), dir_(Left),pathStepProgress_(0.0f)
+Person::Person():rank_(Other), type_(Civilian), ship_(NULL), dir_(Left),pathStepProgress_(0.0f),speed_(0.05f)
 {
   actions_.push_back(Idle);
 }
@@ -15,7 +16,7 @@ Person::~Person()
 bool Person::init( Ship* ship, Position pos )
 {
   pos_ = pos;
-
+  headTexX_ = (64 + 64*(rand()%6)) / (float)Renderer::getInstance().getHeadsTexSize().x;
   ship_ = ship;
   bool found = false;
   for (Compartment* comp: ship_->getCompartments()) {
@@ -63,7 +64,7 @@ void Person::pathStep()
   }
   Direction nextDir = path_.front();
   dir_ = nextDir;
-  pathStepProgress_ += 0.1f;
+  pathStepProgress_ += speed_;
   if (pathStepProgress_ > 1.0f) {
     pathStepProgress_ = 0.0f;
     path_.pop_front();

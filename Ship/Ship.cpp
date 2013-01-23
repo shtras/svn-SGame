@@ -953,7 +953,7 @@ int Deck::getPathFindValue( int x, int y )
 
 void Deck::setPathFindValue( int x, int y, int value )
 {
-  assert (x > 0 && y > 0 && x < width_ && y < height_);
+  assert (x >= 0 && y >= 0 && x < width_ && y < height_);
   pathFindValues_[y*width_ + x] = value;
 }
 

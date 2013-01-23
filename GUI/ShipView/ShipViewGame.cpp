@@ -34,18 +34,27 @@ void ShipViewGame::render()
   const list<Person*>& crew = ship_->getCrew();
   float dx = offsetX_*zoom_ + size_.left + size_.width*0.5f;
   float dy = offsetY_*zoom_ + size_.top + size_.height*0.5f;
+  map<int, int> crewInTiles;
   GLuint headsTex = renderer.getHeadsTex();
   for (Person* pers: crew) {
     if (pers->getPosition().deckIdx != activeDeckIdx_) {
       continue;
     }
     DCoord persCoord = pers->getPosition().coord;
-    float tileX = persCoord.x*tileWidth_ + dx;
-    float tileY = persCoord.y*tileHeight_ + dy;
+    int x = persCoord.x;
+    int y = persCoord.y;
+    if (crewInTiles.count(x*100+y) == 0) {
+      crewInTiles[x*100+y] = 1;
+    } else {
+      crewInTiles[x*100+y]++;
+    }
+    int crewInTile = crewInTiles[x*100+y];
+    float tileX = x*tileWidth_ + dx + crewInTile * 0.05f * tileWidth_;
+    float tileY = y*tileHeight_ + dy + crewInTile * 0.05f * tileHeight_;
     if (tileX < size_.left || tileY < size_.top || tileX + tileWidth_ > size_.left + size_.width || tileY + tileHeight_ > size_.top + size_.height) {
       continue;
     }
-    Rect texSize(256.0f/headsTexSize.x, 0.0f, 64.0f/headsTexSize.x, 64.0f/headsTexSize.y);
+    Rect texSize(pers->getHeadTexX(), 0.0f, 64.0f/headsTexSize.x, 64.0f/headsTexSize.y);
     int rotation = 0;
     float pathStepProgress = pers->getPathSteProgress();
     switch (pers->getDirection())
