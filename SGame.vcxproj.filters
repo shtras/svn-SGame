@@ -81,9 +81,6 @@
     <ClCompile Include="Math\Vector.cpp">
       <Filter>Source Files\Math</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\GUIManager.cpp">
-      <Filter>Source Files\GUI</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\Window.cpp">
       <Filter>Source Files\GUI</Filter>
     </ClCompile>
@@ -159,6 +156,9 @@
     <ClCompile Include="Ship\Person.cpp">
       <Filter>Source Files\Ship</Filter>
     </ClCompile>
+    <ClCompile Include="Credits.cpp">
+      <Filter>Source Files\GUI\Forms</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SGame.h">
@@ -181,9 +181,6 @@
     </ClInclude>
     <ClInclude Include="Math\Vector.h">
       <Filter>Header Files\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="GUI\GUIManager.h">
-      <Filter>Header Files\GUI</Filter>
     </ClInclude>
     <ClInclude Include="GUI\Window.h">
       <Filter>Header Files\GUI</Filter>
@@ -268,6 +265,9 @@
     </ClInclude>
     <ClInclude Include="Ship\Person.h">
       <Filter>Header Files\Ship</Filter>
+    </ClInclude>
+    <ClInclude Include="Credits.h">
+      <Filter>Header Files\GUI\Forms</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

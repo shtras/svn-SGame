@@ -4,13 +4,14 @@
 class SGame: public has_slots<>
 {
 public:
-  enum GameState {Menu, Editor, Game, Quit};
+  enum GameState {Menu, Editor, Game, ShowCredits, Quit};
   static SGame& getInstance();
   bool init();
   bool run();
   void toggleEditor();
   void toggleMenu();
   void toggleGame();
+  void toggleCredits();
 private:
   bool mainLoop();
   bool initMenu();
@@ -19,6 +20,8 @@ private:
   bool finishEditor();
   bool initGame();
   bool finishGame();
+  bool initCredits();
+  bool finishCredits();
   void handleEvent(SDL_Event& event);
   void quit();
   void close();

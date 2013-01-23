@@ -102,6 +102,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="auxFuncs.cpp" />
+    <ClCompile Include="Credits.cpp" />
     <ClCompile Include="FileTools\RoomParser.cpp" />
     <ClCompile Include="GameWorld.cpp" />
     <ClCompile Include="Generic\CString.cpp" />
@@ -115,7 +116,6 @@
     <ClCompile Include="GUI\Forms\FileOpenDialog.cpp" />
     <ClCompile Include="GUI\Forms\TopPanel.cpp" />
     <ClCompile Include="GUI\GlobalWindow.cpp" />
-    <ClCompile Include="GUI\GUIManager.cpp" />
     <ClCompile Include="GUI\Input.cpp" />
     <ClCompile Include="GUI\ProgressBar.cpp" />
     <ClCompile Include="GUI\ShipView\ShipView.cpp" />
@@ -141,6 +141,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="auxFuncs.h" />
+    <ClInclude Include="Credits.h" />
     <ClInclude Include="FileTools\RoomParser.h" />
     <ClInclude Include="GameWorld.h" />
     <ClInclude Include="Generic\CString.h" />
@@ -154,7 +155,6 @@
     <ClInclude Include="GUI\Forms\FileOpenDialog.h" />
     <ClInclude Include="GUI\Forms\TopPanel.h" />
     <ClInclude Include="GUI\GlobalWindow.h" />
-    <ClInclude Include="GUI\GUIManager.h" />
     <ClInclude Include="GUI\Input.h" />
     <ClInclude Include="GUI\ProgressBar.h" />
     <ClInclude Include="GUI\ShipView\ShipView.h" />

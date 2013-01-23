@@ -197,7 +197,7 @@ void Renderer::renderText( float x, float y, CString text )
 
 void Renderer::loadFonts()
 {
-  loadTexture("res/font2.png", font_);
+  loadTexture("res/font3.png", font_);
 }
 
 void Renderer::loadTexture(CString fileName, GLuint& tex, int& width, int& height)

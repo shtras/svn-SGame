@@ -8,6 +8,7 @@
 #include "ShipEditor.h"
 #include "FileOpenDialog.h"
 #include "GameWindow.h"
+#include "Credits.h"
 
 const char* Version = "0.0.6.";
 //TODO for next major version:
@@ -114,6 +115,12 @@ bool SGame::run()
       mainLoop();
       finishGame();
       break;
+    case ShowCredits:
+      Logger::getInstance().log(INFO_LOG_NAME, "Switching to credits");
+      initCredits();
+      mainLoop();
+      finishCredits();
+      break;
     default:
       Logger::getInstance().log(ERROR_LOG_NAME, "Encountered unknown state. Terminating.");
       state_ = Quit;
@@ -185,27 +192,40 @@ bool SGame::initMenu()
   stateRunnig_ = true;
   Window* menuWindow = new Window(Rect(0.3, 0.1, 0.4, 0.8));
   renderer.addWidget(menuWindow);
-
-  Button* editorButton = new Button(Rect(0.1, 0.1, 0.8, 0.1));
+  double top = 0.1;
+  double height = 0.15;
+  Button* editorButton = new Button(Rect(0.1, top, 0.8, height));
   editorButton->setCaption("Ship editor");
   editorButton->setColor(Vector4(0, 0, 255, 255));
   editorButton->setTextSize(3);
   menuWindow->addWidget(editorButton);
   editorButton->sigClick.connect(this, &SGame::toggleEditor);
+  top += height + 0.05;
 
-  Button* newGameButton = new Button(Rect(0.1, 0.25, 0.8, 0.1));
+  Button* newGameButton = new Button(Rect(0.1, top, 0.8, height));
   newGameButton->setCaption("New game");
   newGameButton->setColor(Vector4(0, 0, 255, 255));
   newGameButton->setTextSize(3);
   menuWindow->addWidget(newGameButton);
   newGameButton->sigClick.connect(this, &SGame::toggleGame);
+  top += height + 0.05;
 
-  Button* quitButton = new Button(Rect(0.1, 0.4, 0.8, 0.1));
+  Button* creditsButton = new Button(Rect(0.1, top, 0.8, height));
+  creditsButton->setCaption("Credits");
+  creditsButton->setColor(Vector4(0, 0, 255, 255));
+  creditsButton->setTextSize(3);
+  menuWindow->addWidget(creditsButton);
+  creditsButton->sigClick.connect(this, &SGame::toggleCredits);
+  top += height + 0.05;
+
+  Button* quitButton = new Button(Rect(0.1, top, 0.8, height));
   quitButton->setCaption("Quit");
   quitButton->setColor(Vector4(0, 0, 255, 255));
   quitButton->setTextSize(3);
   menuWindow->addWidget(quitButton);
   quitButton->sigClick.connect(this, &SGame::quit);
+  top += height + 0.05;
+
   return true;
 }
 
@@ -315,6 +335,26 @@ void SGame::toggleGame()
 }
 
 bool SGame::finishEditor()
+{
+  Renderer::getInstance().clearWindows();
+  return true;
+}
+
+void SGame::toggleCredits()
+{
+  state_ = ShowCredits;
+  stateRunnig_ = false;
+}
+
+bool SGame::initCredits()
+{
+  stateRunnig_ = true;
+  Credits* credits = new Credits(Rect(0,0,1,1));
+  Renderer::getInstance().addWidget(credits);
+  return true;
+}
+
+bool SGame::finishCredits()
 {
   Renderer::getInstance().clearWindows();
   return true;
