@@ -122,4 +122,6 @@ private:
   Widget* keyboardListner_;
   map<char, float> fontMapX_;
   float floatingWidgetWidthLimit_;
+  int charWidth_;
+  int charHeight_;
 };

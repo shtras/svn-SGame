@@ -42,6 +42,9 @@ Renderer::Renderer():font_(0),currVertIdx_(0),color_(Vector4(255,255,255,255)),a
   fontMapX_[','] = (++i)/104.0f;
   fontMapX_['/'] = (++i)/104.0f;
   fontMapX_['|'] = (++i)/104.0f;
+
+  charWidth_ = 9;
+  charHeight_ = 15;
 }
 
 Renderer::~Renderer()
@@ -197,7 +200,7 @@ void Renderer::renderText( float x, float y, CString text )
 
 void Renderer::loadFonts()
 {
-  loadTexture("res/font3.png", font_);
+  loadTexture("res/font2.png", font_);
 }
 
 void Renderer::loadTexture(CString fileName, GLuint& tex, int& width, int& height)
@@ -239,8 +242,8 @@ void Renderer::renderTextLines()
 
 void Renderer::renderTextLine(TextToRender& ttr)
 {
-  float width = 9 / (float)width_ * ttr.size_;
-  float height = 15 / (float)height_ * ttr.size_;
+  float width = charWidth_ / (float)width_ * ttr.size_;
+  float height = charHeight_ / (float)height_ * ttr.size_;
   color_ = ttr.color;
   for (int i=0; i<ttr.text.getSize(); ++i) {
     char c = ttr.text[i];
@@ -424,12 +427,12 @@ void Renderer::setFloatingWidget( Widget* w )
 
 float Renderer::getCharWidth()
 {
-  return textSize_ * 9.0f / (float)width_;
+  return textSize_ * charWidth_ / (float)width_;
 }
 
 float Renderer::getCharHeight()
 {
-  return textSize_ * 15.0f / (float)height_;
+  return textSize_ * charHeight_ / (float)height_;
 }
 
 void Renderer::addWidget( Widget* window )
