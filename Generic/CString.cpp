@@ -50,7 +50,8 @@ CString::CString(int val)
     len++;
   }
   cont_ = new char[len+1];
-  _itoa(origval, cont_, 10);
+  //_itoa(origval, cont_, 10);
+  sprintf(cont_, "%d", origval);
   len_ = len;
 
   //std::stringstream ss;

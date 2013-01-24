@@ -102,7 +102,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="auxFuncs.cpp" />
-    <ClCompile Include="Credits.cpp" />
     <ClCompile Include="FileTools\RoomParser.cpp" />
     <ClCompile Include="GameWorld.cpp" />
     <ClCompile Include="Generic\CString.cpp" />
@@ -111,6 +110,7 @@
     <ClCompile Include="GUI\CompHoverInfo.cpp" />
     <ClCompile Include="GUI\Forms\BuildInfo.cpp" />
     <ClCompile Include="GUI\Forms\BuildTools.cpp" />
+    <ClCompile Include="GUI\Forms\Credits.cpp" />
     <ClCompile Include="GUI\Forms\GameWindow.cpp" />
     <ClCompile Include="GUI\Forms\ShipEditor.cpp" />
     <ClCompile Include="GUI\Forms\FileOpenDialog.cpp" />
@@ -141,7 +141,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="auxFuncs.h" />
-    <ClInclude Include="Credits.h" />
     <ClInclude Include="FileTools\RoomParser.h" />
     <ClInclude Include="GameWorld.h" />
     <ClInclude Include="Generic\CString.h" />
@@ -150,6 +149,7 @@
     <ClInclude Include="GUI\CompHoverInfo.h" />
     <ClInclude Include="GUI\Forms\BuildInfo.h" />
     <ClInclude Include="GUI\Forms\BuildTools.h" />
+    <ClInclude Include="GUI\Forms\Credits.h" />
     <ClInclude Include="GUI\Forms\GameWindow.h" />
     <ClInclude Include="GUI\Forms\ShipEditor.h" />
     <ClInclude Include="GUI\Forms\FileOpenDialog.h" />

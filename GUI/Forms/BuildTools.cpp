@@ -207,7 +207,7 @@ void BuildTools::init(ShipViewEditor* shipView)
 
 void BuildTools::categoryClick(void* param)
 {
-  int iParam = (int)param;
+  int iParam = (size_t)param;
   for (int i=0; i<Compartment::LastCategory; ++i) {
     Button* but = categoryButtons_[i];
     but->setHighlighted(i == iParam);

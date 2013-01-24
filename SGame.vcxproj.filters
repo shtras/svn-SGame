@@ -156,7 +156,7 @@
     <ClCompile Include="Ship\Person.cpp">
       <Filter>Source Files\Ship</Filter>
     </ClCompile>
-    <ClCompile Include="Credits.cpp">
+    <ClCompile Include="GUI\Forms\Credits.cpp">
       <Filter>Source Files\GUI\Forms</Filter>
     </ClCompile>
   </ItemGroup>
@@ -266,7 +266,7 @@
     <ClInclude Include="Ship\Person.h">
       <Filter>Header Files\Ship</Filter>
     </ClInclude>
-    <ClInclude Include="Credits.h">
+    <ClInclude Include="GUI\Forms\Credits.h">
       <Filter>Header Files\GUI\Forms</Filter>
     </ClInclude>
   </ItemGroup>

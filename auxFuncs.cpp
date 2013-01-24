@@ -116,7 +116,7 @@ CString readStringFromFile(FILE* file)
   return CString(buffer);
 }
 
-FilePointer::FilePointer(const char* fileName, std::ios_base::open_mode mode)
+FilePointer::FilePointer(const char* fileName, std::ios_base::openmode mode)
 {
   file_.open(fileName, mode);
 }

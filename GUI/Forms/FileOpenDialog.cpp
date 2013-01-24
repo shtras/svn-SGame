@@ -82,7 +82,7 @@ void FileOpenDialog::clear()
 
 void FileOpenDialog::fileClick(void* param)
 {
-  int i = (int)param;
+  int i = (size_t)param;
   CString fileName = fileNames_[i];
   input_->setCaption(fileName);
 }

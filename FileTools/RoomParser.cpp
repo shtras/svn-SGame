@@ -214,6 +214,7 @@ CString RoomParser::getNextLine()
     CString line(inStr.c_str());
     //line = line.toLower();
     line.replace('\t', ' ');
+    line.remove('\r');
     line = line.remove(' ');
     if (line.contains(';')) {
       line = line.tokenize(';')[0];

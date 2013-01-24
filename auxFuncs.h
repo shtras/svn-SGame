@@ -27,7 +27,7 @@ CString readStringFromFile(FILE* file);
 class FilePointer
 {
 public:
-  FilePointer(const char* fileName, std::ios_base::open_mode mode);
+  FilePointer(const char* fileName, std::ios_base::openmode mode);
   ~FilePointer();
   fstream& operator->();
 private:

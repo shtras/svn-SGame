@@ -1,5 +1,9 @@
 #pragma once
+#ifdef WIN32
 #include <Windows.h>
+#else
+#include <limits.h>
+#endif //WIN32
 #include <iostream>
 #include <vector>
 #include <list>
@@ -29,8 +33,13 @@ using namespace std;
 #include "auxFuncs.h"
 #include "Vector.h"
 #include "Matrix.h"
+#ifdef WIN32
 #include "SDL.h"
 #include "SDL_image.h"
+#else
+#include <SDL/SDL.h>
+#include <SDL/SDL_image.h>
+#endif
 #include <GL/gl.h>
 
 #include "MemManager.h"
