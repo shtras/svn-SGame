@@ -1,6 +1,7 @@
 #pragma once
 
 class Ship;
+class Compartment;
 
 struct Stats
 {
@@ -49,7 +50,7 @@ public:
   Direction getDirection() {return dir_;}
   float getPathSteProgress() {return pathStepProgress_;}
   float getHeadTexX() {return headTexX_;}
-private:
+protected:
   void pathStep();
   CString name_;
   Rank rank_;
@@ -58,6 +59,9 @@ private:
   Stats stats_;
   Position pos_;
   Position quarter_;
+  Compartment* quarterComp_;
+  Position watchPos_[3];
+  Compartment* watchComp_[3];
   list<Direction> path_;
   float pathStepProgress_;
   Ship* ship_;
@@ -65,3 +69,4 @@ private:
   float headTexX_;
   float speed_;
 };
+

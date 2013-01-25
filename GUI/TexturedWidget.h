@@ -67,6 +67,7 @@ public:
   void lmUp();
   void rmUp();
   void click();
+  void rightClick();
   void hoverEnter();
   void hoverExit();
   void drag();
@@ -83,6 +84,7 @@ public:
   virtual void onLMUp() {}
   virtual void onRMUp() {}
   virtual void onClick() {}
+  virtual void onRightClick() {}
   virtual void onHoverEnter() {}
   virtual void onHoverExit() {}
   virtual void onDrag() {}
@@ -125,6 +127,7 @@ private:
   Widget();
   bool hovered_;
   bool pressed_;
+  bool rightPressed_;
   bool dragged_;
   bool highlighted_;
   CString toolTip_;

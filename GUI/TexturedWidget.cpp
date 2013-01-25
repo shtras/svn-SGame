@@ -6,7 +6,7 @@ static int id = 0;
 
 Widget::Widget(Rect size):
   size_(size), regularTexture_(NULL), hoveredTexture_(NULL), pressedTexture_(NULL), activeTexture_(NULL), hovered_(false), pressed_(false), clickable_(false),
-  draggable_(false), dragged_(false),highlighted_(false),scrollTransparrent_(false),visible_(true),align_(NoAlign),listensKeyboard_(false)
+  draggable_(false), dragged_(false),highlighted_(false),scrollTransparrent_(false),visible_(true),align_(NoAlign),listensKeyboard_(false),rightPressed_(false)
 {
   id_ = ++id;
 }
@@ -97,6 +97,7 @@ void Widget::lmDown()
 
 void Widget::rmDown()
 {
+  rightPressed_ = true;
   onRMDown();
 }
 
@@ -121,6 +122,10 @@ void Widget::lmUp()
 
 void Widget::rmUp()
 {
+  if (rightPressed_ && clickable_) {
+    rightClick();
+  }
+  rightPressed_ = false;
   onRMUp();
 }
 
@@ -133,6 +138,11 @@ void Widget::click()
     Renderer::getInstance().setKeyboardListener(NULL);
   }
   onClick();
+}
+
+void Widget::rightClick()
+{
+  onRightClick();
 }
 
 void Widget::hoverEnter()
@@ -148,6 +158,7 @@ void Widget::hoverExit()
 {
   hovered_ = false;
   pressed_ = false;
+  rightPressed_ = false;
   activeTexture_ = regularTexture_;
   if (highlighted_ && pressedTexture_) {
     activeTexture_ = pressedTexture_;

@@ -159,6 +159,12 @@
     <ClCompile Include="GUI\Forms\Credits.cpp">
       <Filter>Source Files\GUI\Forms</Filter>
     </ClCompile>
+    <ClCompile Include="GUI\Forms\CrewList.cpp">
+      <Filter>Source Files\GUI\Forms</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\CrewMemberIcon.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SGame.h">
@@ -268,6 +274,12 @@
     </ClInclude>
     <ClInclude Include="GUI\Forms\Credits.h">
       <Filter>Header Files\GUI\Forms</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI\Forms\CrewList.h">
+      <Filter>Header Files\GUI\Forms</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI\CrewMemberIcon.h">
+      <Filter>Header Files\GUI</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

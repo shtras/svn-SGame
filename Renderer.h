@@ -92,6 +92,7 @@ private:
   Vertex verts_[MAX_VERTS];
   int currVertIdx_;
   GLuint activeTex_;
+  GLuint logoTex_;
   int width_;
   int height_;
   float textSize_;

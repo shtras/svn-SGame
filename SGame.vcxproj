@@ -108,9 +108,11 @@
     <ClCompile Include="GUI\Button.cpp" />
     <ClCompile Include="GUI\CompartmentButton.cpp" />
     <ClCompile Include="GUI\CompHoverInfo.cpp" />
+    <ClCompile Include="GUI\CrewMemberIcon.cpp" />
     <ClCompile Include="GUI\Forms\BuildInfo.cpp" />
     <ClCompile Include="GUI\Forms\BuildTools.cpp" />
     <ClCompile Include="GUI\Forms\Credits.cpp" />
+    <ClCompile Include="GUI\Forms\CrewList.cpp" />
     <ClCompile Include="GUI\Forms\GameWindow.cpp" />
     <ClCompile Include="GUI\Forms\ShipEditor.cpp" />
     <ClCompile Include="GUI\Forms\FileOpenDialog.cpp" />
@@ -147,9 +149,11 @@
     <ClInclude Include="GUI\Button.h" />
     <ClInclude Include="GUI\CompartmentButton.h" />
     <ClInclude Include="GUI\CompHoverInfo.h" />
+    <ClInclude Include="GUI\CrewMemberIcon.h" />
     <ClInclude Include="GUI\Forms\BuildInfo.h" />
     <ClInclude Include="GUI\Forms\BuildTools.h" />
     <ClInclude Include="GUI\Forms\Credits.h" />
+    <ClInclude Include="GUI\Forms\CrewList.h" />
     <ClInclude Include="GUI\Forms\GameWindow.h" />
     <ClInclude Include="GUI\Forms\ShipEditor.h" />
     <ClInclude Include="GUI\Forms\FileOpenDialog.h" />

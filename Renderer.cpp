@@ -115,6 +115,7 @@ bool Renderer::init()
   loadTexture("res/gui.png", gui_, guiTexWidth_, guiTexHeight_);
   loadTexture("res/walls.png", tiles_, tilesTexWidth_, tilesTexHeight_);
   loadTexture("res/bg.png", bgTex_);
+  loadTexture("res/logo.png", logoTex_);
   loadTexture("res/heads.png", headsTex_, headsTexSize_.x, headsTexSize_.y);
   Logger::getInstance().log(INFO_LOG_NAME, "Finished loading textures.");
 
@@ -141,6 +142,7 @@ void Renderer::clear()
 void Renderer::render()
 {
   //First render GUI frames for each widget. Then run virtual render function for each widget.
+  //drawTexRect(Rect(0.05, 0.8, 0.1, 0.1*width_/(double)height_), logoTex_, Rect(0,0,1,1));
   setWidgetForTooltip(NULL);
   globalGUIWindow_->renderFrameRec();
   globalGUIWindow_->renderContRec();

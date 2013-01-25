@@ -27,7 +27,6 @@ OBJS = ./Math/Matrix.o \
 	./GUI/Forms/Credits.o \
 	./GUI/Button.o \
 	./GUI/GlobalWindow.o \
-	./GUI/GUIManager.o \
 	./GUI/Text.o \
 	./GUI/ShipView/ShipViewGame.o \
 	./GUI/ShipView/ShipView.o \
