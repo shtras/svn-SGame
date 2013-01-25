@@ -223,7 +223,7 @@ void ShipView::drawCompartments()
     if (selectedComp_ && selectedComp_->isConnectedTo(comp)) {
       renderer.setColor(Vector4(125, 125, 125, 255));
     }
-    if (hoveredComp_ == comp) {
+    if (hoveredComp_ == comp || comp->isHighLighted()) {
       renderer.setColor(Vector4(125, 200, 210, 255));
     }
     for (auto itemItr = comp->getItems().begin(); itemItr != comp->getItems().end(); ++itemItr) {

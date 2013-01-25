@@ -107,6 +107,7 @@
     <ClCompile Include="Generic\CString.cpp" />
     <ClCompile Include="GUI\Button.cpp" />
     <ClCompile Include="GUI\CompartmentButton.cpp" />
+    <ClCompile Include="GUI\CompartmentCrewIcons.cpp" />
     <ClCompile Include="GUI\CompHoverInfo.cpp" />
     <ClCompile Include="GUI\CrewMemberIcon.cpp" />
     <ClCompile Include="GUI\Forms\BuildInfo.cpp" />
@@ -119,6 +120,7 @@
     <ClCompile Include="GUI\Forms\TopPanel.cpp" />
     <ClCompile Include="GUI\GlobalWindow.cpp" />
     <ClCompile Include="GUI\Input.cpp" />
+    <ClCompile Include="GUI\PersonHoverInfo.cpp" />
     <ClCompile Include="GUI\ProgressBar.cpp" />
     <ClCompile Include="GUI\ShipView\ShipView.cpp" />
     <ClCompile Include="GUI\ShipView\ShipViewEditor.cpp" />
@@ -147,6 +149,7 @@
     <ClInclude Include="GameWorld.h" />
     <ClInclude Include="Generic\CString.h" />
     <ClInclude Include="GUI\Button.h" />
+    <ClInclude Include="GUI\CompartmentCrewIcons.h" />
     <ClInclude Include="GUI\CompartmentButton.h" />
     <ClInclude Include="GUI\CompHoverInfo.h" />
     <ClInclude Include="GUI\CrewMemberIcon.h" />
@@ -160,6 +163,7 @@
     <ClInclude Include="GUI\Forms\TopPanel.h" />
     <ClInclude Include="GUI\GlobalWindow.h" />
     <ClInclude Include="GUI\Input.h" />
+    <ClInclude Include="GUI\PersonHoverInfo.h" />
     <ClInclude Include="GUI\ProgressBar.h" />
     <ClInclude Include="GUI\ShipView\ShipView.h" />
     <ClInclude Include="GUI\ShipView\ShipViewEditor.h" />

@@ -3,9 +3,13 @@
 #include "Ship.h"
 #include "Renderer.h"
 
-Person::Person():rank_(Other), type_(Civilian), ship_(NULL), dir_(Left),pathStepProgress_(0.0f),speed_(0.05f)
+Person::Person():rank_(Other), type_(Civilian), ship_(NULL), dir_(Left),pathStepProgress_(0.0f),speed_(0.05f),highlighted_(false)
 {
   actions_.push_back(Idle);
+  for (int i=0; i<3; ++i) {
+    //watchComp_[i] = NULL;
+    watchIcon_[i] = NULL;
+  }
 }
 
 Person::~Person()
@@ -15,6 +19,8 @@ Person::~Person()
 
 bool Person::init( Ship* ship, Position pos )
 {
+  static int nameInt = 0;
+  name_ = "Crew Member " + CString(nameInt++);
   pos_ = pos;
   headTexX_ = (64 + 64*(rand()%6)) / (float)Renderer::getInstance().getHeadsTexSize().x;
   ship_ = ship;
@@ -90,4 +96,25 @@ void Person::pathStep()
       break;
     }
   }
+}
+
+//void Person::setWatchCompartment( int watchNum, Compartment* comp )
+//{
+//  assert (watchNum >= 0 && watchNum < 3);
+//  watchComp_[watchNum] = comp;
+//}
+//
+//Compartment* Person::getWatchCompartment( int watchNum )
+//{
+//  return watchComp_[watchNum];
+//}
+
+CrewMemberIcon* Person::getWatchIcon( int watchNum )
+{
+  return watchIcon_[watchNum];
+}
+
+void Person::setWatchIcon( int watchNum, CrewMemberIcon* icon )
+{
+  watchIcon_[watchNum] = icon;
 }

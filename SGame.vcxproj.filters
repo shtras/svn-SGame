@@ -165,6 +165,12 @@
     <ClCompile Include="GUI\CrewMemberIcon.cpp">
       <Filter>Source Files\GUI</Filter>
     </ClCompile>
+    <ClCompile Include="GUI\CompartmentCrewIcons.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\PersonHoverInfo.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SGame.h">
@@ -279,6 +285,12 @@
       <Filter>Header Files\GUI\Forms</Filter>
     </ClInclude>
     <ClInclude Include="GUI\CrewMemberIcon.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI\CompartmentCrewIcons.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI\PersonHoverInfo.h">
       <Filter>Header Files\GUI</Filter>
     </ClInclude>
   </ItemGroup>

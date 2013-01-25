@@ -40,6 +40,11 @@ void ShipViewGame::render()
     if (pers->getPosition().deckIdx != activeDeckIdx_) {
       continue;
     }
+    if (pers->isHighLighted()) {
+      renderer.setColor(Vector4(255,200,100,255));
+    } else {
+      renderer.setColor(Vector4(255,255,255,255));
+    }
     DCoord persCoord = pers->getPosition().coord;
     int x = persCoord.x;
     int y = persCoord.y;
@@ -80,5 +85,6 @@ void ShipViewGame::render()
       break;
     }
     renderer.drawTexRect(Rect(tileX, tileY, tileWidth_, tileHeight_), headsTex, texSize, rotation);
+    renderer.resetColor();
   }
 }

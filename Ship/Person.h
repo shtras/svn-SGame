@@ -2,6 +2,7 @@
 
 class Ship;
 class Compartment;
+class CrewMemberIcon;
 
 struct Stats
 {
@@ -50,6 +51,13 @@ public:
   Direction getDirection() {return dir_;}
   float getPathSteProgress() {return pathStepProgress_;}
   float getHeadTexX() {return headTexX_;}
+  //void setWatchCompartment(int watchNum, Compartment* comp);
+  //Compartment* getWatchCompartment(int watchNum);
+  void setWatchIcon(int watchNum, CrewMemberIcon* icon);
+  CrewMemberIcon* getWatchIcon(int watchNum);
+  void setHighLighted(bool value) {highlighted_ = value;}
+  bool isHighLighted() {return highlighted_;}
+  CString getName() {return name_;}
 protected:
   void pathStep();
   CString name_;
@@ -61,12 +69,14 @@ protected:
   Position quarter_;
   Compartment* quarterComp_;
   Position watchPos_[3];
-  Compartment* watchComp_[3];
+  //Compartment* watchComp_[3];
+  CrewMemberIcon* watchIcon_[3];
   list<Direction> path_;
   float pathStepProgress_;
   Ship* ship_;
   Direction dir_;
   float headTexX_;
   float speed_;
+  bool highlighted_;
 };
 

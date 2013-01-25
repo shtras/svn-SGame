@@ -181,6 +181,8 @@ public:
   bool isInside(int x, int y);
   int getDeckIdx() {return deckIdx_;}
   void setDeckIdx(int deckIdx) {deckIdx_ = deckIdx;}
+  void setHighLighted(bool value) {highlighted_ = value;}
+  bool isHighLighted() {return highlighted_;}
 private:
   Category category_;
   int left_;
@@ -202,6 +204,7 @@ private:
   int maxConnections_;
   int maxSameConnections_;
   bool requiresAccess_;
+  bool highlighted_;
 };
 
 class Item
