@@ -1,10 +1,11 @@
 #include "StdAfx.h"
 #include "TopPanel.h"
+#include "TimeControl.h"
 
 
-TopPanel::TopPanel( Rect size, ShipView* shipView ):Window(size),shipView_(shipView)
+TopPanel::TopPanel( Rect size, ShipView* shipView, bool editor ):Window(size),shipView_(shipView), editor_(editor)
 {
-  double buttonWidth = 0.1;
+  double buttonWidth = 0.08;
   double buttonLeft = 0.5 - buttonWidth*2.0;
   double buttonTop = 0.1;
   double buttonHeight = 1.0 - buttonTop*2.0;
@@ -14,18 +15,22 @@ TopPanel::TopPanel( Rect size, ShipView* shipView ):Window(size),shipView_(shipV
   MenuButton->setColor(Vector4(255, 0, 0, 255));
   addWidget(MenuButton);
 
-  SaveButton = new Button(Rect(0.002, buttonTop, 0.1, buttonHeight));
+  SaveButton = new Button(Rect(0.002, buttonTop, 0.06, buttonHeight));
   SaveButton->setCaption("Save");
   SaveButton->setColor(Vector4(255,0,0,255));
   addWidget(SaveButton);
 
-  LoadButton = new Button(Rect(0.102, buttonTop, 0.1, buttonHeight));
+  LoadButton = new Button(Rect(0.062, buttonTop, 0.06, buttonHeight));
   LoadButton->setCaption("Load");
   LoadButton->setColor(Vector4(255,0,0,255));
   addWidget(LoadButton);
 
   constructionOverlayButton_ = new Button(Rect(buttonLeft, buttonTop, buttonWidth, buttonHeight));
-  constructionOverlayButton_->setCaption("Construction");
+  if (editor) {
+    constructionOverlayButton_->setCaption("Construction");
+  } else {
+    constructionOverlayButton_->setCaption("Ship");
+  }
   addWidget(constructionOverlayButton_);
   constructionOverlayButton_->sigClick.connect(this, &TopPanel::constructionClick);
   constructionOverlayButton_->setColor(Vector4(255,0,0,255));
@@ -52,6 +57,11 @@ TopPanel::TopPanel( Rect size, ShipView* shipView ):Window(size),shipView_(shipV
   oxygenOverlayButton_->setColor(Vector4(255,0,0,255));
   oxygenOverlayButton_->sigClick.connect(this, &TopPanel::oxygenClick);
   buttonLeft += buttonWidth;
+
+  if (!editor_) {
+    TimeControl* control = new TimeControl(Rect(buttonLeft, buttonTop, 0.2, buttonHeight));
+    addWidget(control);
+  }
 }
 
 TopPanel::~TopPanel()

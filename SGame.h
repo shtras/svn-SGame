@@ -12,6 +12,8 @@ public:
   void toggleMenu();
   void toggleGame();
   void toggleCredits();
+  void togglePause();
+  bool isPaused() {return paused_;}
 private:
   bool mainLoop();
   bool initMenu();

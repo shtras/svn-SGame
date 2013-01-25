@@ -6,7 +6,7 @@
 class TopPanel: public Window
 {
 public:
-  TopPanel(Rect size, ShipView* shipView);
+  TopPanel(Rect size, ShipView* shipView, bool editor);
   ~TopPanel();
 
   Button* LoadButton;
@@ -23,4 +23,5 @@ private:
   Button* powerOverlayButton_;
   Button* oxygenOverlayButton_;
   ShipView* shipView_;
+  bool editor_;
 };

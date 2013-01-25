@@ -171,6 +171,12 @@
     <ClCompile Include="GUI\PersonHoverInfo.cpp">
       <Filter>Source Files\GUI</Filter>
     </ClCompile>
+    <ClCompile Include="Time.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\TimeControl.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SGame.h">
@@ -291,6 +297,12 @@
       <Filter>Header Files\GUI</Filter>
     </ClInclude>
     <ClInclude Include="GUI\PersonHoverInfo.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Time.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI\TimeControl.h">
       <Filter>Header Files\GUI</Filter>
     </ClInclude>
   </ItemGroup>

@@ -9,6 +9,7 @@
 #include "FileOpenDialog.h"
 #include "GameWindow.h"
 #include "Credits.h"
+#include "Time.h"
 
 const char* Version = "0.0.6.";
 //TODO for next major version:
@@ -161,8 +162,11 @@ bool SGame::mainLoop()
         accumulator -= dt;
         if (state_ == Game && world_) {
           world_->step();
+          Time::getTime().progress(1);
         }
       }
+    } else {
+      Time::getTime().progress(0);
     }
     lastTime = currTime;
     ++frames;
@@ -181,7 +185,7 @@ bool SGame::mainLoop()
 
     Renderer::getInstance().renderEnd();
     checkReleaseError("OpenGL error during main loop. Something bad happened :(");
-    //Sleep(0);
+    Sleep(0);
   }
   return true;
 }
@@ -294,7 +298,7 @@ void SGame::handleEvent( SDL_Event& event )
   case SDL_KEYDOWN:
     Renderer::getInstance().handleKeyboardEvent(event);
     if (event.key.keysym.sym == SDLK_SPACE) {
-      paused_ = !paused_;
+      togglePause();
     }
     break;
   case SDL_VIDEORESIZE:
@@ -358,6 +362,11 @@ bool SGame::finishCredits()
 {
   Renderer::getInstance().clearWindows();
   return true;
+}
+
+void SGame::togglePause()
+{
+  paused_ = !paused_;
 }
 
 #ifdef WIN32

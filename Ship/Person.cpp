@@ -22,7 +22,7 @@ bool Person::init( Ship* ship, Position pos )
   static int nameInt = 0;
   name_ = "Crew Member " + CString(nameInt++);
   pos_ = pos;
-  headTexX_ = (64 + 64*(rand()%6)) / (float)Renderer::getInstance().getHeadsTexSize().x;
+  headTexX_ = (64*(nameInt)) / (float)Renderer::getInstance().getHeadsTexSize().x;
   ship_ = ship;
   bool found = false;
   for (Compartment* comp: ship_->getCompartments()) {

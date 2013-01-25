@@ -128,6 +128,7 @@
     <ClCompile Include="GUI\Text.cpp" />
     <ClCompile Include="GUI\TextArea.cpp" />
     <ClCompile Include="GUI\TexturedWidget.cpp" />
+    <ClCompile Include="GUI\TimeControl.cpp" />
     <ClCompile Include="GUI\Window.cpp" />
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="Math\Matrix.cpp" />
@@ -142,6 +143,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Time.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="auxFuncs.h" />
@@ -171,6 +173,7 @@
     <ClInclude Include="GUI\Text.h" />
     <ClInclude Include="GUI\TextArea.h" />
     <ClInclude Include="GUI\TexturedWidget.h" />
+    <ClInclude Include="GUI\TimeControl.h" />
     <ClInclude Include="GUI\Window.h" />
     <ClInclude Include="Logger.h" />
     <ClInclude Include="Math\Matrix.h" />
@@ -183,6 +186,7 @@
     <ClInclude Include="Ship\Ship.h" />
     <ClInclude Include="sigslot.h" />
     <ClInclude Include="StdAfx.h" />
+    <ClInclude Include="Time.h" />
     <ClInclude Include="VersionInfo.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
