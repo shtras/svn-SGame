@@ -2,7 +2,7 @@
 #include "CrewMemberIcon.h"
 #include "Renderer.h"
 
-CrewMemberIcon::CrewMemberIcon( Rect size, Compartment* comp ):Widget(size),person_(NULL)
+CrewMemberIcon::CrewMemberIcon( Rect size, Compartment* comp ):Widget(size),person_(NULL),comp_(comp)
 {
   clickable_ = true;
 }
@@ -47,6 +47,10 @@ void CrewMemberIcon::onHoverExit()
 {
   if (person_) {
     person_->setHighLighted(false);
+  }
+  PersonHoverInfo* currHoverInfo = dynamic_cast<PersonHoverInfo*>(Renderer::getInstance().getFloatingWidget());
+  if (currHoverInfo && currHoverInfo->getPerson() != person_) {
+    return;
   }
   Renderer::getInstance().setFloatingWidget(NULL);
 }
@@ -108,6 +112,7 @@ void CrewMemberIconWatch::onDrop( Widget* w )
   //newPerson->setWatchCompartment(watchNum_, comp_);
   newPerson->setWatchIcon(watchNum_, this);
   setPerson(newPerson);
+  hoverInfo_->setPerson(newPerson);
 }
 
 void CrewMemberIconWatch::onRightClick()
@@ -118,4 +123,5 @@ void CrewMemberIconWatch::onRightClick()
   //person_->setWatchCompartment(watchNum_, NULL);
   person_->setWatchIcon(watchNum_, NULL);
   setPerson(NULL);
+  onHoverEnter();
 }

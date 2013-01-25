@@ -707,6 +707,16 @@ void Ship::findPathRec( Tile* tile, int value )
   }
 }
 
+int Ship::getSuffixIndex( CString str )
+{
+  if (suffixIndex_.count(str) == 0) {
+    suffixIndex_[str] = 1;
+    return 1;
+  } else {
+    return ++suffixIndex_[str];
+  }
+}
+
 Deck::Deck(Ship* ship, int width, int height,int idx):
   ship_(ship), width_(width), height_(height), idx_(idx)
 {
@@ -734,6 +744,8 @@ Deck::~Deck()
 
 void Deck::addCompartment(Compartment* comp)
 {
+  int suffixIndex = ship_->getSuffixIndex(comp->getFullName());
+  comp->setSuffixIndex(CString(suffixIndex));
   comp->setDeckIdx(idx_);
   compartments_.push_back(comp);
   ship_->compartments_.push_back(comp);

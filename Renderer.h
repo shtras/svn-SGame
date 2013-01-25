@@ -10,6 +10,7 @@ struct TextToRender
   float size_;
   CString text;
   Vector4 color;
+  bool dimOnHover;
 };
 
 struct Vertex
@@ -125,4 +126,5 @@ private:
   float floatingWidgetWidthLimit_;
   int charWidth_;
   int charHeight_;
+  bool dimTextOnHover_;
 };

@@ -7,7 +7,7 @@
 
 CrewList::CrewList(Rect size):Window(size),hoverInfo_(NULL)
 {
-  hoverInfo_ = new PersonHoverInfo(Rect(0.0, 0.0, 0.1, 0.3));
+  hoverInfo_ = new PersonHoverInfo(Rect(0.0, 0.0, 0.15, 0.3));
 }
 
 CrewList::~CrewList()

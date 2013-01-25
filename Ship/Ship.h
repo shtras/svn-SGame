@@ -38,6 +38,7 @@ public:
   const list<Person*>& getCrew() const {return crew_;}
   void step();
   const list<Compartment*>& getCompartments() const {return compartments_;}
+  int getSuffixIndex(CString str);
 private:
   void findPathRec(Tile* tile, int value);
   void fillPath(Tile* from, Tile* to);
@@ -66,6 +67,7 @@ private:
   list<Person*> crew_;
   list<Compartment*> compartments_;
   list<Direction> path_;
+  map<CString, int> suffixIndex_;
 };
 
 class Tile
@@ -162,7 +164,7 @@ public:
   int getCrewCapacity() {return crewCapacity_;}
   CString getName() {return name_;}
   CString getSuffix() {return suffix_;}
-  CString getFullName() {return name_+" "+suffix_;}
+  CString getFullName() {return name_+" "+suffix_ + " " + suffixIndex_;}
   static CString categoryName(Category cat);
   void connectTo(Compartment* comp);
   void disconnectFrom(Compartment* comp);
@@ -183,6 +185,7 @@ public:
   void setDeckIdx(int deckIdx) {deckIdx_ = deckIdx;}
   void setHighLighted(bool value) {highlighted_ = value;}
   bool isHighLighted() {return highlighted_;}
+  void setSuffixIndex(CString str) {suffixIndex_ = str;}
 private:
   Category category_;
   int left_;
@@ -205,6 +208,7 @@ private:
   int maxSameConnections_;
   bool requiresAccess_;
   bool highlighted_;
+  CString suffixIndex_;
 };
 
 class Item

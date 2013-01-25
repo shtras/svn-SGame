@@ -9,7 +9,7 @@
 Renderer::Renderer():font_(0),currVertIdx_(0),color_(Vector4(255,255,255,255)),activeTex_(-1),width_(1600), height_(900), textSize_(1.0f), guiTexHeight_(-1), guiTexWidth_(-1),
   globalGUIWindow_(NULL), draggedWidget_(NULL), offsetX_(0), offsetY_(0), xAtStartDrag_(0), yAtStartDrag_(0), startMouseX_(0), startMouseY_(0),
   renderingDragged_(false),lastColor_(Vector4(255,255,255,255)),flushes_(0),vertices_(0),tilesTexWidth_(0),tilesTexHeight_(0), floatingWidget_(NULL),
-  keyboardListner_(NULL),floatingWidgetWidthLimit_(1.0f)
+  keyboardListner_(NULL),floatingWidgetWidthLimit_(1.0f),dimTextOnHover_(true)
 {
   globalGUIWindow_ = new GlobalWindow(Rect(0,0,1,1));
   for (char c = 'a'; c <= 'z'; ++c) {
@@ -165,8 +165,10 @@ void Renderer::render()
       if (offsetY_ + floatingWidget_->getSize().height > 1) {
         offsetY_ = 1 - floatingWidget_->getSize().height;
       }
+      dimTextOnHover_ = false;
       floatingWidget_->renderFrameRec();
       floatingWidget_->renderContRec();
+      dimTextOnHover_ = true;
     }
     color_[3] = lastOpacity;
     offsetX_ = 0;
@@ -197,6 +199,8 @@ void Renderer::renderText( float x, float y, CString text )
   ttr.text = text;
   ttr.color = color_;
   ttr.size_ = textSize_;
+  ttr.dimOnHover = dimTextOnHover_;
+  //renderTextLine(ttr);
   linesToRender_.push_back(ttr);
 }
 
@@ -246,6 +250,7 @@ void Renderer::renderTextLine(TextToRender& ttr)
 {
   float width = charWidth_ / (float)width_ * ttr.size_;
   float height = charHeight_ / (float)height_ * ttr.size_;
+
   color_ = ttr.color;
   for (int i=0; i<ttr.text.getSize(); ++i) {
     char c = ttr.text[i];
@@ -267,6 +272,25 @@ void Renderer::renderTextLine(TextToRender& ttr)
     texPos.width = 1/104.0f;
     texPos.top = ty;
     texPos.height = 1.0f;
+    if (!draggedWidget_ && floatingWidget_ && ttr.dimOnHover) {
+      float dimLeft = mouseX_;
+      float dimTop = mouseY_;
+      float dimWidth = floatingWidget_->getSize().width;
+      if (dimLeft + dimWidth > floatingWidgetWidthLimit_) {
+        dimLeft = floatingWidgetWidthLimit_-dimWidth;
+      }
+      float dimHeight = floatingWidget_->getSize().height;
+      if (dimTop + dimHeight > 1) {
+        dimTop = 1-dimHeight;
+      }
+
+      if (pos.left > dimLeft && pos.left+pos.width < dimLeft+dimWidth &&
+        pos.top > dimTop && pos.top + pos.height < dimTop + dimHeight) {
+          color_[3] = 50;
+      } else {
+        color_[3] = ttr.color[3];
+      }
+    }
     drawTexRect(pos, font_, texPos);
   }
 }
