@@ -44,7 +44,7 @@ void CompartmentCrewIcons::initWorking()
   for (int i=0; i<3; ++i) {
     //Loop watches
     FramedText* caption = new FramedText(Rect(0.33f*i+0.01f, top, 0.32f, 0.1f));
-    caption->setCaption("Watch " + CString(i));
+    caption->setCaption("Watch " + CString(i+1));
     addWidget(caption);
     Rect iconPos(0.01f + i*0.33f, top + 0.13f, 0.1f, 0.1f*aspect);
     for (int j = 0; j<comp_->getMaxCrew(); ++j) {

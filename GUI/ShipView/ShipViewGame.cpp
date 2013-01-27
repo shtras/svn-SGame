@@ -59,7 +59,8 @@ void ShipViewGame::render()
     if (tileX < size_.left || tileY < size_.top || tileX + tileWidth_ > size_.left + size_.width || tileY + tileHeight_ > size_.top + size_.height) {
       continue;
     }
-    Rect texSize(pers->getHeadTexX(), 0.0f, 64.0f/headsTexSize.x, 64.0f/headsTexSize.y);
+    float texX = ((int)((pers->getPathSteProgress()) * 7.78f) + 1) * 64.0f / (float)headsTexSize.x;
+    Rect texSize(/*pers->getHeadTexX()*/texX, 0.0f, 64.0f/headsTexSize.x, 64.0f/headsTexSize.y);
     int rotation = 0;
     float pathStepProgress = pers->getPathSteProgress();
     switch (pers->getDirection())
@@ -85,6 +86,10 @@ void ShipViewGame::render()
       break;
     }
     renderer.drawTexRect(Rect(tileX, tileY, tileWidth_, tileHeight_), headsTex, texSize, rotation);
-    renderer.resetColor();
+    texSize.left = pers->getHeadTexX();
+    texSize.top = 128.0f / headsTexSize.y;
+    renderer.drawTexRect(Rect(tileX + tileWidth_*0.25f, tileY + tileHeight_*0.25f, tileWidth_*0.5f, tileHeight_*0.5f), headsTex, texSize, rotation);
+    renderer.setColor(Vector4(255,255,255,255));
   }
+  renderer.setColor(Vector4(255,255,255,255));
 }

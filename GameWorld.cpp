@@ -16,6 +16,10 @@ bool GameWorld::init()
 {
   playerShip_ = new Ship(1, 1);
   bool res = playerShip_->load("saves/test2.sgs", true);
+  if (!res) {
+    Logger::getInstance().log(ERROR_LOG_NAME, "Could not find saves/test2.sgs");
+    return false;
+  }
   if (!playerShip_->generalStatusOK()) {
     Logger::getInstance().log(ERROR_LOG_NAME, "Ship design incomplete");
     return false;

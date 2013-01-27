@@ -58,12 +58,16 @@ public:
   void setHighLighted(bool value) {highlighted_ = value;}
   bool isHighLighted() {return highlighted_;}
   CString getName() {return name_;}
+  Compartment* getQuarterComp() {return quarterComp_;}
 protected:
   void pathStep();
+  void decideNextAction();
+  Position movePosition(Position pos, Direction dir);
   CString name_;
   Rank rank_;
   Type type_;
   list<Action> actions_;
+  int idleCnt_;
   Stats stats_;
   Position pos_;
   Position quarter_;

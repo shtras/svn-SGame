@@ -82,6 +82,12 @@ struct DCoord
 
 struct Position
 {
+  bool operator==(const Position& other) {
+    return coord.x == other.coord.x && coord.y == other.coord.y && deckIdx == other.deckIdx;
+  }
+  bool operator!=(const Position& other) {
+    return !(*this == other);
+  }
   DCoord coord;
   int deckIdx;
 };

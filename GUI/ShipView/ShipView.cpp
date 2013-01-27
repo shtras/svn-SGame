@@ -79,6 +79,7 @@ void ShipView::render()
       Rect texPos(0.0f, 0.0f, tileTexWidth, tileTexHeight);
       int wallValue = activeDeck_->getTileType(i, j);
       int wallCode = 0;
+      int rotation = 0;
       bool renderPrevFloorCorners = false;
       if (wallValue == Tile::Wall || wallValue == Tile::Door) {
         wallCode = activeDeck_->getWallCode(i, j);
@@ -149,11 +150,16 @@ void ShipView::render()
       }
       if (wallValue == Tile::Door) {
         assert (wallCode == 10 || wallCode == 5);
-        texPos.left = 257.0f / tilesTexWidth_;
-        if (wallCode == 10) {
-          texPos.top = 65.0f / tilesTexHeight_;
-        } else if (wallCode == 5) {
-          texPos.top = 129.0f / tilesTexHeight_;
+        int openState = tile->getOpenState();
+        int coordX = 257 + openState*64;
+        texPos.top = 65.0f / tilesTexHeight_;
+        if (openState > 3) {
+          coordX -= 64*4;
+          texPos.top += 64.0f/(float)tilesTexHeight_;
+        }
+        texPos.left = (coordX) / (float)tilesTexWidth_;
+        if (wallCode == 5) {
+          rotation = 1;
         }
         if (tile->isEntrance()) {
           assert (tile == ship_->getEntrance());
@@ -168,7 +174,7 @@ void ShipView::render()
       //texPos.top += 0.004f;
       //texPos.width -= 0.004f;
       //texPos.height -= 0.008f;
-      renderer.drawTexRect(tilePos, tilesTex, texPos);
+      renderer.drawTexRect(tilePos, tilesTex, texPos, rotation);
       renderer.setColor(Vector4(255,255,255,255));
     }
   }

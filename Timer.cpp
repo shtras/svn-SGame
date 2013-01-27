@@ -1,24 +1,24 @@
 #include "StdAfx.h"
-#include "Time.h"
+#include "Timer.h"
 
 
-Time& Time::getTime()
+Timer& Timer::getTime()
 {
-  static Time instance;
+  static Timer instance;
   return instance;
 }
 
-Time::Time():year_(2317),month_(7),day_(12),hour_(5),minute_(30),second_(0),fracture_(0),control_(NULL)
+Timer::Timer():year_(2317),month_(7),day_(12),hour_(5),minute_(30),second_(0),fracture_(0),control_(NULL)
 {
 
 }
 
-Time::~Time()
+Timer::~Timer()
 {
 
 }
 
-void Time::progress(int value)
+void Timer::progress(int value)
 {
   fracture_ += value;
   while (fracture_ > 100) {
@@ -50,37 +50,48 @@ void Time::progress(int value)
   }
 }
 
-int Time::getYear()
+int Timer::getYear()
 {
   return year_;
 }
 
-int Time::getMonth()
+int Timer::getMonth()
 {
   return month_;
 }
 
-int Time::getDay()
+int Timer::getDay()
 {
   return day_;
 }
 
-int Time::getHour()
+int Timer::getHour()
 {
   return hour_;
 }
 
-int Time::getMinute()
+int Timer::getMinute()
 {
   return minute_;
 }
 
-int Time::getSecond()
+int Timer::getSecond()
 {
   return second_;
 }
 
-CString Time::getTimeStr()
+CString Timer::getTimeStr()
 {
   return CString(day_, 2) + "/" + CString(month_,2) + "/" + CString(year_) + " " + CString(hour_,2) + ":" + CString(minute_,2) + ":" + CString(second_,2);
+}
+
+int Timer::getWatch()
+{
+  if (hour_ < 8) {
+    return 0;
+  }
+  if (hour_ < 16) {
+    return 1;
+  }
+  return 2;
 }

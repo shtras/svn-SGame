@@ -267,6 +267,10 @@ bool Ship::load(CString fileName, bool adjustSize/*=false*/)
   left_ = 0;
   top_ = 0;
   FILE* file = fopen(fileName, "rb");
+  if (!file) {
+    Logger::getInstance().log(ERROR_LOG_NAME, "Load failed");
+    return false;
+  }
   char buffer[1024];
   readFromFile(buffer, 1, 5, file);
   if (buffer[0] != 'S' || buffer[1] != 'G' || buffer[2] != 'S' || buffer[3] != 'F') {
@@ -605,6 +609,17 @@ void Ship::step()
   for (Person* pers: crew_) {
     pers->step();
   }
+
+  set<Tile*> toDelete;
+  for (Tile* door: doorsInProgress_) {
+    door->update();
+    if (door->getState() == Tile::Open || door->getState() == Tile::Closed) {
+      toDelete.insert(door);
+    }
+  }
+  for (Tile* door: toDelete) {
+    doorsInProgress_.erase(door);
+  }
 }
 
 list<Direction> Ship::findPath( Position from, Position to )
@@ -715,6 +730,18 @@ int Ship::getSuffixIndex( CString str )
   } else {
     return ++suffixIndex_[str];
   }
+}
+
+void Ship::openDoor( Tile* door )
+{
+  door->open();
+  doorsInProgress_.insert(door);
+}
+
+void Ship::closeDoor( Tile* door )
+{
+  door->close();
+  doorsInProgress_.insert(door);
 }
 
 Deck::Deck(Ship* ship, int width, int height,int idx):
@@ -1147,11 +1174,62 @@ void Item::vacateWatch( int watch )
   occupied_ ^= (1 << (watch-1));
 }
 
-Tile::Tile(int x, int y, int deck):type_(Empty), x_(x), y_(y), accessible_(false), connected_(false), checked_(false), deckIdx_(deck), entrance_(false)
+Direction Item::getDirection()
+{
+  int dirInt = rotation_+1;
+  if (dirInt > 3) {
+    dirInt -= 4;
+  }
+  return (Direction)dirInt;
+}
+
+Tile::Tile(int x, int y, int deck):type_(Empty), x_(x), y_(y), accessible_(false), connected_(false), checked_(false), deckIdx_(deck), entrance_(false),
+  doorState_(Closed), openProgress_(0)
 {
 }
 
 Tile::~Tile()
 {
+}
+
+void Tile::open()
+{
+  assert(type_ == Door);
+  if (doorState_ == Opening || doorState_ == Open) {
+    return;
+  }
+  doorState_ = Opening;
+}
+
+void Tile::close()
+{
+  assert(type_ == Door);
+  //if (doorState_ != Open) {
+  //  return;
+  //}
+  doorState_ = Closing;
+}
+
+void Tile::update()
+{
+  assert(type_ == Door);
+  if (doorState_ == Opening) {
+    ++openProgress_;
+    if (openProgress_ >= 21) {
+      openProgress_ = 21;
+      doorState_ = Open;
+    }
+  } else if (doorState_ == Closing) {
+    --openProgress_;
+    if (openProgress_ <= 0) {
+      openProgress_ = 0;
+      doorState_ = Closed;
+    }
+  }
+}
+
+int Tile::getOpenState()
+{
+  return openProgress_ / 3;
 }
 

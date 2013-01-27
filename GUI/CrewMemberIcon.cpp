@@ -15,11 +15,17 @@ CrewMemberIcon::~CrewMemberIcon()
 void CrewMemberIcon::render()
 {
   Renderer& renderer = Renderer::getInstance();
+  if (person_ && person_->isHighLighted()) {
+    renderer.setColor(Vector4(100, 50, 255, 255));
+  } else {
+    renderer.setColor(Vector4(255, 255, 255, 255));
+  }
   Rect texPos(0.0f, 64/(float)renderer.getHeadsTexSize().y, 64/(float)renderer.getHeadsTexSize().x, 64/(float)renderer.getHeadsTexSize().y);
   if (person_) {
     texPos.left = person_->getHeadTexX();
   }
   renderer.drawTexRect(size_, renderer.getHeadsTex(), texPos);
+  renderer.resetColor();
 }
 
 void CrewMemberIcon::setPerson( Person* pers )
@@ -122,6 +128,7 @@ void CrewMemberIconWatch::onRightClick()
   }
   //person_->setWatchCompartment(watchNum_, NULL);
   person_->setWatchIcon(watchNum_, NULL);
+  person_->setHighLighted(false);
   setPerson(NULL);
   onHoverEnter();
 }

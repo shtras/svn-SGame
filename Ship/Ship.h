@@ -39,6 +39,8 @@ public:
   void step();
   const list<Compartment*>& getCompartments() const {return compartments_;}
   int getSuffixIndex(CString str);
+  void openDoor(Tile* door);
+  void closeDoor(Tile* door);
 private:
   void findPathRec(Tile* tile, int value);
   void fillPath(Tile* from, Tile* to);
@@ -68,6 +70,7 @@ private:
   list<Compartment*> compartments_;
   list<Direction> path_;
   map<CString, int> suffixIndex_;
+  set<Tile*> doorsInProgress_;
 };
 
 class Tile
@@ -76,6 +79,7 @@ public:
   Tile(int x, int y, int deck);
   ~Tile();
   enum TileType {Empty, Wall, Floor, Door, Stair};
+  enum DoorState {Closed, Open, Opening, Closing};
   TileType getType() {return type_;}
   void setType(TileType type) {type_ = type;}
   void setEntrance(bool value) {entrance_ = value;}
@@ -89,6 +93,11 @@ public:
   void setChecked(bool value) {checked_ = value;}
   int getX() {return x_;}
   int getY() {return y_;}
+  void open();
+  void close();
+  void update();
+  int getOpenState();
+  DoorState getState() {return doorState_;}
 private:
   TileType type_;
   int x_;
@@ -98,6 +107,8 @@ private:
   bool connected_;
   bool entrance_;
   bool checked_; //For entrance validation
+  DoorState doorState_;
+  int openProgress_;
 };
 
 class Deck
@@ -124,7 +135,6 @@ public:
   void resetPathFindValues();
   int getPathFindValue(int x, int y);
   void setPathFindValue(int x, int y, int value);
-
 private:
   Deck();
 
@@ -245,6 +255,7 @@ public:
   void vacateGeneral();
   void vacateWatch(int watch);
   Type getType() {return type_;}
+  Direction getDirection();
 private:
   int id_;
   int x_;

@@ -20,7 +20,7 @@ PersonHoverInfo::PersonHoverInfo(Rect size):Window(size),pers_(NULL)
 
   for (int i=0; i<3; ++i) {
     watchText_[i] = new Text(pos);
-    watchText_[i]->setCaption("Shift " + CString(i+1) + ": NO");
+    watchText_[i]->setCaption("Watch " + CString(i+1) + ": NO");
     watchText_[i]->setAlign(Widget::LeftAlign);
     addWidget(watchText_[i]);
     pos.top += pos.height;
@@ -37,21 +37,28 @@ void PersonHoverInfo::setPerson( Person* pers )
   pers_ = pers;
   if (pers) {
     nameText_->setCaption(pers->getName());
-    livingText_->setCaption("Quarter: NO");
+    CString quarterName = "NO";
+    if (pers->getQuarterComp()) {
+      quarterName = pers->getQuarterComp()->getFullName();
+    }
+    livingText_->setCaption("Quarter: " + quarterName);
+    livingText_->setVisible(true);
 
     for (int i=0; i<3; ++i) {
       CString watchCompName = "NO";
       if (pers_ && pers_->getWatchIcon(i)) {
         watchCompName = pers_->getWatchIcon(i)->getComp()->getFullName();
       }
-      watchText_[i]->setCaption("Shift " + CString(i+1) + ": " + watchCompName);
+      watchText_[i]->setCaption("Watch " + CString(i+1) + ": " + watchCompName);
+      watchText_[i]->setVisible(true);
     }
   } else {
     nameText_->setCaption("Vacant");
     livingText_->setCaption("Quarter: NO");
-
+    livingText_->setVisible(false);
     for (int i=0; i<3; ++i) {
-      watchText_[i]->setCaption("Shift " + CString(i+1) + ": NO");
+      watchText_[i]->setCaption("Watch " + CString(i+1) + ": NO");
+      watchText_[i]->setVisible(false);
     }
   }
 }

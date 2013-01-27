@@ -1,10 +1,10 @@
 #pragma once
 #include "TimeControl.h"
 
-class Time
+class Timer
 {
 public:
-  static Time& getTime();
+  static Timer& getTime();
   void progress(int value);
   int getYear();
   int getMonth();
@@ -14,9 +14,10 @@ public:
   int getSecond();
   CString getTimeStr();
   void setTimeControl(TimeControl* control) {control_ = control;}
+  int getWatch();
 private:
-  Time();
-  ~Time();
+  Timer();
+  ~Timer();
   int year_;
   int month_;
   int day_;

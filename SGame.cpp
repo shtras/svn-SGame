@@ -9,7 +9,7 @@
 #include "FileOpenDialog.h"
 #include "GameWindow.h"
 #include "Credits.h"
-#include "Time.h"
+#include "Timer.h"
 
 const char* Version = "0.0.6.";
 //TODO for next major version:
@@ -162,11 +162,11 @@ bool SGame::mainLoop()
         accumulator -= dt;
         if (state_ == Game && world_) {
           world_->step();
-          Time::getTime().progress(1);
+          Timer::getTime().progress(1);
         }
       }
     } else {
-      Time::getTime().progress(0);
+      Timer::getTime().progress(0);
     }
     lastTime = currTime;
     ++frames;
@@ -375,6 +375,7 @@ int __stdcall WinMain( __in HINSTANCE hInstance, __in_opt HINSTANCE hPrevInstanc
 int main(int argc, char** argv)
 #endif
 {
+  srand(0);
   Logger::getInstance().log(INFO_LOG_NAME, "Application started. Hello, World!");
   Logger::getInstance().log(INFO_LOG_NAME, CString("Application version: ") + Version + CString(BUILD_NUM) + " " + CString(BUILD_STR));
 #if defined(WIN32) && defined(DEBUG)
