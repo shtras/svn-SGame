@@ -375,7 +375,6 @@ int __stdcall WinMain( __in HINSTANCE hInstance, __in_opt HINSTANCE hPrevInstanc
 int main(int argc, char** argv)
 #endif
 {
-  srand(0);
   Logger::getInstance().log(INFO_LOG_NAME, "Application started. Hello, World!");
   Logger::getInstance().log(INFO_LOG_NAME, CString("Application version: ") + Version + CString(BUILD_NUM) + " " + CString(BUILD_STR));
 #if defined(WIN32) && defined(DEBUG)
