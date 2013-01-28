@@ -41,6 +41,10 @@ using namespace std;
 #include <SDL/SDL_image.h>
 #endif
 #include <GL/gl.h>
+#include "al.h"
+#include "alc.h"
+#include "vorbis/codec.h"
+#include "vorbis/vorbisfile.h"
 
 #include "MemManager.h"
 

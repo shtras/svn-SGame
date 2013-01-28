@@ -10,6 +10,7 @@
 #include "GameWindow.h"
 #include "Credits.h"
 #include "Timer.h"
+#include "SoundManager.h"
 
 const char* Version = "0.0.6.";
 //TODO for next major version:
@@ -88,6 +89,11 @@ bool SGame::init()
   res = ItemsDB::getInstance().init();
   if (!res) {
     Logger::getInstance().log(ERROR_LOG_NAME, "Failed to initialize items DB");
+    return false;
+  }
+  res = SoundManager::getInstance().init();
+  if (!res) {
+    Logger::getInstance().log(ERROR_LOG_NAME, "Failed to sound manager");
     return false;
   }
   return true;

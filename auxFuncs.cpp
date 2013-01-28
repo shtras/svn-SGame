@@ -37,6 +37,11 @@ void checkErrorDebug(CString errorMsg/* = ""*/)
     Logger::getInstance().log(ERROR_LOG_NAME, errorMsg + CString(" OpenGL error: ") + CString((int)err));
   }
   assert(err == 0);
+  ALenum alErr = alGetError();
+  if (alErr != AL_NO_ERROR) {
+    Logger::getInstance().log(ERROR_LOG_NAME, errorMsg + CString(" OpenAL error: ") + CString((int)alErr));
+  }
+  assert(alErr == AL_NO_ERROR);
 }
 
 void checkReleaseError(CString errorMsg)
