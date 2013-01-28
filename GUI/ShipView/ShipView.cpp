@@ -61,14 +61,15 @@ void ShipView::render()
   }
   float tileTexWidth = 62 / (float)tilesTexWidth_;
   float tileTexHeight = 62 / (float)tilesTexHeight_;
+  renderer.setDrawBoundries(size_);
   for (int i=0; i<layoutWidth_; ++i) {
     float tileX = i*tileWidth_ + offsetX_*zoom_ + size_.left + size_.width*0.5f;
-    if (tileX < size_.left || tileX+tileWidth_ > size_.left + size_.width) {
+    if (tileX < size_.left - tileWidth_ || tileX > size_.left + size_.width) {
       continue;
     }
     for (int j=0; j<layoutHeight_; ++j) {
       float tileY = j*tileHeight_ + offsetY_*zoom_ + size_.top + size_.height*0.5f;
-      if (tileY < size_.top || tileY+tileHeight_ > size_.top + size_.height) {
+      if (tileY < size_.top-tileHeight_ || tileY > size_.top + size_.height) {
         continue;
       }
       Tile* tile = activeDeck_->getTile(i, j);
@@ -179,6 +180,7 @@ void ShipView::render()
     }
   }
   drawCompartments();
+  renderer.resetDrawBoundries();
   //glScissor(0, 0, 1600, 900);
 }
 
@@ -246,10 +248,10 @@ void ShipView::drawCompartments()
       }
       float tileX = x*tileWidth_ + offsetX_*zoom_ + size_.left + size_.width*0.5f;
       float tileY = y*tileHeight_ + offsetY_*zoom_ + size_.top + size_.height*0.5f;
-      if (tileX < size_.left || tileX+tileWidth_ > size_.left + size_.width) {
+      if (tileX < size_.left-tileWidth_ || tileX > size_.left + size_.width) {
         continue;
       }
-      if (tileY < size_.top || tileY+tileHeight_ > size_.top + size_.height) {
+      if (tileY < size_.top - tileHeight_ || tileY > size_.top + size_.height) {
         continue;
       }
       if (overviewType_ == Accessibility) {

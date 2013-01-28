@@ -56,7 +56,7 @@ void ShipViewGame::render()
     int crewInTile = crewInTiles[x*100+y];
     float tileX = x*tileWidth_ + dx + crewInTile * 0.05f * tileWidth_;
     float tileY = y*tileHeight_ + dy + crewInTile * 0.05f * tileHeight_;
-    if (tileX < size_.left || tileY < size_.top || tileX + tileWidth_ > size_.left + size_.width || tileY + tileHeight_ > size_.top + size_.height) {
+    if (tileX+tileWidth_ < size_.left || tileY+tileHeight_ < size_.top || tileX > size_.left + size_.width || tileY > size_.top + size_.height) {
       continue;
     }
     float texX = ((int)((pers->getPathSteProgress()) * 7.78f) + 1) * 64.0f / (float)headsTexSize.x;

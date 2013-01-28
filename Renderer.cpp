@@ -45,6 +45,8 @@ Renderer::Renderer():font_(0),currVertIdx_(0),color_(Vector4(255,255,255,255)),a
 
   charWidth_ = 9;
   charHeight_ = 15;
+
+  drawBoundries_ = Rect(0,0,1,1);
 }
 
 Renderer::~Renderer()
@@ -295,9 +297,33 @@ void Renderer::renderTextLine(TextToRender& ttr)
   }
 }
 
+void Renderer::clampRect(Rect& pos, FCoord& tex1, FCoord& tex2, FCoord& tex3, FCoord& tex4)
+{
+  /*
+   12
+   43
+  */
+  if (pos.left < drawBoundries_.left) {
+    pos.width -= drawBoundries_.left - pos.left;
+    pos.left = drawBoundries_.left;
+  }
+}
+
 void Renderer::drawTexRect(Rect pos, GLuint texID, Rect texPos, int rotation/* = 0*/)
 {
-  
+  if (pos.left + pos.width < drawBoundries_.left) {
+    return;
+  }
+  if (pos.top + pos.height < drawBoundries_.top) {
+    return;
+  }
+  if (pos.left > drawBoundries_.left + drawBoundries_.width) {
+    return;
+  }
+  if (pos.top > drawBoundries_.top + drawBoundries_.height) {
+    return;
+  }
+
   if (texID != activeTex_) {
     flushVerts();
     glBindTexture(GL_TEXTURE_2D, texID);
@@ -329,25 +355,127 @@ void Renderer::drawTexRect(Rect pos, GLuint texID, Rect texPos, int rotation/* =
   default:
     assert(0);
   }
-  /*
-  addVertex(pos.left + offsetX_,           1-(pos.top) - offsetY_,              texX1, texY2);
-  addVertex(pos.left+pos.width + offsetX_, 1-(pos.top) - offsetY_,              texX1, texY1);
-  addVertex(pos.left+pos.width + offsetX_, 1-(pos.top + pos.height) - offsetY_, texX2, texY1);
 
-  addVertex(pos.left + offsetX_,           1-(pos.top) - offsetY_,              texX1, texY2);
-  addVertex(pos.left+pos.width + offsetX_, 1-(pos.top + pos.height) - offsetY_, texX2, texY1);
-  addVertex(pos.left + offsetX_,           1-(pos.top + pos.height) - offsetY_, texX2, texY2);
-  */
-  /*
-  addVertex(pos.left + offsetX_,           1-(pos.top) - offsetY_,              texPos.left,                texPos.top);
-  addVertex(pos.left+pos.width + offsetX_, 1-(pos.top) - offsetY_,              texPos.left + texPos.width, texPos.top);
-  addVertex(pos.left+pos.width + offsetX_, 1-(pos.top + pos.height) - offsetY_, texPos.left + texPos.width, texPos.top + texPos.height);
+  if (pos.left < drawBoundries_.left) {
+    float newPosL = drawBoundries_.left;
+    float newPosW = pos.width - (drawBoundries_.left - pos.left);
+    float newTexPosL;
+    switch (rotation)
+    {
+    case 0:
+      newTexPosL = texPos.left + texPos.width * (newPosL - pos.left)/pos.width;
+      tex1.x = newTexPosL;
+      tex3.x = newTexPosL;
+      break;
+    case 1:
+      newTexPosL = texPos.top + texPos.height - texPos.height* (newPosL - pos.left)/pos.width;
+      tex1.y = newTexPosL;
+      tex3.y = newTexPosL;
+      break;
+    case 2:
+      newTexPosL = texPos.left + texPos.width - texPos.width* (newPosL - pos.left)/pos.width;
+      tex1.x = newTexPosL;
+      tex3.x = newTexPosL;
+      break;
+    case 3:
+      newTexPosL = texPos.top + texPos.height* (newPosL - pos.left)/pos.width;
+      tex1.y = newTexPosL;
+      tex3.y = newTexPosL;
+      break;
+    }
+    pos.left = newPosL;
+    pos.width = newPosW;
+  }
 
-  addVertex(pos.left + offsetX_,           1-(pos.top) - offsetY_,              texPos.left,                texPos.top);
-  addVertex(pos.left+pos.width + offsetX_, 1-(pos.top + pos.height) - offsetY_, texPos.left + texPos.width, texPos.top + texPos.height);
-  addVertex(pos.left + offsetX_,           1-(pos.top + pos.height) - offsetY_, texPos.left,                texPos.top + texPos.height);
-  */
-  
+  if (pos.top < drawBoundries_.top) {
+    float newPosL = drawBoundries_.top;
+    float newPosW = pos.height - (drawBoundries_.top - pos.top);
+    float newTexPosL;
+    switch (rotation)
+    {
+    case 0:
+      newTexPosL = texPos.top + texPos.height * (newPosL - pos.top)/pos.height;
+      tex1.y = newTexPosL;
+      tex2.y = newTexPosL;
+      break;
+    case 1:
+      newTexPosL = texPos.left + texPos.width * (newPosL - pos.top)/pos.height;
+      tex1.x = newTexPosL;
+      tex2.x = newTexPosL;
+      break;
+    case 2:
+      newTexPosL = texPos.top + texPos.height - texPos.height * (newPosL - pos.top)/pos.height;
+      tex1.y = newTexPosL;
+      tex2.y = newTexPosL;
+      break;
+    case 3:
+      newTexPosL = texPos.left + texPos.width - texPos.width * (newPosL - pos.top)/pos.height;
+      tex1.x = newTexPosL;
+      tex2.x = newTexPosL;
+      break;
+    }
+    pos.top = newPosL;
+    pos.height = newPosW;
+  }
+
+  if (pos.left+pos.width > drawBoundries_.left+drawBoundries_.width) {
+    float newPosW = drawBoundries_.left + drawBoundries_.width - pos.left;
+    float newTexPosL;
+    switch (rotation)
+    {
+    case 0:
+      newTexPosL = texPos.left + texPos.width * (newPosW)/pos.width;
+      tex2.x = newTexPosL;
+      tex4.x = newTexPosL;
+      break;
+    case 1:
+      newTexPosL = texPos.top + texPos.height  - texPos.height * (newPosW)/pos.width;
+      tex2.y = newTexPosL;
+      tex4.y = newTexPosL;
+      break;
+    case 2:
+      newTexPosL = texPos.left + texPos.width - texPos.width* (newPosW)/pos.width;
+      tex2.x = newTexPosL;
+      tex4.x = newTexPosL;
+      break;
+    case 3:
+      newTexPosL = texPos.top + texPos.height * (newPosW)/pos.width;
+      tex2.y = newTexPosL;
+      tex4.y = newTexPosL;
+      break;
+    }
+    pos.width = newPosW;
+  }
+
+  if (pos.top+pos.height > drawBoundries_.top+drawBoundries_.height) {
+    float newPosW = drawBoundries_.top + drawBoundries_.height - pos.top;
+    float newTexPosL;
+    switch (rotation)
+    {
+    case 0:
+      newTexPosL = texPos.top + texPos.height * (newPosW)/pos.height;
+      tex3.y = newTexPosL;
+      tex4.y = newTexPosL;
+      break;
+    case 1:
+      newTexPosL = texPos.left + texPos.width * (newPosW)/pos.height;
+      tex3.x = newTexPosL;
+      tex4.x = newTexPosL;
+      break;
+    case 2:
+      newTexPosL = texPos.top + texPos.height - texPos.height * (newPosW)/pos.height;
+      tex3.y = newTexPosL;
+      tex4.y = newTexPosL;
+      break;
+    case 3:
+      newTexPosL = texPos.left + texPos.width - texPos.width * (newPosW)/pos.height;
+      tex3.x = newTexPosL;
+      tex4.x = newTexPosL;
+      break;
+    }
+    pos.height = newPosW;
+  }
+
   FCoord c1 (pos.left + offsetX_,           1-(pos.top) - offsetY_);
   FCoord c2 (pos.left+pos.width + offsetX_, 1-(pos.top + pos.height) - offsetY_);
 
@@ -529,4 +657,9 @@ void Renderer::setKeyboardListener( Widget* w )
     w->onKeyboardFocusGain();
   }
   keyboardListner_ = w;
+}
+
+void Renderer::resetDrawBoundries()
+{
+  drawBoundries_ = Rect(0,0,1,1);
 }

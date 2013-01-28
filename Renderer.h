@@ -71,6 +71,9 @@ public:
   void setWidgetForTooltip(Widget* w) {renderTooltipFor_ = w;}
   void resize(int width, int height);
   void setFloatingWidgetWidthLimit(float value) {floatingWidgetWidthLimit_ = value;}
+  void setDrawBoundries(Rect boundries) {drawBoundries_ = boundries;}
+  void resetDrawBoundries();
+  void clampRect(Rect& pos, FCoord& tex1, FCoord& tex2, FCoord& tex3, FCoord& tex4);
 private:
   Renderer();
   ~Renderer();
@@ -127,4 +130,5 @@ private:
   int charWidth_;
   int charHeight_;
   bool dimTextOnHover_;
+  Rect drawBoundries_;
 };
