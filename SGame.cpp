@@ -191,6 +191,7 @@ bool SGame::mainLoop()
 
     Renderer::getInstance().renderEnd();
     checkReleaseError("OpenGL error during main loop. Something bad happened :(");
+    SoundManager::getInstance().update();
     Sleep(0);
   }
   return true;

@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "TexturedWidget.h"
 #include "Renderer.h"
+#include "SoundManager.h"
 
 static int id = 0;
 
@@ -131,6 +132,7 @@ void Widget::rmUp()
 
 void Widget::click()
 {
+  SoundManager::getInstance().playSound(SoundManager::Test);
   assert (clickable_);
   if (listensKeyboard_) {
     Renderer::getInstance().setKeyboardListener(this);
