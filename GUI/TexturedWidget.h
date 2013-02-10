@@ -112,6 +112,8 @@ public:
   void setAlign(Align align) {align_ = align;}
 protected:
   Rect size_;
+  Rect finalSize_;
+  bool deploying_;
   bool clickable_;
   bool draggable_;
   bool scrollTransparrent_; //Widget does not handle scroll events

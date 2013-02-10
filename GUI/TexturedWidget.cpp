@@ -7,7 +7,8 @@ static int id = 0;
 
 Widget::Widget(Rect size):
   size_(size), regularTexture_(NULL), hoveredTexture_(NULL), pressedTexture_(NULL), activeTexture_(NULL), hovered_(false), pressed_(false), clickable_(false),
-  draggable_(false), dragged_(false),highlighted_(false),scrollTransparrent_(false),visible_(true),align_(NoAlign),listensKeyboard_(false),rightPressed_(false)
+  draggable_(false), dragged_(false),highlighted_(false),scrollTransparrent_(false),visible_(true),align_(NoAlign),listensKeyboard_(false),rightPressed_(false),deploying_(false),
+  finalSize_(size)
 {
   id_ = ++id;
 }
@@ -38,6 +39,9 @@ void Widget::renderFrameRec()
   }
   customFrameRender();
   //Draw all the children
+  if (deploying_) {
+    return;
+  }
   for (auto itr = children_.begin(); itr != children_.end(); ++itr) {
     Widget* child = *itr;
     child->renderFrameRec();
@@ -49,6 +53,25 @@ void Widget::renderFrameRec()
 
 void Widget::renderContRec()
 {
+  if (deploying_) {
+    Rect newSize = size_;
+    newSize.width += finalSize_.width*0.05f;
+    newSize.height += finalSize_.height*0.05f;
+    int cnt = 0;
+    if (newSize.width > finalSize_.width) {
+      newSize.width = finalSize_.width;
+      ++cnt;
+    }
+    if (newSize.height > finalSize_.height) {
+      newSize.height = finalSize_.height;
+      ++cnt;
+      if (cnt == 2) {
+        deploying_ = false;
+      }
+    }
+    resize(newSize);
+    return;
+  }
   if (!visible_) {
     return;
   }

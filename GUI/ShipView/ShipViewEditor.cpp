@@ -102,43 +102,45 @@ void ShipViewEditor::onDrop(Widget* w)
   Compartment* newComp = new Compartment(*comp);
   newComp->setX(hoveredLeft_);
   newComp->setY(hoveredTop_);
-  newComp->width_ = hoverWidth_;
-  newComp->height_ = hoverHeight_;
   //Rotate items in the compartment
   if (draggedCompartmentRoataion_ != 0) {
-    for (auto itr = newComp->getItems().begin(); itr != newComp->getItems().end(); ++itr) {
-      Item* item = *itr;
-      int newRot = item->getRotation() + draggedCompartmentRoataion_;
-      if (newRot > 3) {
-        newRot -= 4;
-      }
-      if (newRot < 0) {
-        newRot += 4;
-      }
-      item->setRotation(newRot);
-      int x = item->getX();
-      int y = item->getY();
-      switch (draggedCompartmentRoataion_)
-      {
-      case 1:
-        item->setX(comp->getHeight() - y - 1);
-        item->setY(x);
-        break;
-      case 2:
-        item->setX(comp->getWidth() - x - 1);
-        item->setY(comp->getHeight() - y - 1);
-        break;
-      case 3:
-        item->setX(y);
-        item->setY(comp->getWidth() - x - 1);
-        break;
-      default:
-        assert(0);
-        break;
-      }
-      assert(item->getX() >= 0 && item->getX() < newComp->getWidth() && item->getY() >= 0 && item->getY() < newComp->getHeight());
-    }
+    newComp->rotate(draggedCompartmentRoataion_);
+    //for (auto itr = newComp->getItems().begin(); itr != newComp->getItems().end(); ++itr) {
+    //  Item* item = *itr;
+    //  int newRot = item->getRotation() + draggedCompartmentRoataion_;
+    //  if (newRot > 3) {
+    //    newRot -= 4;
+    //  }
+    //  if (newRot < 0) {
+    //    newRot += 4;
+    //  }
+    //  item->setRotation(newRot);
+    //  int x = item->getX();
+    //  int y = item->getY();
+    //  switch (draggedCompartmentRoataion_)
+    //  {
+    //  case 1:
+    //    item->setX(comp->getHeight() - y - 1);
+    //    item->setY(x);
+    //    break;
+    //  case 2:
+    //    item->setX(comp->getWidth() - x - 1);
+    //    item->setY(comp->getHeight() - y - 1);
+    //    break;
+    //  case 3:
+    //    item->setX(y);
+    //    item->setY(comp->getWidth() - x - 1);
+    //    break;
+    //  default:
+    //    assert(0);
+    //    break;
+    //  }
+    //  assert(item->getX() >= 0 && item->getX() < newComp->getWidth() && item->getY() >= 0 && item->getY() < newComp->getHeight());
+    //}
   }
+  newComp->width_ = hoverWidth_;
+  newComp->height_ = hoverHeight_;
+  newComp->rotation_ = draggedCompartmentRoataion_;
   activeDeck_->addCompartment(newComp);
   buildInfo_->updateValues();
   draggedCompartmentRoataion_ = 0;

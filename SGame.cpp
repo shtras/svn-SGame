@@ -152,16 +152,22 @@ bool SGame::mainLoop()
   int lastTime = currTime;
   int accumulator = 0;
   int dt = 10;
+  int accumulatorEvents = 0;
+  int dtEvents = 6;
   int frames = 0;
   float fps = 0;
   CString version = Version + CString(BUILD_NUM) + " " + CString(BUILD_STR);
   while(stateRunnig_) {
-    SDL_Event event;
-    while (SDL_PollEvent(&event)) {
-      handleEvent(event);
+    if (accumulatorEvents > dtEvents) {
+      SDL_Event event;
+      while (SDL_PollEvent(&event)) {
+        handleEvent(event);
+      }
+      accumulatorEvents -= dtEvents;
     }
     currTime = SDL_GetTicks();
     int delta = currTime - lastTime;
+    accumulatorEvents += delta;
     if (!paused_) {
       accumulator += delta;
       while (accumulator >= dt) {

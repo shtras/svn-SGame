@@ -29,7 +29,7 @@ Credits::Credits( Rect size ):Widget(size)
   top += height;
 
   t = new Text(Rect(left, top, width, height));
-  t->setCaption("Gregory \"NetStranger\" Shtrasberg");
+  t->setCaption("NetStranger");
   addWidget(t);
   top += height + 0.05;
 

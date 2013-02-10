@@ -85,7 +85,7 @@ bool SoundManager::init()
   sounds_[Ambient] = snd;
   
   snd = new Snd();
-  snd->open("motor_a8.wav", false, false);
+  snd->open("res/button.wav", false, false);
   sounds_[Test] = snd;
   checkReleaseError("");
   return true;

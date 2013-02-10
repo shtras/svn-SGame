@@ -55,12 +55,13 @@ bool RoomParser::parseCSV()
       break;
     }
     vector<CString> parts = line.tokenize(',');
-    if (parts.size() != 16) {
+    if (parts.size() != 17) {
       file.close();
       Logger::getInstance().log(ERROR_LOG_NAME, "Wrong file format: res/comps.csv");
       return false;
     }
     Compartment* comp = new Compartment();
+    comp->id_ = parseInt(parts[0]);
     comp->name_ = parts[1];
     comp->suffix_ = parts[2];
     comp->category_ = (Compartment::Category)parseInt(parts[3]);
@@ -71,14 +72,14 @@ bool RoomParser::parseCSV()
     comp->crewCapacity_ = parseInt(parts[8]);
     comp->powerRequired_ = parseInt(parts[9]);
     comp->powerProduced_ = parseInt(parts[10]);
-    comp->maxConnections_ = parseInt(parts[11]);
-    comp->maxSameConnections_ = parseInt(parts[12]);
-    comp->requiresAccess_ = (parts[13] == "TRUE")?true:false;
-    vector<CString> required = parts[14].tokenize(':');
+    comp->maxConnections_ = parseInt(parts[12]);
+    comp->maxSameConnections_ = parseInt(parts[13]);
+    comp->requiresAccess_ = (parts[14] == "TRUE")?true:false;
+    vector<CString> required = parts[15].tokenize(':');
     for (int i=0; i<(int)required.size(); ++i) {
       comp->requiredConnections_.insert(required[i]);
     }
-    vector<CString> items = parts[15].tokenize(':');
+    vector<CString> items = parts[16].tokenize(':');
     if (items.size() % 5 != 0) {
       delete comp;
       file.close();

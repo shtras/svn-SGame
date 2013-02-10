@@ -30,6 +30,7 @@ void ShipViewGame::render()
 {
   ShipView::render();
   Renderer& renderer = Renderer::getInstance();
+  renderer.setDrawBoundries(size_);
   DCoord headsTexSize = renderer.getHeadsTexSize();
   const list<Person*>& crew = ship_->getCrew();
   float dx = offsetX_*zoom_ + size_.left + size_.width*0.5f;
@@ -92,4 +93,5 @@ void ShipViewGame::render()
     renderer.setColor(Vector4(255,255,255,255));
   }
   renderer.setColor(Vector4(255,255,255,255));
+  renderer.resetDrawBoundries();
 }

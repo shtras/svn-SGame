@@ -278,12 +278,13 @@ bool Ship::load(CString fileName, bool adjustSize/*=false*/)
     fclose(file);
     return false;
   }
-
+#ifndef DEBUG
   if (buffer[4] != SAVE_VERSION) {
     Logger::getInstance().log(ERROR_LOG_NAME, "Old version of the save file");
     fclose(file);
     return false;
   }
+#endif
 
   int fileHash;
   readFromFile(&fileHash, sizeof(int), 1, file);
@@ -361,12 +362,13 @@ bool Ship::load(CString fileName, bool adjustSize/*=false*/)
     char numCompartments = 0;
     readFromFile(&numCompartments, 1, 1, file);
     for (int i=0; i<numCompartments; ++i) {
-      Compartment* comp = new Compartment();
+      readFromFile(buffer, sizeof(int), 1, file);
+      Compartment* comp = new Compartment(*ItemsDB::getInstance().getCompByID(buffer[0]));
       CString name = readStringFromFile(file);
       CString suffix = readStringFromFile(file);
       comp->setName(name);
       comp->suffix_ = suffix;
-      if (!readFromFile(buffer, 1, 16, file)) {
+      if (!readFromFile(buffer, 1, 7, file)) {
         delete[] deckOffsets;
         Logger::getInstance().log(ERROR_LOG_NAME, "Save file corrupted");
         fclose(file);
@@ -377,46 +379,54 @@ bool Ship::load(CString fileName, bool adjustSize/*=false*/)
       comp->width_ = buffer[3];
       comp->height_ = buffer[4];
       comp->rotation_ = buffer[5];
-      comp->minCrew_ = buffer[6];
-      comp->maxCrew_ = buffer[7];
-      comp->powerProduced_ = buffer[8];
-      comp->powerRequired_ = buffer[9];
-      comp->crewCapacity_ = buffer[10];
-      comp->category_ = (Compartment::Category)buffer[11];
-      comp->maxConnections_ = buffer[12];
-      comp->maxSameConnections_ = buffer[13];
-      comp->requiresAccess_ = buffer[14]==1?true:false;
+      if (comp->rotation_%2 != 0) {
+        comp->width_ = buffer[4];
+        comp->height_ = buffer[3];
+      }
+      comp->rotate(buffer[5]);
+      comp->width_ = buffer[3];
+      comp->height_ = buffer[4];
+      //comp->minCrew_ = buffer[6];
+      //comp->maxCrew_ = buffer[7];
+      //comp->powerProduced_ = buffer[8];
+      //comp->powerRequired_ = buffer[9];
+      //comp->crewCapacity_ = buffer[10];
+      //comp->category_ = (Compartment::Category)buffer[11];
+      //comp->maxConnections_ = buffer[12];
+      //comp->maxSameConnections_ = buffer[13];
+      //comp->requiresAccess_ = buffer[14]==1?true:false;
       int id = buffer[0];
       assert (compIDs.count(id) == 0);
       compIDs[id] = comp;
       list<int> connections;
-      for (int connection = 0; connection<buffer[15]; ++connection) {
+      for (int connection = 0; connection<buffer[6]; ++connection) {
         char c;
         readFromFile(&c, 1, 1, file);
         connections.push_back(c);
       }
       compConnections[comp] = connections;
-      char numRequirements = 0;
-      readFromFile(&numRequirements, 1, 1, file);
-      set<CString> requirements;
-      for (int i=0; i<numRequirements; ++i) {
-        CString requirement = readStringFromFile(file);
-        requirements.insert(requirement);
-      }
-      comp->setRequiredConnections(requirements);
-      char numItems = 0;
-      readFromFile(&numItems, 1, 1, file);
-      for (int itemItr = 0; itemItr<numItems; ++itemItr) {
-        readFromFile(buffer, 1, 6, file);
-        Item* itemOriginal = ItemsDB::getInstance().getItemByID(buffer[0]);
-        Item* item = new Item(*itemOriginal);
-        item->setX(buffer[1]);
-        item->setY(buffer[2]);
-        item->setRotation(buffer[3]);
-        item->requiresVacuum_ = buffer[4]==1?true:false;
-        item->occupied_ = buffer[5];
-        comp->addItem(item);
-      }
+      //char numRequirements = 0;
+      //readFromFile(&numRequirements, 1, 1, file);
+      //set<CString> requirements;
+      //for (int i=0; i<numRequirements; ++i) {
+      //  CString requirement = readStringFromFile(file);
+      //  requirements.insert(requirement);
+      //}
+      //comp->setRequiredConnections(requirements);
+      //char numItems = 0;
+      //readFromFile(&numItems, 1, 1, file);
+      //for (int itemItr = 0; itemItr<numItems; ++itemItr) {
+      //  readFromFile(buffer, 1, 6, file);
+      //  Item* itemOriginal = ItemsDB::getInstance().getItemByID(buffer[0]);
+      //  Item* item = new Item(*itemOriginal);
+      //  item->setX(buffer[1]);
+      //  item->setY(buffer[2]);
+      //  item->setRotation(buffer[3]);
+      //  item->requiresVacuum_ = buffer[4]==1?true:false;
+      //  item->occupied_ = buffer[5];
+      //  //comp->addItem(item);
+      //  delete item;
+      //}
       deck->addCompartment(comp);
     }
   }
@@ -513,6 +523,8 @@ void Ship::save( CString fileName )
     writeToFile(buffer, 1, 1, file); //write num compartments
     for (auto itr = deck->getCompartments().begin(); itr != deck->getCompartments().end(); ++itr) {
       Compartment* comp = *itr;
+      buffer[0] = comp->getID();
+      writeToFile(buffer, sizeof(int), 1, file);
       writeStringToFile(file, comp->getName());
       writeStringToFile(file, comp->getSuffix());
       assert (compIDs_.count(comp) == 1);
@@ -523,15 +535,15 @@ void Ship::save( CString fileName )
       buffer[cnt++] = comp->getWidth();
       buffer[cnt++] = comp->getHeight();
       buffer[cnt++] = comp->getRotation();
-      buffer[cnt++] = comp->getMinCrew();
-      buffer[cnt++] = comp->getMaxCrew();
-      buffer[cnt++] = comp->getPowerProduced();
-      buffer[cnt++] = comp->getPowerRequired();
-      buffer[cnt++] = comp->getCrewCapacity();
-      buffer[cnt++] = comp->getCategory();
-      buffer[cnt++] = comp->getMaxConnections();
-      buffer[cnt++] = comp->getMaxSameConnections();
-      buffer[cnt++] = comp->requiresAccess()?1:0;
+//       buffer[cnt++] = comp->getMinCrew();
+//       buffer[cnt++] = comp->getMaxCrew();
+//       buffer[cnt++] = comp->getPowerProduced();
+//       buffer[cnt++] = comp->getPowerRequired();
+//       buffer[cnt++] = comp->getCrewCapacity();
+//       buffer[cnt++] = comp->getCategory();
+//       buffer[cnt++] = comp->getMaxConnections();
+//       buffer[cnt++] = comp->getMaxSameConnections();
+//       buffer[cnt++] = comp->requiresAccess()?1:0;
       buffer[cnt++] = comp->getConnections().size();
       writeToFile(buffer, 1, cnt, file);
       cnt=0;
@@ -543,25 +555,25 @@ void Ship::save( CString fileName )
       if (cnt > 0) {
         writeToFile(buffer, 1, cnt, file);
       }
-      char numRequirements = comp->getRequiredConnections().size();
-      writeToFile(&numRequirements, 1, 1, file);
-      for (auto requirementItr = comp->getRequiredConnections().begin(); requirementItr != comp->getRequiredConnections().end(); ++requirementItr) {
-        CString requirement = *requirementItr;
-        writeStringToFile(file, requirement);
-      }
-      buffer[0] = comp->getItems().size();
-      writeToFile(buffer, 1, 1, file);
-      for (auto itr = comp->getItems().begin(); itr != comp->getItems().end(); ++itr) {
-        Item* item = *itr;
-        int cnt = 0;
-        buffer[cnt++] = item->getID();
-        buffer[cnt++] = item->getX();
-        buffer[cnt++] = item->getY();
-        buffer[cnt++] = item->getRotation();
-        buffer[cnt++] = item->requiresVacuum()?1:0;
-        buffer[cnt++] = item->occupied_;
-        writeToFile(buffer, 1, cnt, file);
-      }
+      //char numRequirements = comp->getRequiredConnections().size();
+      //writeToFile(&numRequirements, 1, 1, file);
+      //for (auto requirementItr = comp->getRequiredConnections().begin(); requirementItr != comp->getRequiredConnections().end(); ++requirementItr) {
+      //  CString requirement = *requirementItr;
+      //  writeStringToFile(file, requirement);
+      //}
+      //buffer[0] = comp->getItems().size();
+      //writeToFile(buffer, 1, 1, file);
+      //for (auto itr = comp->getItems().begin(); itr != comp->getItems().end(); ++itr) {
+      //  Item* item = *itr;
+      //  int cnt = 0;
+      //  buffer[cnt++] = item->getID();
+      //  buffer[cnt++] = item->getX();
+      //  buffer[cnt++] = item->getY();
+      //  buffer[cnt++] = item->getRotation();
+      //  buffer[cnt++] = item->requiresVacuum()?1:0;
+      //  buffer[cnt++] = item->occupied_;
+      //  writeToFile(buffer, 1, cnt, file);
+      //}
     }
   }
   fclose(file);
@@ -1003,7 +1015,7 @@ Compartment::Compartment():rotation_(0),deckIdx_(-1),highlighted_(false)
 Compartment::Compartment(const Compartment& other):left_(other.left_), top_(other.top_), width_(other.width_), height_(other.height_), name_(other.name_),
   category_(other.category_),minCrew_(other.minCrew_),maxCrew_(other.maxCrew_),powerRequired_(other.powerRequired_),powerProduced_(other.powerProduced_),
   crewCapacity_(other.crewCapacity_),rotation_(other.rotation_),maxSameConnections_(other.maxSameConnections_),maxConnections_(other.maxConnections_),
-  requiresAccess_(other.requiresAccess_),suffix_(other.suffix_),deckIdx_(-1),highlighted_(false)
+  requiresAccess_(other.requiresAccess_),suffix_(other.suffix_),deckIdx_(-1),highlighted_(false),id_(other.id_)
 {
   for (auto itr = other.items_.begin(); itr != other.items_.end(); ++itr) {
     items_.push_back(new Item(**itr));
@@ -1106,6 +1118,43 @@ Item* Compartment::getItem( int x, int y )
 bool Compartment::isInside( int x, int y )
 {
   return x >= left_ && y >= top_ && x < left_+width_ && y < top_+height_;
+}
+
+void Compartment::rotate( int rotation )
+{
+  if (rotation == 0) {
+    return;
+  }
+  for (Item* item: items_) {
+    int newRot = item->getRotation() + rotation;
+    if (newRot > 3) {
+      newRot -= 4;
+    }
+    if (newRot < 0) {
+      newRot += 4;
+    }
+    item->setRotation(newRot);
+    int x = item->getX();
+    int y = item->getY();
+    switch (rotation)
+    {
+    case 1:
+      item->setX(getHeight() - y - 1);
+      item->setY(x);
+      break;
+    case 2:
+      item->setX(getWidth() - x - 1);
+      item->setY(getHeight() - y - 1);
+      break;
+    case 3:
+      item->setX(y);
+      item->setY(getWidth() - x - 1);
+      break;
+    default:
+      assert(0);
+      break;
+    }
+  }
 }
 
 Item::Item():occupied_(0)

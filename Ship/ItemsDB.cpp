@@ -18,11 +18,14 @@ ItemsDB::~ItemsDB()
   for (auto itr = itemsMap_.begin(); itr != itemsMap_.end(); ++itr) {
     delete (*itr).second;
   }
-  for (auto itr = roomsMap_.begin(); itr != roomsMap_.end(); ++itr) {
-    for (auto itr1 = (*itr).second.begin(); itr1 != (*itr).second.end(); ++itr1) {
-      delete *itr1;
-    }
+  for (auto itr = compartmentsMap_.begin(); itr != compartmentsMap_.end(); ++itr) {
+    delete (*itr).second;
   }
+  //for (auto itr = compsCategoryMap_.begin(); itr != compsCategoryMap_.end(); ++itr) {
+  //  for (auto itr1 = (*itr).second.begin(); itr1 != (*itr).second.end(); ++itr1) {
+  //    delete *itr1;
+  //  }
+  //}
 }
 
 bool ItemsDB::isValidCategory( int category )
@@ -41,20 +44,25 @@ void ItemsDB::addItem( Item* item )
 
 void ItemsDB::addCompartment( Compartment* comp )
 {
+  if (compartmentsMap_.count(comp->getID()) != 0) {
+    Logger::getInstance().log(ERROR_LOG_NAME, "Compartment already exists in the DB: " + CString(comp->getID()));
+    return;
+  }
+  compartmentsMap_[comp->getID()] = comp;
   assert (isValidCategory(comp->getCategory()));
-  if (roomsMap_.count(comp->getCategory()) == 0) {
+  if (compsCategoryMap_.count(comp->getCategory()) == 0) {
     list<Compartment*> compList;
     compList.push_back(comp);
-    roomsMap_[comp->getCategory()] = compList;
+    compsCategoryMap_[comp->getCategory()] = compList;
   } else {
-    roomsMap_[comp->getCategory()].push_back(comp);
+    compsCategoryMap_[comp->getCategory()].push_back(comp);
   }
 }
 
 list<Compartment*> ItemsDB::getCompartmentsByCategory( Compartment::Category category )
 {
   assert (isValidCategory(category));
-  return roomsMap_[category];
+  return compsCategoryMap_[category];
 }
 
 Item* ItemsDB::getItemByID( int id )
@@ -68,5 +76,11 @@ bool ItemsDB::init()
   RoomParser parser;
   bool res = parser.parse("res/rooms.txt");
   return res;
+}
+
+Compartment* ItemsDB::getCompByID( int id )
+{
+  assert (compartmentsMap_.count(id) != 0);
+  return compartmentsMap_[id];
 }
 

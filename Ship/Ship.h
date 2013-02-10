@@ -1,5 +1,5 @@
 #pragma once
-#define SAVE_VERSION 3
+#define SAVE_VERSION 4
 #include "Person.h"
 
 class Deck;
@@ -160,6 +160,7 @@ public:
   void addItem(Item* item) {items_.push_back(item);}
   Category getCategory() {return category_;}
   const list<Item*>& getItems() {return items_;}
+  int getID() {return id_;}
   int getX() {return left_;}
   int getY() {return top_;}
   void setX(int x) {left_ = x;}
@@ -196,8 +197,10 @@ public:
   void setHighLighted(bool value) {highlighted_ = value;}
   bool isHighLighted() {return highlighted_;}
   void setSuffixIndex(CString str) {suffixIndex_ = str;}
+  void rotate(int rotation);
 private:
   Category category_;
+  int id_;
   int left_;
   int top_;
   int width_;

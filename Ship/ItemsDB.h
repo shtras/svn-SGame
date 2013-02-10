@@ -11,6 +11,7 @@ public:
   void addCompartment(Compartment* comp);
   list<Compartment*> getCompartmentsByCategory(Compartment::Category category);
   Item* getItemByID(int id);
+  Compartment* getCompByID(int id);
   void setFileHash(int hash) {hash_ = hash;}
   int getFileHash() {return hash_;}
 private:
@@ -18,6 +19,7 @@ private:
   ~ItemsDB();
 
   map<int, Item*> itemsMap_;
-  map<Compartment::Category, list<Compartment*> > roomsMap_;
+  map<int, Compartment*> compartmentsMap_;
+  map<Compartment::Category, list<Compartment*> > compsCategoryMap_;
   int hash_;
 };
