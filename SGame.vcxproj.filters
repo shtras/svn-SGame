@@ -55,6 +55,12 @@
     <Filter Include="Source Files\GUI\ShipView">
       <UniqueIdentifier>{1f9ae967-5bd6-4662-ba46-81b0fbb8e682}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Universe">
+      <UniqueIdentifier>{9a30fb9e-7fbd-49ae-9c92-7a3d955cd1e4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Universe">
+      <UniqueIdentifier>{a4c6dacc-5bda-4a9f-972a-619d89f34bca}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SGame.cpp">
@@ -179,6 +185,9 @@
     </ClCompile>
     <ClCompile Include="SoundManager.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Universe\Universe.cpp">
+      <Filter>Source Files\Universe</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -310,6 +319,9 @@
     </ClInclude>
     <ClInclude Include="SoundManager.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Universe\Universe.h">
+      <Filter>Header Files\Universe</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
